@@ -1,0 +1,39 @@
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.suo
+*.ntuser*
+*.iml
+
+# Node / Frontend
+node_modules/
+dist/
+.next/
+out/
+.vercel/
+
+# Java / Maven
+target/
+*.class
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables and secrets
+.env
+.env.local
+.env.production
+.env.development
+.env.test
+
+# Logs and temporary files
+*.log
+temp_clones/

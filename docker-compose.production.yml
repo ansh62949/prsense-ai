@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+  db:
+    image: pgvector/pgvector:pg15
+    container_name: prsense-db
+    environment:
+      POSTGRES_DB: prsense_db
+      POSTGRES_USER: prsense_user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U prsense_user -d prsense_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+    container_name: prsense-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./prsense-backend
+      dockerfile: Dockerfile
+    container_name: prsense-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=prsense_db
+      - DB_USER=prsense_user
+      - DB_PASS=password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - AI_SERVICE_URL=http://ai-service:8000
+      - SPRING_PROFILES_ACTIVE=prod
+      - ALLOWED_ORIGINS=http://localhost:5173,http://localhost
+      - WEBHOOK_BASE_URL=http://backend:8080
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  ai-service:
+    build:
+      context: ./prsense-ai-service
+      dockerfile: Dockerfile
+    container_name: prsense-ai-service
+    ports:
+      - "8000:8000"
+    environment:
+      - LLM_PROVIDER=gemini
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=prsense_db
+      - POSTGRES_USER=prsense_user
+      - POSTGRES_PASSWORD=password
+      - REDIS_URL=redis://redis:6379/0
+      - BACKEND_CALLBACK_URL=http://backend:8080/api/reviews/callback
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  celery-worker:
+    build:
+      context: ./prsense-ai-service
+      dockerfile: Dockerfile
+    container_name: prsense-celery-worker
+    command: celery -A celery_worker.celery_app worker --loglevel=info -P solo
+    environment:
+      - LLM_PROVIDER=gemini
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=prsense_db
+      - POSTGRES_USER=prsense_user
+      - POSTGRES_PASSWORD=password
+      - REDIS_URL=redis://redis:6379/0
+      - BACKEND_CALLBACK_URL=http://backend:8080/api/reviews/callback
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  pgdata:

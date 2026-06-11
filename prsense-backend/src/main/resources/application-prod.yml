@@ -1,0 +1,31 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:${DATABASE_URL}}
+    username: ${DB_USER:}
+    password: ${DB_PASS:}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  data:
+    redis:
+      url: ${REDIS_URL:redis://localhost:6379/0}
+
+ai:
+  service:
+    url: ${AI_SERVICE_URL:http://localhost:8000}
+
+allowed:
+  origins: ${ALLOWED_ORIGINS:*}
+
+webhook:
+  base:
+    url: ${WEBHOOK_BASE_URL:http://localhost:8080}
