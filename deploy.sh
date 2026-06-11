@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# FlowGuard AI - Setup & Deployment Script
+# PRSense AI - Setup & Deployment Script
 
 set -e
 
-echo "🚀 FlowGuard AI - Starting deployment..."
+echo "🚀 PRSense AI - Starting deployment..."
 
 # Colors for output
 RED='\033[0;31m'
@@ -43,28 +43,27 @@ sleep 10
 
 # Run database migrations
 echo -e "${YELLOW}[6/6] Running database migrations...${NC}"
-docker-compose exec -T postgres psql -U flowguard -d flowguard -f /docker-entrypoint-initdb.d/database-schema.sql
+docker-compose exec -T db psql -U prsense_user -d prsense_db -f /docker-entrypoint-initdb.d/database-schema.sql
 echo -e "${GREEN}✓ Database migrations completed${NC}"
 
 # Print deployment summary
 echo ""
 echo -e "${GREEN}========================================${NC}"
-echo -e "${GREEN}✓ FlowGuard AI deployment completed!${NC}"
+echo -e "${GREEN}✓ PRSense AI deployment completed!${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
 echo "Services running on:"
 echo "  API Gateway:      http://localhost:8080"
 echo "  Frontend:         http://localhost:3000"
-echo "  RabbitMQ Admin:   http://localhost:15672"
 echo "  Grafana:          http://localhost:3000"
 echo "  Prometheus:       http://localhost:9090"
 echo ""
 echo "Default credentials:"
-echo "  RabbitMQ:  flowguard / flowguard_secure_password"
 echo "  Grafana:   admin / admin"
 echo ""
 echo "Next steps:"
-echo "  1. Update .env with your OpenAI API key"
-echo "  2. Configure Slack webhooks"
+echo "  1. Update .env with your OpenAI/Gemini API key"
+echo "  2. Configure GitHub webhooks"
 echo "  3. Access frontend at http://localhost:3000"
 echo ""
+
