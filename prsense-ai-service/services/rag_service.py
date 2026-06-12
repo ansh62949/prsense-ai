@@ -194,6 +194,12 @@ class RAGService:
         # Re-establish connection
         db_url = os.getenv("DATABASE_URL") or os.getenv("SPRING_DATASOURCE_URL")
         
+        # Check for obvious placeholder characters or brackets in the connection string
+        if db_url:
+            if any(char in db_url for char in ['[', ']', '<', '>', '{', '}']):
+                logger.warning("WARNING: DATABASE_URL contains bracket/placeholder characters ('[', ']', '<', '>', '{', '}'). "
+                               "Please ensure you have replaced placeholders with your actual password and removed the brackets themselves.")
+                               
         try:
             if db_url:
                 if db_url.startswith("jdbc:"):

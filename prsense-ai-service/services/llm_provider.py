@@ -8,7 +8,7 @@ logger.setLevel(logging.INFO)
 # Load environment configurations
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "gemini").lower()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or ""
 
 # Standard auto-switching logic if credentials dictate it
 if not LLM_PROVIDER or LLM_PROVIDER not in ["openai", "gemini"]:

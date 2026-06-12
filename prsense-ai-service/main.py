@@ -38,7 +38,7 @@ app.include_router(monitoring.router)
 @app.on_event("startup")
 async def startup_event():
     # Startup validation
-    gemini_key = os.getenv("GEMINI_API_KEY")
+    gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
     openai_key = os.getenv("OPENAI_API_KEY")
     provider = os.getenv("LLM_PROVIDER", "gemini").lower()
     
