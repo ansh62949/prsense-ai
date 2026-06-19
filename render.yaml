@@ -1,0 +1,53 @@
+services:
+  # FastAPI AI Service
+  - type: web
+    name: prsense-ai-service
+    env: docker
+    rootDir: prsense-ai-service
+    dockerfilePath: Dockerfile
+    dockerContext: .
+    envVars:
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+
+  # Spring Boot Backend
+  - type: web
+    name: prsense-backend
+    env: docker
+    rootDir: prsense-backend
+    dockerfilePath: Dockerfile
+    dockerContext: .
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: AI_SERVICE_URL
+        fromService:
+          name: prsense-ai-service
+          type: web
+          property: host
+
+  # React Frontend (Static Site)
+  - type: web
+    name: prsense-frontend
+    env: static
+    rootDir: prsense-frontend
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          name: prsense-backend
+          type: web
+          property: host
