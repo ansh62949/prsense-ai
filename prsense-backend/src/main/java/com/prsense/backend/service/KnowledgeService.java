@@ -27,7 +27,7 @@ public class KnowledgeService {
     
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${ai.service.url:http://127.0.0.1:8000}")
+    @Value("${ai.service.url:http://localhost:8000}")
     private String aiServiceUrl;
 
     @Transactional

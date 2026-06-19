@@ -2,9 +2,9 @@ spring:
   application:
     name: prsense-backend
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:prsense_db}
-    username: ${DB_USER:prsense_user}
-    password: ${DB_PASS:password}
+    url: ${SPRING_DATASOURCE_URL:${DATABASE_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:prsense_db}}}
+    username: ${SPRING_DATASOURCE_USERNAME:${DB_USER:prsense_user}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASS:password}}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -16,6 +16,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   data:
     redis:
+      url: ${REDIS_URL:redis://localhost:6379/0}
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
 
@@ -37,3 +38,11 @@ github:
     client-id: ${GITHUB_CLIENT_ID:}
     client-secret: ${GITHUB_CLIENT_SECRET:}
     redirect-uri: ${GITHUB_OAUTH_REDIRECT_URI:http://localhost:3000/auth/github/callback}
+
+ai:
+  service:
+    url: ${AI_SERVICE_URL:http://localhost:8000}
+
+allowed:
+  origins: ${ALLOWED_ORIGINS:http://localhost:5173}
+

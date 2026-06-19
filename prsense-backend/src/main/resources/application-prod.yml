@@ -4,8 +4,8 @@ spring:
       on-profile: prod
   datasource:
     url: ${SPRING_DATASOURCE_URL:${DATABASE_URL}}
-    username: ${DB_USER:}
-    password: ${DB_PASS:}
+    username: ${SPRING_DATASOURCE_USERNAME:${DB_USER:}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASS:}}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -29,3 +29,4 @@ allowed:
 webhook:
   base:
     url: ${WEBHOOK_BASE_URL:http://localhost:8080}
+
