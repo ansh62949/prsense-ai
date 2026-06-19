@@ -4,6 +4,9 @@
 ![License](https://img.shields.io/badge/license-proprietary-red)
 ![Status](https://img.shields.io/badge/status-actively%20developed-green)
 
+🚀 **Live AI Agent Service**: [https://prsense-ai.onrender.com/](https://prsense-ai.onrender.com/)  
+📝 **Interactive API Testing (Swagger UI)**: [https://prsense-ai.onrender.com/docs](https://prsense-ai.onrender.com/docs)
+
 PRSense AI is a **premium, AI-native SaaS platform** designed to automate GitHub Pull Request reviews, analyze code safety, styles, and architectures, and provide deep repository-wide conversational intelligence. Built with a Spring Boot Java backend, a Vite + React + Framer Motion premium frontend, and a FastAPI + LangGraph Python AI service.
 
 ---
@@ -104,13 +107,14 @@ prsense-ai/
 
 ---
 
-## 🛠️ Service Architecture
+## 🛠️ Service Architecture & Endpoints
 
-| Service | Address | Description |
-|---------|---------|-------------|
-| **Frontend** | `http://localhost:3000` | React web application portal |
-| **Backend API** | `http://localhost:8080` | Spring Boot orchestrator, user accounts, OAuth |
-| **AI Agent Service** | `http://localhost:8000` | FastAPI LangGraph agent microservice |
+| Service | Local Address | Live/Production Address | Description |
+|---------|---------------|-------------------------|-------------|
+| **Frontend** | `http://localhost:3000` | - | React web application portal |
+| **Backend API** | `http://localhost:8080` | - | Spring Boot orchestrator, user accounts, OAuth |
+| **AI Agent Service** | `http://localhost:8000` | [https://prsense-ai.onrender.com/](https://prsense-ai.onrender.com/) | FastAPI LangGraph agent microservice |
+| **Swagger UI** | `http://localhost:8000/docs` | [https://prsense-ai.onrender.com/docs](https://prsense-ai.onrender.com/docs) | Interactive API testing documentation |
 
 ---
 
