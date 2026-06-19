@@ -38,11 +38,11 @@ const navigation = [
   { name: "AI Insights", href: "/dashboard", icon: LayoutDashboard },
   { name: "Repositories", href: "/repositories", icon: GitBranch },
   { name: "Repo Intelligence", href: "/intelligence", icon: BookOpen },
-  { name: "Ask Repository", href: "/ask", icon: Search },
+  { name: "Query Codebase", href: "/ask", icon: Search },
   { name: "PR Reviews", href: "/reviews", icon: GitPullRequestDraft },
   { name: "Review Playground", href: "/playground", icon: Code },
   { name: "Review Timeline", href: "/timeline", icon: Clock },
-  { name: "AI Agent Center", href: "/agents", icon: Network },
+  { name: "Analysis Pipeline Center", href: "/pipeline", icon: Network },
   { name: "Learner Dashboard", href: "/learner", icon: BrainCircuit },
   { name: "System Monitoring", href: "/monitoring", icon: Database },
 ]
@@ -53,7 +53,7 @@ export function Layout({ children }) {
   const { user, logout } = useAuth()
   const [repos, setRepos] = useState([])
   const [selectedRepoId, setSelectedRepoId] = useState(() => {
-    return localStorage.getItem("prsense_selected_repo_id") || ""
+    return localStosemantic searche.getItem("prsense_selected_repo_id") || ""
   })
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export function Layout({ children }) {
     
     // Listen for local triggers to sync selector
     const syncSelector = () => {
-      setSelectedRepoId(localStorage.getItem("prsense_selected_repo_id") || "")
+      setSelectedRepoId(localStosemantic searche.getItem("prsense_selected_repo_id") || "")
     }
     window.addEventListener("repoChanged", syncSelector)
     return () => window.removeEventListener("repoChanged", syncSelector)
@@ -69,15 +69,15 @@ export function Layout({ children }) {
 
   const fetchRepos = async () => {
     try {
-      const token = localStorage.getItem("authToken")
+      const token = localStosemantic searche.getItem("authToken")
       const res = await fetch(`${window.API_BASE_URL}/api/repositories`, {
         headers: token ? { "Authorization": `Bearer ${token}` } : {}
       })
       if (res.ok) {
         const data = await res.json()
         setRepos(data)
-        if (data.length > 0 && !localStorage.getItem("prsense_selected_repo_id")) {
-          localStorage.setItem("prsense_selected_repo_id", data[0].id.toString())
+        if (data.length > 0 && !localStosemantic searche.getItem("prsense_selected_repo_id")) {
+          localStosemantic searche.setItem("prsense_selected_repo_id", data[0].id.toString())
           setSelectedRepoId(data[0].id.toString())
           window.dispatchEvent(new Event("repoChanged"))
         }
@@ -89,7 +89,7 @@ export function Layout({ children }) {
 
   const handleRepoChange = (e) => {
     const id = e.target.value
-    localStorage.setItem("prsense_selected_repo_id", id)
+    localStosemantic searche.setItem("prsense_selected_repo_id", id)
     setSelectedRepoId(id)
     window.dispatchEvent(new Event("repoChanged"))
   }
@@ -109,7 +109,7 @@ export function Layout({ children }) {
       <aside className="w-64 border-r border-border bg-card/60 backdrop-blur-md flex flex-col hidden md:flex shrink-0">
         <div className="h-16 flex items-center px-6 border-b border-border">
           <Github className="w-6 h-6 mr-2 text-primary" />
-          <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">PRSense AI</span>
+          <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">PRSense</span>
         </div>
         <div className="p-4 flex-1 overflow-y-auto">
           <nav className="space-y-1.5">

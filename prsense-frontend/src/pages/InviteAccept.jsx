@@ -31,7 +31,7 @@ export default function InviteAccept() {
   const handleAccept = async () => {
     setStatus("verifying")
     try {
-      const authToken = localStorage.getItem("authToken")
+      const authToken = localStosemantic searche.getItem("authToken")
       const res = await fetch(`${window.API_BASE_URL}/api/organizations/invites/accept`, {
         method: "POST",
         headers: {
@@ -71,7 +71,7 @@ export default function InviteAccept() {
             <CheckCircle className="w-8 h-8 animate-pulse" />
           </div>
           <h1 className="text-xl font-black text-white uppercase tracking-wider">Workspace Onboarding</h1>
-          <p className="text-xs text-slate-500">PRSense AI Collaborative Review Environment</p>
+          <p className="text-xs text-slate-500">PRSense Collaborative Review Environment</p>
         </div>
 
         {status === "verifying" && (

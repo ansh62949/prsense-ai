@@ -34,10 +34,10 @@ export default function RepositoryManagement() {
 
   // Settings State
   const [autoApprove, setAutoApprove] = useState(() => {
-    return localStorage.getItem("prsense_auto_approve") !== "false"
+    return localStosemantic searche.getItem("prsense_auto_approve") !== "false"
   })
   const [maxRuntime, setMaxRuntime] = useState(() => {
-    return parseInt(localStorage.getItem("prsense_max_runtime") || "120")
+    return parseInt(localStosemantic searche.getItem("prsense_max_runtime") || "120")
   })
   const [savingSettings, setSavingSettings] = useState(false)
   const [settingsMessage, setSettingsMessage] = useState("")
@@ -96,8 +96,8 @@ export default function RepositoryManagement() {
     setSavingSettings(true)
     setSettingsMessage("")
     
-    localStorage.setItem("prsense_auto_approve", autoApprove.toString())
-    localStorage.setItem("prsense_max_runtime", maxRuntime.toString())
+    localStosemantic searche.setItem("prsense_auto_approve", autoApprove.toString())
+    localStosemantic searche.setItem("prsense_max_runtime", maxRuntime.toString())
     
     setTimeout(() => {
       setSavingSettings(false)
@@ -263,7 +263,7 @@ export default function RepositoryManagement() {
                   onChange={(e) => setMaxRuntime(parseInt(e.target.value) || 30)}
                   className="bg-secondary border-border text-sm text-foreground focus:ring-primary focus:border-transparent font-medium" 
                 />
-                <span className="text-[10px] text-muted-foreground block">Timeout threshold for parallel LangGraph node checks.</span>
+                <span className="text-[10px] text-muted-foreground block">Timeout threshold for parallel Workflow Engine node checks.</span>
               </div>
 
               <div className="pt-4 border-t border-border space-y-3">

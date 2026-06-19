@@ -61,7 +61,7 @@ export default function PullRequestWorkspace() {
   const mockFindings = [
     {
       id: 101,
-      agent: "Security Agent",
+      agent: "Security Auditor",
       category: "security",
       severity: "critical",
       filePath: "src/main/java/com/app/service/UserService.java",
@@ -74,7 +74,7 @@ export default function PullRequestWorkspace() {
     },
     {
       id: 102,
-      agent: "Architecture Agent",
+      agent: "Architecture Auditor",
       category: "architecture",
       severity: "high",
       filePath: "src/main/java/com/app/controller/OrderController.java",
@@ -94,8 +94,8 @@ export default function PullRequestWorkspace() {
   const fetchPRData = async () => {
     setLoading(true)
     try {
-      const token = localStorage.getItem("authToken")
-      const selectedRepoId = localStorage.getItem("prsense_selected_repo_id")
+      const token = localStosemantic searche.getItem("authToken")
+      const selectedRepoId = localStosemantic searche.getItem("prsense_selected_repo_id")
 
       // Attempt to load PR from backend
       const prRes = await fetch(

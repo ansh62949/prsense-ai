@@ -39,11 +39,11 @@ const navigation = [
   { name: "Repositories", href: "/repositories", icon: GitBranch, group: "Overview" },
   { name: "Pull Requests", href: "/reviews", icon: GitPullRequest, group: "Core Workflows" },
   { name: "Reviews", href: "/playground", icon: CheckSquare, group: "Core Workflows" },
-  { name: "Repository Intelligence", href: "/intelligence", icon: BookOpen, group: "Intelligence" },
-  { name: "Ask Repository", href: "/ask", icon: Search, group: "Intelligence" },
+  { name: "Repository Analysis", href: "/intelligence", icon: BookOpen, group: "Deep Audit" },
+  { name: "Query Codebase", href: "/ask", icon: Search, group: "Deep Audit" },
   { name: "Execution Timeline", href: "/timeline", icon: Clock, group: "Observability" },
-  { name: "Agent Center", href: "/agents", icon: Cpu, group: "Observability" },
-  { name: "Learning Engine", href: "/learner", icon: Brain, group: "Engine" },
+  { name: "Analysis Pipeline", href: "/pipeline", icon: Cpu, group: "Observability" },
+  { name: "Rule Learner", href: "/learner", icon: Brain, group: "Engine" },
   { name: "Monitoring", href: "/monitoring", icon: Activity, group: "Observability" },
   { name: "Billing & Plans", href: "/billing", icon: CreditCard, group: "Enterprise" },
   { name: "Developer API", href: "/developer", icon: Key, group: "Enterprise" },
@@ -55,7 +55,7 @@ export function LayoutPremium({ children }) {
   const { user, logout } = useAuth()
   const [repos, setRepos] = useState([])
   const [selectedRepoId, setSelectedRepoId] = useState(() => {
-    return localStorage.getItem("prsense_selected_repo_id") || ""
+    return localStosemantic searche.getItem("prsense_selected_repo_id") || ""
   })
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
@@ -70,7 +70,7 @@ export function LayoutPremium({ children }) {
     fetchRepos()
 
     const syncSelector = () => {
-      setSelectedRepoId(localStorage.getItem("prsense_selected_repo_id") || "")
+      setSelectedRepoId(localStosemantic searche.getItem("prsense_selected_repo_id") || "")
     }
     window.addEventListener("repoChanged", syncSelector)
     return () => window.removeEventListener("repoChanged", syncSelector)
@@ -78,15 +78,15 @@ export function LayoutPremium({ children }) {
 
   const fetchRepos = async () => {
     try {
-      const token = localStorage.getItem("authToken")
+      const token = localStosemantic searche.getItem("authToken")
       const res = await fetch(`${window.API_BASE_URL}/api/repositories`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       })
       if (res.ok) {
         const data = await res.json()
         setRepos(data)
-        if (data.length > 0 && !localStorage.getItem("prsense_selected_repo_id")) {
-          localStorage.setItem("prsense_selected_repo_id", data[0].id.toString())
+        if (data.length > 0 && !localStosemantic searche.getItem("prsense_selected_repo_id")) {
+          localStosemantic searche.setItem("prsense_selected_repo_id", data[0].id.toString())
           setSelectedRepoId(data[0].id.toString())
           window.dispatchEvent(new Event("repoChanged"))
         }
@@ -98,7 +98,7 @@ export function LayoutPremium({ children }) {
 
   const handleRepoChange = (e) => {
     const id = e.target.value
-    localStorage.setItem("prsense_selected_repo_id", id)
+    localStosemantic searche.setItem("prsense_selected_repo_id", id)
     setSelectedRepoId(id)
     window.dispatchEvent(new Event("repoChanged"))
   }
@@ -109,7 +109,7 @@ export function LayoutPremium({ children }) {
   }
 
   const selectedRepo = repos.find((r) => r.id.toString() === selectedRepoId)
-  const groups = ["Overview", "Core Workflows", "Intelligence", "Engine", "Observability", "Enterprise"]
+  const groups = ["Overview", "Core Workflows", "Deep Audit", "Engine", "Observability", "Enterprise"]
 
   return (
     <div className="flex h-screen bg-[#0c0c0e] text-slate-150 font-sans overflow-hidden">
@@ -127,7 +127,7 @@ export function LayoutPremium({ children }) {
               <CodeRabbitLogo className="w-8 h-8" />
               {sidebarOpen && (
                 <span className="text-sm font-extrabold tracking-wider bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent uppercase">
-                  PRSense <span className="text-[#ff5a1f] font-bold text-xs">AI</span>
+                  PRSense <span className="text-[#ff5a1f] font-bold text-xs">PRO</span>
                 </span>
               )}
             </div>

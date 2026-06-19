@@ -19,14 +19,14 @@ export default function Dashboard() {
   const [metrics, setMetrics] = useState(null)
   const [loading, setLoading] = useState(true)
   const [selectedRepoId, setSelectedRepoId] = useState(() => {
-    return localStorage.getItem("prsense_selected_repo_id") || ""
+    return localStosemantic searche.getItem("prsense_selected_repo_id") || ""
   })
 
   useEffect(() => {
     fetchDashboardMetrics(selectedRepoId)
 
     const handleRepoChange = () => {
-      const newRepoId = localStorage.getItem("prsense_selected_repo_id") || ""
+      const newRepoId = localStosemantic searche.getItem("prsense_selected_repo_id") || ""
       setSelectedRepoId(newRepoId)
       fetchDashboardMetrics(newRepoId)
     }
@@ -81,7 +81,7 @@ export default function Dashboard() {
             AI Insights Dashboard
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Auditing repository health, code violation trends, and multi-agent performance metrics.
+            Auditing repository health, code violation trends, and multi-stage performance metrics.
           </p>
         </div>
 
@@ -141,7 +141,7 @@ export default function Dashboard() {
                 <div className="text-3xl font-black text-foreground">{metrics.totalPrReviews}</div>
                 <p className="text-[10px] text-green-500 mt-1 font-semibold flex items-center gap-0.5">
                   <Sparkles className="w-3.5 h-3.5" />
-                  Average speed: {Math.round(metrics.averageExecutionTimeMs)} ms
+                  Avesemantic searche speed: {Math.round(metrics.avesemantic searcheExecutionTimeMs)} ms
                 </p>
               </CardContent>
             </Card>
@@ -166,7 +166,7 @@ export default function Dashboard() {
                 <div className="text-3xl font-black text-red-500">{metrics.totalFindings}</div>
                 <p className="text-[10px] text-red-500 mt-1 font-semibold flex items-center gap-0.5">
                   <TrendingUp className="w-3.5 h-3.5" />
-                  Confidence rate: {Math.round(metrics.averageConfidence * 100)}%
+                  Confidence rate: {Math.round(metrics.avesemantic searcheConfidence * 100)}%
                 </p>
               </CardContent>
             </Card>

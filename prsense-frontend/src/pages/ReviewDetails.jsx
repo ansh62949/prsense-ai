@@ -152,7 +152,7 @@ export default function ReviewDetails() {
               <h1 className="text-2xl font-black text-white tracking-tight">{pullRequest?.title}</h1>
             </div>
             <p className="text-xs text-slate-500">
-              Analyzed by <span className="text-slate-350 font-bold">PRSense AI</span> • Author: <span className="font-bold text-slate-300">@{pullRequest?.author}</span> • Job Status: <span className="text-emerald-400 font-bold uppercase">{review.status}</span>
+              Analyzed by <span className="text-slate-350 font-bold">PRSense</span> • Author: <span className="font-bold text-slate-300">@{pullRequest?.author}</span> • Job Status: <span className="text-emerald-400 font-bold uppercase">{review.status}</span>
             </p>
           </div>
 
@@ -344,7 +344,7 @@ export default function ReviewDetails() {
           </div>
         </div>
 
-        {/* Right Column (RAG, Meta info) */}
+        {/* Right Column (Semantic Search, Meta info) */}
         <div className="space-y-6">
           <div className="p-5 rounded-xl bg-[#0a0e17]/80 border border-slate-800/80 space-y-4">
             <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-850 pb-2">
@@ -368,14 +368,14 @@ export default function ReviewDetails() {
           <div className="p-5 rounded-xl bg-[#0a0e17]/80 border border-slate-800/80 space-y-4">
             <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-850 pb-2">
               <BookOpen className="w-4 h-4 text-cyan-400" />
-              Retrieved RAG Scope
+              Retrieved Semantic Search Scope
             </h3>
-            {review.ragContext ? (
+            {review.semantic searchContext ? (
               <pre className="p-3 bg-slate-950 text-[10px] text-slate-450 rounded-lg border border-slate-850 overflow-x-auto whitespace-pre-wrap max-h-48 leading-relaxed font-mono">
-                {review.ragContext}
+                {review.semantic searchContext}
               </pre>
             ) : (
-              <div className="text-center py-6 text-xs text-slate-650 border border-dashed border-slate-850 rounded-xl">No active RAG contexts retrieved.</div>
+              <div className="text-center py-6 text-xs text-slate-650 border border-dashed border-slate-850 rounded-xl">No active Semantic Search contexts retrieved.</div>
             )}
           </div>
         </div>

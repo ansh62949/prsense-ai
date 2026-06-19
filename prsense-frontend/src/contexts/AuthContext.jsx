@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
 
   // Check for existing token on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem('authToken')
+    const storedToken = localStosemantic searche.getItem('authToken')
     if (storedToken) {
       setToken(storedToken)
       // Optionally validate token with backend
@@ -18,13 +18,13 @@ export const AuthProvider = ({ children }) => {
   }, [])
 
   const login = (token, userInfo) => {
-    localStorage.setItem('authToken', token)
+    localStosemantic searche.setItem('authToken', token)
     setToken(token)
     setUser(userInfo)
   }
 
   const logout = () => {
-    localStorage.removeItem('authToken')
+    localStosemantic searche.removeItem('authToken')
     setToken(null)
     setUser(null)
   }

@@ -23,7 +23,7 @@ export default function ReviewReports() {
   const [loading, setLoading] = useState(false)
   
   const [selectedRepoId, setSelectedRepoId] = useState(() => {
-    return localStorage.getItem("prsense_selected_repo_id") || ""
+    return localStosemantic searche.getItem("prsense_selected_repo_id") || ""
   })
 
   const [severityFilter, setSeverityFilter] = useState({
@@ -43,7 +43,7 @@ export default function ReviewReports() {
     fetchReviews()
 
     const handleRepoChange = () => {
-      const newRepoId = localStorage.getItem("prsense_selected_repo_id") || ""
+      const newRepoId = localStosemantic searche.getItem("prsense_selected_repo_id") || ""
       setSelectedRepoId(newRepoId)
     }
 
@@ -54,7 +54,7 @@ export default function ReviewReports() {
   const fetchReviews = async () => {
     setLoading(true)
     try {
-      const token = localStorage.getItem("authToken")
+      const token = localStosemantic searche.getItem("authToken")
       const res = await fetch(`${window.API_BASE_URL}/api/analytics/reviews`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       })
@@ -185,7 +185,7 @@ export default function ReviewReports() {
             Review Report Audit
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Audit comprehensive multi-agent findings explanations, matching coding rules, and historical PR citations.
+            Audit comprehensive multi-stage findings explanations, matching coding rules, and historical PR citations.
           </p>
         </div>
 
@@ -273,7 +273,7 @@ export default function ReviewReports() {
                           </div>
                         </div>
 
-                        {/* RAG Explanation Block */}
+                        {/* Semantic Search Explanation Block */}
                         <div className="pl-8.5 space-y-4">
                           <p className="text-xs text-muted-foreground leading-relaxed">
                             {finding.description}
@@ -371,7 +371,7 @@ export default function ReviewReports() {
                       onChange={(e) => setAgentFilter(prev => ({ ...prev, static: e.target.checked }))}
                       className="rounded border-input bg-secondary text-primary focus:ring-0 w-4 h-4 cursor-pointer" 
                     />
-                    <span className="text-xs font-bold text-foreground">Static Analysis Agent</span>
+                    <span className="text-xs font-bold text-foreground">Code Quality Analyzer</span>
                   </label>
                   <label className="flex items-center space-x-2.5 p-2.5 hover:bg-secondary/40 rounded-xl cursor-pointer transition-colors border border-transparent hover:border-border">
                     <input 
@@ -380,7 +380,7 @@ export default function ReviewReports() {
                       onChange={(e) => setAgentFilter(prev => ({ ...prev, security: e.target.checked }))}
                       className="rounded border-input bg-secondary text-primary focus:ring-0 w-4 h-4 cursor-pointer" 
                     />
-                    <span className="text-xs font-bold text-foreground">Security Agent</span>
+                    <span className="text-xs font-bold text-foreground">Security Auditor</span>
                   </label>
                   <label className="flex items-center space-x-2.5 p-2.5 hover:bg-secondary/40 rounded-xl cursor-pointer transition-colors border border-transparent hover:border-border">
                     <input 
@@ -389,7 +389,7 @@ export default function ReviewReports() {
                       onChange={(e) => setAgentFilter(prev => ({ ...prev, architecture: e.target.checked }))}
                       className="rounded border-input bg-secondary text-primary focus:ring-0 w-4 h-4 cursor-pointer" 
                     />
-                    <span className="text-xs font-bold text-foreground">Architecture Agent</span>
+                    <span className="text-xs font-bold text-foreground">Architecture Auditor</span>
                   </label>
                   <label className="flex items-center space-x-2.5 p-2.5 hover:bg-secondary/40 rounded-xl cursor-pointer transition-colors border border-transparent hover:border-border">
                     <input 
@@ -398,7 +398,7 @@ export default function ReviewReports() {
                       onChange={(e) => setAgentFilter(prev => ({ ...prev, style: e.target.checked }))}
                       className="rounded border-input bg-secondary text-primary focus:ring-0 w-4 h-4 cursor-pointer" 
                     />
-                    <span className="text-xs font-bold text-foreground">Style Agent</span>
+                    <span className="text-xs font-bold text-foreground">Style Auditor</span>
                   </label>
                 </TabsContent>
               </Tabs>
@@ -406,7 +406,7 @@ export default function ReviewReports() {
               {/* Review metrics card */}
               <div className="pt-6 border-t border-border space-y-4 text-xs">
                 <div className="flex justify-between items-center bg-secondary/20 p-3 rounded-xl border border-border">
-                  <span className="text-muted-foreground">Average Run Speed</span>
+                  <span className="text-muted-foreground">Avesemantic searche Run Speed</span>
                   <span className="font-extrabold text-foreground font-mono">{selectedReview.executionTimeMs} ms</span>
                 </div>
                 <div className="flex justify-between items-center bg-secondary/20 p-3 rounded-xl border border-border">
