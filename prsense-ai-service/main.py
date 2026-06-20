@@ -48,15 +48,18 @@ async def startup_event():
     
     logger.info(f"Starting PRSense AI Service with provider: {provider}")
     
-    # Validate BACKEND_URL
+    # Validate BACKEND_URL or production BACKEND_CALLBACK_URL
     backend_url = os.getenv("BACKEND_URL")
-    if not backend_url:
+    backend_callback = os.getenv("BACKEND_CALLBACK_URL")
+    is_valid_prod_callback = backend_callback and "localhost" not in backend_callback and "127.0.0.1" not in backend_callback
+    
+    if not backend_url and not is_valid_prod_callback:
         if os.getenv("RENDER") == "true" or os.getenv("PORT") is not None:
-            raise RuntimeError("BACKEND_URL environment variable is required in production!")
+            raise RuntimeError("Either BACKEND_URL or a production BACKEND_CALLBACK_URL environment variable is required!")
         else:
-            logger.warning("WARNING: BACKEND_URL environment variable is missing! Callbacks will default to localhost:8080.")
+            logger.warning("WARNING: BACKEND_URL and BACKEND_CALLBACK_URL are missing! Callbacks will default to localhost:8080.")
     else:
-        logger.info(f"BACKEND_URL configured: {backend_url}")
+        logger.info(f"Callback config verified. BACKEND_URL={backend_url}, BACKEND_CALLBACK_URL={backend_callback}")
         
     if provider == "gemini" and not gemini_key:
         logger.warning("WARNING: GEMINI_API_KEY is not configured but provider is set to gemini!")
