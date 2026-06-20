@@ -32,7 +32,7 @@ export default function Monitoring() {
   const [stats, setStats] = useState(null)
   const [repos, setRepos] = useState([])
   const [loading, setLoading] = useState(true)
-  const [refreshInterval, setRefreshInterval] = useState(5000)
+  const [refreshInterval, setRefreshInterval] = useState(30000)
   const [triggeringIndex, setTriggeringIndex] = useState({})
 
   const [selectedRepoId, setSelectedRepoId] = useState(() => {

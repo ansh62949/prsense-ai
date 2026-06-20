@@ -161,8 +161,8 @@ public class RepositoryController {
     public ResponseEntity<Repository> triggerIndexing(@PathVariable Long id) {
         return repositoryService.getRepositoryById(id)
                 .map(repo -> {
-                    if ("INDEXING".equals(repo.getIndexingStatus()) || "INDEXED".equals(repo.getIndexingStatus())) {
-                        log.info("Repository {} is already in status {}, skipping re-indexing trigger", repo.getFullName(), repo.getIndexingStatus());
+                    if ("INDEXING".equals(repo.getIndexingStatus())) {
+                        log.info("Repository {} is already indexing, skipping re-indexing trigger", repo.getFullName());
                         return ResponseEntity.ok(repo);
                     }
                     
