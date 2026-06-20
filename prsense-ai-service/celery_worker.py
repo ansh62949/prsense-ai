@@ -18,7 +18,13 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("PRSenseCeleryWorker")
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-BACKEND_CALLBACK_URL = os.getenv("BACKEND_CALLBACK_URL", "http://localhost:8080/api/reviews/callback")
+BACKEND_CALLBACK_URL = os.getenv("BACKEND_CALLBACK_URL")
+if not BACKEND_CALLBACK_URL:
+    backend_url = os.getenv("BACKEND_URL")
+    if backend_url:
+        BACKEND_CALLBACK_URL = f"{backend_url.rstrip('/')}/api/reviews/callback"
+    else:
+        BACKEND_CALLBACK_URL = "http://localhost:8080/api/reviews/callback"
 
 celery_app = Celery(
     "prsense_tasks",
