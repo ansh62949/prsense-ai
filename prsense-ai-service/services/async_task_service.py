@@ -18,9 +18,12 @@ REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 BACKEND_CALLBACK_URL = os.getenv("BACKEND_CALLBACK_URL")
 backend_url = os.getenv("BACKEND_URL")
 
-# Override localhost callback URL in production if a real BACKEND_URL is configured
-if BACKEND_CALLBACK_URL and "localhost" in BACKEND_CALLBACK_URL and backend_url and "localhost" not in backend_url:
-    logger.info("Overriding localhost BACKEND_CALLBACK_URL with production BACKEND_URL")
+# Override local callback URL in production if a real BACKEND_URL is configured
+is_local_callback = BACKEND_CALLBACK_URL and ("localhost" in BACKEND_CALLBACK_URL or "127.0.0.1" in BACKEND_CALLBACK_URL)
+is_prod_backend = backend_url and "localhost" not in backend_url and "127.0.0.1" not in backend_url
+
+if is_local_callback and is_prod_backend:
+    logger.info(f"Overriding local BACKEND_CALLBACK_URL ({BACKEND_CALLBACK_URL}) with production BACKEND_URL ({backend_url})")
     BACKEND_CALLBACK_URL = None
 
 if not BACKEND_CALLBACK_URL:
@@ -33,6 +36,8 @@ if not BACKEND_CALLBACK_URL:
         BACKEND_CALLBACK_URL = f"{backend_url.rstrip('/')}/api/reviews/callback"
     else:
         BACKEND_CALLBACK_URL = "http://localhost:8080/api/reviews/callback"
+
+logger.info(f"PRSenseAsyncTaskService initialized. Resolved BACKEND_CALLBACK_URL: {BACKEND_CALLBACK_URL}")
 
 # Import services
 from services.review_service import review_service
@@ -346,7 +351,7 @@ def process_review_event(payload: dict) -> str:
             "execution_time_ms": execution_time_ms
         }
         
-        logger.info(f"Review event {review_id} completed successfully. Sending callback...")
+        logger.info(f"Review event {review_id} completed successfully. Sending callback to URL: {BACKEND_CALLBACK_URL}")
         response = requests.post(BACKEND_CALLBACK_URL, json=callback_payload, timeout=10)
         return f"Success: {response.status_code}"
         
@@ -358,6 +363,7 @@ def process_review_event(payload: dict) -> str:
             "error_message": f"AI Engine execution failed: {str(exc)}"
         }
         try:
+            logger.info(f"Sending error callback to URL: {BACKEND_CALLBACK_URL}")
             requests.post(BACKEND_CALLBACK_URL, json=callback_payload, timeout=10)
         except Exception as cb_exc:
             logger.error(f"Failed to send error callback: {cb_exc}")
@@ -715,6 +721,7 @@ def process_index_event(payload: dict) -> str:
     start_time = time.time()
     
     INDEXING_CALLBACK_URL = BACKEND_CALLBACK_URL.replace("/callback", "/indexing-callback")
+    logger.info(f"Using INDEXING_CALLBACK_URL: {INDEXING_CALLBACK_URL}")
     
     # Update status to INDEXING
     try:
