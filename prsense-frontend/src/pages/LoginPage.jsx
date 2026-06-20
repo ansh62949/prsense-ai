@@ -91,7 +91,7 @@ export default function LoginPage() {
       navigate("/dashboard")
     } catch (err) {
       console.error("Login failed:", err)
-      setError("Connection to API backend failed. Make sure the Spring Boot server is running on ${window.API_BASE_URL}.")
+      setError(`Connection to API backend failed. Make sure the Spring Boot server is running on ${window.API_BASE_URL}.`)
     } finally {
       setLoading(false)
     }
