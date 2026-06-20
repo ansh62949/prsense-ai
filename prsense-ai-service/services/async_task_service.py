@@ -25,7 +25,10 @@ if not is_valid_prod_callback:
     # If no valid production callback is present, we must have a valid BACKEND_URL to build it
     if not backend_url:
         if os.getenv("RENDER") == "true" or os.getenv("PORT") is not None:
-            raise RuntimeError("Either BACKEND_URL or a production BACKEND_CALLBACK_URL environment variable is required!")
+            raise RuntimeError(
+                "Either BACKEND_URL or a production BACKEND_CALLBACK_URL environment variable is required in production! "
+                "Please add BACKEND_URL (e.g. https://prsense-backend.onrender.com) to the environment variables in your Render dashboard."
+            )
         else:
             logger.warning("BACKEND_URL is missing. Defaulting to http://localhost:8080 for local development.")
             backend_url = "http://localhost:8080"

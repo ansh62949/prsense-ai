@@ -55,7 +55,10 @@ async def startup_event():
     
     if not backend_url and not is_valid_prod_callback:
         if os.getenv("RENDER") == "true" or os.getenv("PORT") is not None:
-            raise RuntimeError("Either BACKEND_URL or a production BACKEND_CALLBACK_URL environment variable is required!")
+            raise RuntimeError(
+                "Either BACKEND_URL or a production BACKEND_CALLBACK_URL environment variable is required in production! "
+                "Please add BACKEND_URL (e.g. https://prsense-backend.onrender.com) to the environment variables in your Render dashboard."
+            )
         else:
             logger.warning("WARNING: BACKEND_URL and BACKEND_CALLBACK_URL are missing! Callbacks will default to localhost:8080.")
     else:
