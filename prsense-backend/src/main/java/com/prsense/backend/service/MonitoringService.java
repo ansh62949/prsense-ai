@@ -32,7 +32,7 @@ public class MonitoringService {
 
         if (repoId != null) {
             reviews = reviews.stream()
-                    .filter(r -> r.getPullRequest().getRepository().getId().equals(repoId))
+                    .filter(r -> r.getPullRequest() != null && r.getPullRequest().getRepository() != null && r.getPullRequest().getRepository().getId().equals(repoId))
                     .collect(java.util.stream.Collectors.toList());
             
             java.util.Set<Long> reviewIds = reviews.stream()
