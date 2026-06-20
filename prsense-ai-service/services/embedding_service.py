@@ -16,7 +16,14 @@ class EmbeddingService:
             return None
         
         try:
-            return embeddings.embed_query(text)
+            vec = embeddings.embed_query(text)
+            if vec is not None:
+                # Force dimensions to exactly 1536 to prevent pgvector dimension mismatch
+                if len(vec) > 1536:
+                    vec = vec[:1536]
+                elif len(vec) < 1536:
+                    vec = vec + [0.0] * (1536 - len(vec))
+            return vec
         except Exception as exc:
             logger.warning(f"Embedding generation failed: {exc}")
             return None

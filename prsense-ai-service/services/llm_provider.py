@@ -154,6 +154,7 @@ class LLMProvider:
                 logger.warning("OPENAI_API_KEY is missing. OpenAI embeddings may fail.")
             return self.OpenAIEmbeddings(
                 model="text-embedding-3-large",
+                dimensions=1536,
                 openai_api_key=OPENAI_API_KEY
             )
 
