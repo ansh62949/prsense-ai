@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { API_BASE_URL, backendApi } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"

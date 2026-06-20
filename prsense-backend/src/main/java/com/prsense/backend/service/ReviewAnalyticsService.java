@@ -40,7 +40,7 @@ public class ReviewAnalyticsService {
     public Map<String, Object> getRepositoryReviewTimeline(Long repoId) {
         log.info("Compiling review timeline for repository ID: {}", repoId);
         List<Review> reviews = reviewRepository.findAll().stream()
-                .filter(r -> r.getPullRequest().getRepository().getId().equals(repoId))
+                .filter(r -> r.getPullRequest() != null && r.getPullRequest().getRepository() != null && r.getPullRequest().getRepository().getId().equals(repoId))
                 .sorted(Comparator.comparing(Review::getCreatedAt).reversed())
                 .collect(Collectors.toList());
 
@@ -96,16 +96,16 @@ public class ReviewAnalyticsService {
 
         if (repoId != null) {
             allReviews = reviewRepository.findAll().stream()
-                    .filter(r -> r.getPullRequest() != null && r.getPullRequest().getRepository().getId().equals(repoId))
+                    .filter(r -> r.getPullRequest() != null && r.getPullRequest().getRepository() != null && r.getPullRequest().getRepository().getId().equals(repoId))
                     .collect(Collectors.toList());
             allFindings = findingRepository.findAll().stream()
-                    .filter(f -> f.getReview().getPullRequest() != null && f.getReview().getPullRequest().getRepository().getId().equals(repoId))
+                    .filter(f -> f.getReview() != null && f.getReview().getPullRequest() != null && f.getReview().getPullRequest().getRepository() != null && f.getReview().getPullRequest().getRepository().getId().equals(repoId))
                     .collect(Collectors.toList());
             totalPrs = pullRequestRepository.findAll().stream()
-                    .filter(pr -> pr.getRepository().getId().equals(repoId))
+                    .filter(pr -> pr.getRepository() != null && pr.getRepository().getId().equals(repoId))
                     .count();
             totalLearnedPatterns = learnedPatternRepository.findAll().stream()
-                    .filter(p -> p.getRepository().getId().equals(repoId))
+                    .filter(p -> p.getRepository() != null && p.getRepository().getId().equals(repoId))
                     .count();
         } else {
             allReviews = reviewRepository.findAll();
@@ -157,7 +157,7 @@ public class ReviewAnalyticsService {
                 .count();
 
             long patternCount = learnedPatternRepository.findAll().stream()
-                .filter(p -> repoId == null || p.getRepository().getId().equals(repoId))
+                .filter(p -> repoId == null || (p.getRepository() != null && p.getRepository().getId().equals(repoId)))
                 .filter(p -> p.getCreatedAt() != null && p.getCreatedAt().isBefore(fEnd))
                 .count();
 
@@ -234,7 +234,7 @@ public class ReviewAnalyticsService {
                 .collect(Collectors.toList());
 
         List<Map<String, Object>> recentLearningEvents = learnedPatternRepository.findAll().stream()
-                .filter(p -> repoId == null || p.getRepository().getId().equals(repoId))
+                .filter(p -> repoId == null || (p.getRepository() != null && p.getRepository().getId().equals(repoId)))
                 .sorted(Comparator.comparing(LearnedPattern::getCreatedAt).reversed())
                 .map(p -> {
                     Map<String, Object> map = new HashMap<>();
