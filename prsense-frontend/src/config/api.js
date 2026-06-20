@@ -7,6 +7,7 @@ export const API_CONFIG = {
 
   AI_URL:
     import.meta.env.VITE_AI_URL ||
+    import.meta.env.VITE_AI_SERVICE_URL ||
     "https://prsense-ai.onrender.com",
 
   PROMETHEUS_URL:

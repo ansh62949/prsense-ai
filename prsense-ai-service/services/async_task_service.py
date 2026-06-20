@@ -16,8 +16,14 @@ logger = logging.getLogger("PRSenseAsyncTaskService")
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 BACKEND_CALLBACK_URL = os.getenv("BACKEND_CALLBACK_URL")
+backend_url = os.getenv("BACKEND_URL")
+
+# Override localhost callback URL in production if a real BACKEND_URL is configured
+if BACKEND_CALLBACK_URL and "localhost" in BACKEND_CALLBACK_URL and backend_url and "localhost" not in backend_url:
+    logger.info("Overriding localhost BACKEND_CALLBACK_URL with production BACKEND_URL")
+    BACKEND_CALLBACK_URL = None
+
 if not BACKEND_CALLBACK_URL:
-    backend_url = os.getenv("BACKEND_URL")
     if backend_url:
         if not backend_url.startswith("http://") and not backend_url.startswith("https://"):
             if "localhost" in backend_url or "127.0.0.1" in backend_url:
