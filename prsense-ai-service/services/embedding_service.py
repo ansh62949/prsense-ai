@@ -28,4 +28,25 @@ class EmbeddingService:
             logger.warning(f"Embedding generation failed: {exc}")
             return None
 
+    def embed_texts(self, texts: List[str]) -> List[Optional[List[float]]]:
+        embeddings = llm_provider.get_embeddings()
+        if not embeddings:
+            logger.warning("Embeddings client not available from LLM provider.")
+            return [None] * len(texts)
+        
+        try:
+            vecs = embeddings.embed_documents(texts)
+            processed_vecs = []
+            for vec in vecs:
+                if vec is not None:
+                    if len(vec) > 1536:
+                        vec = vec[:1536]
+                    elif len(vec) < 1536:
+                        vec = vec + [0.0] * (1536 - len(vec))
+                processed_vecs.append(vec)
+            return processed_vecs
+        except Exception as exc:
+            logger.warning(f"Batch embedding generation failed: {exc}")
+            return [None] * len(texts)
+
 embedding_service = EmbeddingService()

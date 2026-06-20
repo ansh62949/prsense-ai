@@ -327,10 +327,13 @@ class RAGService:
         chunker = RecursiveChunker()
         chunks = chunker.chunk_document(raw_content)
         
+        # Batch generate embeddings for all chunks of the document
+        embeddings = embedding_service.embed_texts(chunks)
+        
         saved_count = 0
         for i, chunk in enumerate(chunks):
             title_tag = f"{title} (Part {i+1})" if len(chunks) > 1 else title
-            embedding = embedding_service.embed_text(chunk)
+            embedding = embeddings[i] if i < len(embeddings) else None
             if not embedding:
                 logger.warning(f"Failed to generate embedding for chunk {i}.")
                 continue

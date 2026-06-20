@@ -30,7 +30,66 @@ class GeminiEmbeddings:
         self.api_key = api_key
 
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
-        return [self.embed_query(t) for t in texts]
+        import requests
+        import time
+        
+        if not texts:
+            return []
+            
+        chunk_size = 30
+        all_embeddings = []
+        
+        for idx in range(0, len(texts), chunk_size):
+            batch = texts[idx:idx+chunk_size]
+            
+            # Rate-limiting baseline sleep
+            time.sleep(0.5)
+            
+            max_retries = 3
+            backoff = 1.0
+            batch_success = False
+            
+            for attempt in range(max_retries):
+                try:
+                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:batchEmbedContents?key={self.api_key}"
+                    requests_payload = []
+                    for t in batch:
+                        requests_payload.append({
+                            "model": f"models/{self.model}",
+                            "content": {"parts": [{"text": t}]}
+                        })
+                    
+                    payload = {"requests": requests_payload}
+                    r = requests.post(url, json=payload, timeout=15)
+                    
+                    if r.status_code == 200:
+                        embeddings_list = r.json().get("embeddings", [])
+                        for emb in embeddings_list:
+                            values = emb.get("values", [])
+                            if len(values) < 1536:
+                                values = values + [0.0] * (1536 - len(values))
+                            all_embeddings.append(values)
+                        batch_success = True
+                        break
+                    elif r.status_code == 429:
+                        logger.warning(f"Gemini batch embeddings rate limit (429) on attempt {attempt+1}/{max_retries}. Retrying in {backoff}s...")
+                        time.sleep(backoff)
+                        backoff *= 2
+                    else:
+                        logger.warning(f"Gemini batch embeddings failed (status {r.status_code}) on attempt {attempt+1}: {r.text}. Retrying in {backoff}s...")
+                        time.sleep(backoff)
+                        backoff *= 2
+                except Exception as e:
+                    logger.warning(f"Failed to generate Gemini batch embedding (attempt {attempt+1}/{max_retries}): {e}. Retrying in {backoff}s...")
+                    time.sleep(backoff)
+                    backoff *= 2
+            
+            if not batch_success:
+                logger.error(f"Gemini batch embedding failed completely for batch size {len(batch)}")
+                for _ in batch:
+                    all_embeddings.append([0.0] * 1536)
+                    
+        return all_embeddings
 
     def embed_query(self, text: str) -> list[float]:
         import requests
