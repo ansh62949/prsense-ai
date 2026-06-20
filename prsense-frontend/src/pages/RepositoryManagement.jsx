@@ -71,7 +71,11 @@ export default function RepositoryManagement() {
     const name = parts[parts.length - 1] || repoFullName
 
     try {
-      const res = await backendApi.post('/api/repositories/sync')
+      const res = await backendApi.post('/api/repositories/sync', {
+        fullName: repoFullName.trim(),
+        name: name,
+        language: repoLanguage
+      })
       if (res) {
         setRepoFullName("")
         setModalOpen(false)

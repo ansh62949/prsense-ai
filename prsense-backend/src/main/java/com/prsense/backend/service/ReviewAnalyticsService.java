@@ -96,10 +96,10 @@ public class ReviewAnalyticsService {
 
         if (repoId != null) {
             allReviews = reviewRepository.findAll().stream()
-                    .filter(r -> r.getPullRequest().getRepository().getId().equals(repoId))
+                    .filter(r -> r.getPullRequest() != null && r.getPullRequest().getRepository().getId().equals(repoId))
                     .collect(Collectors.toList());
             allFindings = findingRepository.findAll().stream()
-                    .filter(f -> f.getReview().getPullRequest().getRepository().getId().equals(repoId))
+                    .filter(f -> f.getReview().getPullRequest() != null && f.getReview().getPullRequest().getRepository().getId().equals(repoId))
                     .collect(Collectors.toList());
             totalPrs = pullRequestRepository.findAll().stream()
                     .filter(pr -> pr.getRepository().getId().equals(repoId))
@@ -171,10 +171,17 @@ public class ReviewAnalyticsService {
                 .sorted(Comparator.comparing(Review::getCreatedAt).reversed())
                 .map(r -> {
                     Map<String, Object> map = new HashMap<>();
-                    map.put("prNumber", r.getPullRequest().getPrNumber());
-                    map.put("title", r.getPullRequest().getTitle());
-                    map.put("author", r.getPullRequest().getAuthor());
-                    map.put("status", r.getPullRequest().getStatus());
+                    if (r.getPullRequest() != null) {
+                        map.put("prNumber", r.getPullRequest().getPrNumber());
+                        map.put("title", r.getPullRequest().getTitle());
+                        map.put("author", r.getPullRequest().getAuthor());
+                        map.put("status", r.getPullRequest().getStatus());
+                    } else {
+                        map.put("prNumber", 0);
+                        map.put("title", "Playground Review");
+                        map.put("author", "anonymous");
+                        map.put("status", "COMPLETED");
+                    }
                     map.put("aiDecision", r.getAiDecision());
                     map.put("createdAt", r.getCreatedAt().toString());
                     return map;
@@ -188,8 +195,13 @@ public class ReviewAnalyticsService {
                 .map(r -> {
                     Map<String, Object> map = new HashMap<>();
                     map.put("reviewId", r.getId());
-                    map.put("prNumber", r.getPullRequest().getPrNumber());
-                    map.put("title", r.getPullRequest().getTitle());
+                    if (r.getPullRequest() != null) {
+                        map.put("prNumber", r.getPullRequest().getPrNumber());
+                        map.put("title", r.getPullRequest().getTitle());
+                    } else {
+                        map.put("prNumber", 0);
+                        map.put("title", "Playground Review");
+                    }
                     map.put("status", r.getStatus());
                     map.put("createdAt", r.getCreatedAt().toString());
                     
