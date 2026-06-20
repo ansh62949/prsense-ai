@@ -74,6 +74,8 @@ class PromptRegistry:
             if risk_level == "critical" or agent_name == "Security Agent":
                 return "gemini-2.5-pro"
             return "gemini-2.5-flash"
+        elif provider == "groq":
+            return "llama-3.3-70b-versatile"
         else:
             if risk_level == "critical" or agent_name == "Security Agent":
                 return "gpt-4o"

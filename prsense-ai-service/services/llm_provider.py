@@ -9,10 +9,13 @@ logger.setLevel(logging.INFO)
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "gemini").lower()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or ""
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
 # Standard auto-switching logic if credentials dictate it
-if not LLM_PROVIDER or LLM_PROVIDER not in ["openai", "gemini"]:
-    if GEMINI_API_KEY:
+if not LLM_PROVIDER or LLM_PROVIDER not in ["openai", "gemini", "groq"]:
+    if GROQ_API_KEY:
+        LLM_PROVIDER = "groq"
+    elif GEMINI_API_KEY:
         LLM_PROVIDER = "gemini"
     elif OPENAI_API_KEY:
         LLM_PROVIDER = "openai"
@@ -83,13 +86,15 @@ class LLMProvider:
 
     @property
     def llm_model(self) -> str:
-        if LLM_PROVIDER == "gemini":
+        if LLM_PROVIDER == "groq":
+            return "llama-3.3-70b-versatile"
+        elif LLM_PROVIDER == "gemini":
             return "gemini-2.5-flash"
         return "gpt-4o-mini"
 
     @property
     def embedding_model(self) -> str:
-        if LLM_PROVIDER == "gemini":
+        if LLM_PROVIDER in ["gemini", "groq"]:
             return "gemini-embedding-2"
         return "text-embedding-3-large"
 
@@ -101,7 +106,14 @@ class LLMProvider:
         models_list = []
         
         # 1. Main model with failover fallback chain configuration
-        if LLM_PROVIDER == "gemini":
+        if LLM_PROVIDER == "groq":
+            if GROQ_API_KEY:
+                models_list.append(self.ChatOpenAI(
+                    model="llama-3.3-70b-versatile",
+                    temperature=temperature,
+                    openai_api_key=GROQ_API_KEY,
+                    base_url="https://api.groq.com/openai/v1"
+                ))
             if GEMINI_API_KEY:
                 models_list.append(self.ChatOpenAI(
                     model="gemini-2.5-flash",
@@ -115,12 +127,40 @@ class LLMProvider:
                     temperature=temperature,
                     openai_api_key=OPENAI_API_KEY
                 ))
+        elif LLM_PROVIDER == "gemini":
+            if GEMINI_API_KEY:
+                models_list.append(self.ChatOpenAI(
+                    model="gemini-2.5-flash",
+                    temperature=temperature,
+                    openai_api_key=GEMINI_API_KEY,
+                    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+                ))
+            if GROQ_API_KEY:
+                models_list.append(self.ChatOpenAI(
+                    model="llama-3.3-70b-versatile",
+                    temperature=temperature,
+                    openai_api_key=GROQ_API_KEY,
+                    base_url="https://api.groq.com/openai/v1"
+                ))
+            if OPENAI_API_KEY:
+                models_list.append(self.ChatOpenAI(
+                    model="gpt-4o-mini",
+                    temperature=temperature,
+                    openai_api_key=OPENAI_API_KEY
+                ))
         else:
             if OPENAI_API_KEY:
                 models_list.append(self.ChatOpenAI(
                     model="gpt-4o-mini",
                     temperature=temperature,
                     openai_api_key=OPENAI_API_KEY
+                ))
+            if GROQ_API_KEY:
+                models_list.append(self.ChatOpenAI(
+                    model="llama-3.3-70b-versatile",
+                    temperature=temperature,
+                    openai_api_key=GROQ_API_KEY,
+                    base_url="https://api.groq.com/openai/v1"
                 ))
             if GEMINI_API_KEY:
                 models_list.append(self.ChatOpenAI(
@@ -139,23 +179,21 @@ class LLMProvider:
         return models_list[0]
 
     def get_embeddings(self) -> Any:
-        if LLM_PROVIDER == "gemini":
-            if not GEMINI_API_KEY:
-                logger.warning("GEMINI_API_KEY is missing. Gemini embeddings may fail.")
-            return GeminiEmbeddings(
-                model="gemini-embedding-2",
-                api_key=GEMINI_API_KEY
-            )
-        else:
-            if self.OpenAIEmbeddings is None:
-                logger.error("OpenAIEmbeddings dependency not loaded.")
-                return None
-            if not OPENAI_API_KEY:
-                logger.warning("OPENAI_API_KEY is missing. OpenAI embeddings may fail.")
-            return self.OpenAIEmbeddings(
-                model="text-embedding-3-large",
-                dimensions=1536,
-                openai_api_key=OPENAI_API_KEY
-            )
+        if LLM_PROVIDER in ["gemini", "groq"]:
+            if GEMINI_API_KEY:
+                return GeminiEmbeddings(
+                    model="gemini-embedding-2",
+                    api_key=GEMINI_API_KEY
+                )
+        if self.OpenAIEmbeddings is None:
+            logger.error("OpenAIEmbeddings dependency not loaded.")
+            return None
+        if not OPENAI_API_KEY:
+            logger.warning("OPENAI_API_KEY is missing. OpenAI embeddings may fail.")
+        return self.OpenAIEmbeddings(
+            model="text-embedding-3-large",
+            dimensions=1536,
+            openai_api_key=OPENAI_API_KEY
+        )
 
 llm_provider = LLMProvider()

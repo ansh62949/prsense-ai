@@ -41,14 +41,17 @@ async def startup_event():
     # Startup validation
     gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
     openai_key = os.getenv("OPENAI_API_KEY")
+    groq_key = os.getenv("GROQ_API_KEY")
     provider = os.getenv("LLM_PROVIDER", "gemini").lower()
     
-    logger.info(f"Starting PRSense AI Service with LLM provider: {provider}")
+    logger.info(f"Starting PRSense AI Service with provider: {provider}")
     
     if provider == "gemini" and not gemini_key:
         logger.warning("WARNING: GEMINI_API_KEY is not configured but provider is set to gemini!")
     elif provider == "openai" and not openai_key:
         logger.warning("WARNING: OPENAI_API_KEY is not configured but provider is set to openai!")
+    elif provider == "groq" and not groq_key:
+        logger.warning("WARNING: GROQ_API_KEY is not configured but provider is set to groq!")
     else:
         logger.info("LLM Provider credentials validated.")
         
