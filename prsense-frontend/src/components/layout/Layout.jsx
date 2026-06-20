@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
@@ -70,7 +71,7 @@ export function Layout({ children }) {
   const fetchRepos = async () => {
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${window.API_BASE_URL}/api/repositories`, {
+      const res = await fetch(`${API_BASE_URL}/api/repositories`, {
         headers: token ? { "Authorization": `Bearer ${token}` } : {}
       })
       if (res.ok) {

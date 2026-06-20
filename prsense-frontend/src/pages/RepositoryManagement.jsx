@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -49,7 +50,7 @@ export default function RepositoryManagement() {
   const fetchRepositories = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`${window.API_BASE_URL}/api/repositories`)
+      const res = await fetch(`${API_BASE_URL}/api/repositories`)
       if (res.ok) {
         const data = await res.json()
         setRepos(data)
@@ -70,7 +71,7 @@ export default function RepositoryManagement() {
     const name = parts[parts.length - 1] || repoFullName
 
     try {
-      const res = await fetch(`${window.API_BASE_URL}/api/repositories/sync`, {
+      const res = await fetch(`${API_BASE_URL}/api/repositories/sync`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -108,7 +109,7 @@ export default function RepositoryManagement() {
 
   const triggerManualSync = async (repo) => {
     try {
-      const res = await fetch(`${window.API_BASE_URL}/api/repositories/${repo.id}/index`, {
+      const res = await fetch(`${API_BASE_URL}/api/repositories/${repo.id}/index`, {
         method: "POST"
       })
       if (res.ok) {

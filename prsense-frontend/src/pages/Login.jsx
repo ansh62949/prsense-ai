@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/config/api";
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
@@ -46,7 +47,7 @@ export default function Login() {
   const handleGitHubCallback = async (code) => {
     try {
       setLoading(true)
-      const response = await fetch(`${window.API_BASE_URL}/api/auth/github/callback`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/github/callback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code }),
@@ -75,7 +76,7 @@ export default function Login() {
       setError('')
       setLoading(true)
 
-      const response = await fetch(`${window.API_BASE_URL}/api/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -101,7 +102,7 @@ export default function Login() {
   const handleGitHubLogin = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${window.API_BASE_URL}/api/auth/github/login-url`)
+      const response = await fetch(`${API_BASE_URL}/api/auth/github/login-url`)
       const data = await response.json()
       window.location.href = data.authUrl
     } catch (err) {

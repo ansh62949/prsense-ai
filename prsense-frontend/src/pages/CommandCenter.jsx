@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import {
   GitPullRequest,
@@ -39,8 +40,8 @@ export default function CommandCenter() {
     try {
       const token = localStorage.getItem("authToken")
       const url = selectedRepoId 
-        ? `${window.API_BASE_URL}/api/analytics/dashboard?repoId=${selectedRepoId}` 
-        : `${window.API_BASE_URL}/api/analytics/dashboard`
+        ? `${API_BASE_URL}/api/analytics/dashboard?repoId=${selectedRepoId}` 
+        : `${API_BASE_URL}/api/analytics/dashboard`
       
       const res = await fetch(url, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},

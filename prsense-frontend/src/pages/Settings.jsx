@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { 
   Building2, 
@@ -78,7 +79,7 @@ export default function Settings() {
     try {
       const token = localStorage.getItem("authToken")
       const headers = token ? { Authorization: `Bearer ${token}` } : {}
-      const res = await fetch(`${window.API_BASE_URL}/api/organizations`, { headers })
+      const res = await fetch(`${API_BASE_URL}/api/organizations`, { headers })
       if (res.ok) {
         const data = await res.json()
         setOrganizations(data)
@@ -103,7 +104,7 @@ export default function Settings() {
     if (!newOrgName.trim()) return
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${window.API_BASE_URL}/api/organizations`, {
+      const res = await fetch(`${API_BASE_URL}/api/organizations`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -136,7 +137,7 @@ export default function Settings() {
     try {
       const token = localStorage.getItem("authToken")
       const headers = token ? { Authorization: `Bearer ${token}` } : {}
-      const res = await fetch(`${window.API_BASE_URL}/api/organizations/${orgId}/workspaces`, { headers })
+      const res = await fetch(`${API_BASE_URL}/api/organizations/${orgId}/workspaces`, { headers })
       if (res.ok) {
         const data = await res.json()
         setWorkspaces(data)
@@ -162,7 +163,7 @@ export default function Settings() {
     if (!newWsName.trim() || !selectedOrgId) return
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${window.API_BASE_URL}/api/organizations/${selectedOrgId}/workspaces`, {
+      const res = await fetch(`${API_BASE_URL}/api/organizations/${selectedOrgId}/workspaces`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -171,7 +172,7 @@ export default function Settings() {
         body: JSON.stringify({ 
           name: newWsName, 
           description: newWsDesc, 
-          webhookUrl: newWsWebhook || `${window.API_BASE_URL}/api/webhooks/github` 
+          webhookUrl: newWsWebhook || `${API_BASE_URL}/api/webhooks/github` 
         })
       })
       if (res.ok) {
@@ -201,7 +202,7 @@ export default function Settings() {
     try {
       const token = localStorage.getItem("authToken")
       const headers = token ? { Authorization: `Bearer ${token}` } : {}
-      const res = await fetch(`${window.API_BASE_URL}/api/organizations/workspaces/${wsId}/members`, { headers })
+      const res = await fetch(`${API_BASE_URL}/api/organizations/workspaces/${wsId}/members`, { headers })
       if (res.ok) {
         const data = await res.json()
         setMembers(data)
@@ -216,7 +217,7 @@ export default function Settings() {
     if (!inviteEmail.trim() || !selectedWorkspaceId) return
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${window.API_BASE_URL}/api/organizations/workspaces/${selectedWorkspaceId}/invites`, {
+      const res = await fetch(`${API_BASE_URL}/api/organizations/workspaces/${selectedWorkspaceId}/invites`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -504,7 +505,7 @@ export default function Settings() {
                     <label className="text-[10px] font-mono uppercase text-slate-500 font-bold">GitHub App Webhook URL</label>
                     <input 
                       type="url"
-                      placeholder={`${window.API_BASE_URL}/api/webhooks/github`}
+                      placeholder={`${API_BASE_URL}/api/webhooks/github`}
                       value={newWsWebhook}
                       onChange={e => setNewWsWebhook(e.target.value)}
                       className="w-full bg-slate-950 border border-slate-900 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#ff5a1f] transition"

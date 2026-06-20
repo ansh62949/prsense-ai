@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
@@ -70,7 +71,7 @@ export default function LoginPage() {
     setError(null)
 
     try {
-      const response = await fetch(`${window.API_BASE_URL}/api/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -91,7 +92,7 @@ export default function LoginPage() {
       navigate("/dashboard")
     } catch (err) {
       console.error("Login failed:", err)
-      setError(`Connection to API backend failed. Make sure the Spring Boot server is running on ${window.API_BASE_URL}.`)
+      setError(`Connection to API backend failed. Backend URL: ${API_BASE_URL}`)
     } finally {
       setLoading(false)
     }

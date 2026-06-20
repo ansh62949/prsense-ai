@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { 
   Key, 
@@ -45,7 +46,7 @@ export default function DeveloperPortal() {
     setLoading(true)
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${window.API_BASE_URL}/api/developer/keys/${selectedOrgId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/developer/keys/${selectedOrgId}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       })
       if (res.ok) {
@@ -72,7 +73,7 @@ export default function DeveloperPortal() {
     if (!newKeyName.trim()) return
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${window.API_BASE_URL}/api/developer/keys/${selectedOrgId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/developer/keys/${selectedOrgId}`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -95,7 +96,7 @@ export default function DeveloperPortal() {
     if (!confirm("Are you sure you want to revoke this API token? It will stop working immediately.")) return
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${window.API_BASE_URL}/api/developer/keys/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/developer/keys/${id}`, {
         method: "DELETE",
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       })
@@ -113,7 +114,7 @@ export default function DeveloperPortal() {
   }
 
   const codeSnippets = {
-    curl: `curl -X POST "${window.API_BASE_URL}/api/reviews" \\
+    curl: `curl -X POST "${API_BASE_URL}/api/reviews" \\
   -H "Authorization: Bearer ${generatedKey || "prsense_live_..."}" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -123,7 +124,7 @@ export default function DeveloperPortal() {
   }'`,
     python: `import requests
 
-url = "${window.API_BASE_URL}/api/reviews"
+url = "${API_BASE_URL}/api/reviews"
 headers = {
     "Authorization": "Bearer ${generatedKey || "prsense_live_..."}",
     "Content-Type": "application/json"
@@ -136,7 +137,7 @@ payload = {
 
 response = requests.post(url, headers=headers, json=payload)
 print(response.json())`,
-    javascript: `fetch("${window.API_BASE_URL}/api/reviews", {
+    javascript: `fetch("${API_BASE_URL}/api/reviews", {
   method: "POST",
   headers: {
     "Authorization": "Bearer ${generatedKey || "prsense_live_..."}",
@@ -404,7 +405,7 @@ print(response.json())`,
 
             <div className="pt-2 border-t border-slate-900">
               <a 
-                href={`${window.API_BASE_URL}/swagger-ui/index.html`} 
+                href={`${API_BASE_URL}/swagger-ui/index.html`} 
                 target="_blank" 
                 rel="noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs text-[#ff5a1f] font-bold hover:underline"

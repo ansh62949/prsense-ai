@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { 
   CreditCard, 
@@ -41,8 +42,8 @@ export default function BillingSettings() {
       const token = localStorage.getItem("authToken")
       const headers = token ? { Authorization: `Bearer ${token}` } : {}
       const [subRes, usageRes] = await Promise.all([
-        fetch(`${window.API_BASE_URL}/api/billing/subscription/${selectedOrgId}`, { headers }),
-        fetch(`${window.API_BASE_URL}/api/billing/usage/${selectedOrgId}`, { headers })
+        fetch(`${API_BASE_URL}/api/billing/subscription/${selectedOrgId}`, { headers }),
+        fetch(`${API_BASE_URL}/api/billing/usage/${selectedOrgId}`, { headers })
       ])
       if (subRes.ok && usageRes.ok) {
         const subData = await subRes.json()
@@ -61,7 +62,7 @@ export default function BillingSettings() {
     setUpgrading(true)
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${window.API_BASE_URL}/api/billing/subscription/${selectedOrgId}/upgrade`, {
+      const res = await fetch(`${API_BASE_URL}/api/billing/subscription/${selectedOrgId}/upgrade`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

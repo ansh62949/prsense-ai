@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { useSearchParams, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
@@ -32,7 +33,7 @@ export default function InviteAccept() {
     setStatus("verifying")
     try {
       const authToken = localStorage.getItem("authToken")
-      const res = await fetch(`${window.API_BASE_URL}/api/organizations/invites/accept`, {
+      const res = await fetch(`${API_BASE_URL}/api/organizations/invites/accept`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useEffect, useRef } from "react"
 import { 
   Search, 
@@ -77,7 +78,7 @@ export default function AskRepository() {
 
   const fetchRepositoryDetails = async (id) => {
     try {
-      const res = await fetch(`${window.API_BASE_URL}/api/repositories/${id}`)
+      const res = await fetch(`${API_BASE_URL}/api/repositories/${id}`)
       if (res.ok) {
         const data = await res.json()
         setActiveRepo(data)
@@ -96,7 +97,7 @@ export default function AskRepository() {
     setLoading(true)
 
     try {
-      const res = await fetch(`${window.API_BASE_URL}/api/knowledge/ask`, {
+      const res = await fetch(`${API_BASE_URL}/api/knowledge/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import { 
@@ -33,7 +34,7 @@ export default function ReviewDetails() {
   const fetchReviewDetails = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`${window.API_BASE_URL}/api/reviews/${reviewId}`)
+      const res = await fetch(`${API_BASE_URL}/api/reviews/${reviewId}`)
       if (res.ok) {
         const json = await res.json()
         setData(json)

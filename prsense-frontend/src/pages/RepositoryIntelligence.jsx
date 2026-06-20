@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { 
   Cpu, 
@@ -75,14 +76,14 @@ export default function RepositoryIntelligence() {
     setLoading(true)
     setProfileExists(true)
     try {
-      const repoRes = await fetch(`${window.API_BASE_URL}/api/repositories/${id}`)
+      const repoRes = await fetch(`${API_BASE_URL}/api/repositories/${id}`)
       if (repoRes.ok) {
         const repoData = await repoRes.json()
         setActiveRepo(repoData)
       }
 
       // Check snapshot
-      const snapshotRes = await fetch(`${window.API_BASE_URL}/api/repositories/${id}/snapshot`)
+      const snapshotRes = await fetch(`${API_BASE_URL}/api/repositories/${id}/snapshot`)
       if (snapshotRes.status === 404) {
         setProfileExists(false)
         setSnapshot(null)
@@ -96,13 +97,13 @@ export default function RepositoryIntelligence() {
       }
 
       // Fetch dynamic files
-      const filesRes = await fetch(`${window.API_BASE_URL}/api/repositories/${id}/files`)
+      const filesRes = await fetch(`${API_BASE_URL}/api/repositories/${id}/files`)
       if (filesRes.ok) {
         const filesData = await filesRes.json()
         setFiles(filesData)
       }
 
-      const summaryRes = await fetch(`${window.API_BASE_URL}/api/repositories/${id}/summary`)
+      const summaryRes = await fetch(`${API_BASE_URL}/api/repositories/${id}/summary`)
       if (summaryRes.ok) {
         const summaryData = await summaryRes.json()
         setSummary(summaryData)
@@ -120,7 +121,7 @@ export default function RepositoryIntelligence() {
     setIndexing(true)
     setMsg("")
     try {
-      const res = await fetch(`${window.API_BASE_URL}/api/repositories/${activeRepo.id}/index`, {
+      const res = await fetch(`${API_BASE_URL}/api/repositories/${activeRepo.id}/index`, {
         method: "POST"
       })
       if (res.ok) {
@@ -145,7 +146,7 @@ export default function RepositoryIntelligence() {
     setIndexing(true)
     setMsg("")
     try {
-      const res = await fetch(`${window.API_BASE_URL}/api/repositories/${activeRepo.id}/profile`, {
+      const res = await fetch(`${API_BASE_URL}/api/repositories/${activeRepo.id}/profile`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

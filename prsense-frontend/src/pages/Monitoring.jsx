@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { 
   Activity, 
@@ -55,11 +56,11 @@ export default function Monitoring() {
   const fetchStats = async () => {
     try {
       const statsUrl = selectedRepoId 
-        ? `${window.API_BASE_URL}/api/monitoring/stats?repoId=${selectedRepoId}`
-        : `${window.API_BASE_URL}/api/monitoring/stats`
+        ? `${API_BASE_URL}/api/monitoring/stats?repoId=${selectedRepoId}`
+        : `${API_BASE_URL}/api/monitoring/stats`
       const [statsRes, reposRes] = await Promise.all([
         fetch(statsUrl),
-        fetch(`${window.API_BASE_URL}/api/repositories`)
+        fetch(`${API_BASE_URL}/api/repositories`)
       ])
       
       if (statsRes.ok) {
@@ -81,7 +82,7 @@ export default function Monitoring() {
   const handleIndexRepo = async (id) => {
     setTriggeringIndex(prev => ({ ...prev, [id]: true }))
     try {
-      const res = await fetch(`${window.API_BASE_URL}/api/repositories/${id}/index`, {
+      const res = await fetch(`${API_BASE_URL}/api/repositories/${id}/index`, {
         method: "POST"
       })
       if (res.ok) {

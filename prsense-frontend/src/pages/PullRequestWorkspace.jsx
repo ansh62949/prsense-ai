@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import {
@@ -99,7 +100,7 @@ export default function PullRequestWorkspace() {
 
       // Attempt to load PR from backend
       const prRes = await fetch(
-        `${window.API_BASE_URL}/api/reviews/${prId}`,
+        `${API_BASE_URL}/api/reviews/${prId}`,
         {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         }

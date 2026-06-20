@@ -1,3 +1,4 @@
+import { API_BASE_URL, AI_BASE_URL } from "@/config/api";
 import { useState, useEffect } from "react"
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts"
 import { 
@@ -39,7 +40,7 @@ export default function LearnerDashboard() {
   // Custom categories filter tab
   const [activeTab, setActiveTab] = useState("all")
 
-  const API_BASE = `${window.AI_BASE_URL}`
+  const API_BASE = `${AI_BASE_URL}`
   
   const [selectedRepoId, setSelectedRepoId] = useState(() => {
     return localStorage.getItem("prsense_selected_repo_id") || ""
@@ -78,7 +79,7 @@ export default function LearnerDashboard() {
 
   const fetchRepositoryDetails = async (id) => {
     try {
-      const res = await fetch(`${window.API_BASE_URL}/api/repositories/${id}`)
+      const res = await fetch(`${API_BASE_URL}/api/repositories/${id}`)
       if (res.ok) {
         const data = await res.json()
         setActiveRepo(data)
@@ -122,8 +123,8 @@ export default function LearnerDashboard() {
       const token = localStorage.getItem("authToken")
       const headers = token ? { "Authorization": `Bearer ${token}` } : {}
       const url = activeRepo 
-        ? `${window.API_BASE_URL}/api/analytics/dashboard?repoId=${activeRepo.id}`
-        : `${window.API_BASE_URL}/api/analytics/dashboard`
+        ? `${API_BASE_URL}/api/analytics/dashboard?repoId=${activeRepo.id}`
+        : `${API_BASE_URL}/api/analytics/dashboard`
       const dashRes = await fetch(url, { headers })
       if (dashRes.ok) {
         const dashData = await dashRes.json()

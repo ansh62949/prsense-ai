@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import {
@@ -36,7 +37,7 @@ export default function RepositoryPage() {
     setLoading(true)
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${window.API_BASE_URL}/api/repositories/${repoId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/repositories/${repoId}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       })
       if (res.ok) {
@@ -45,7 +46,7 @@ export default function RepositoryPage() {
       }
 
       // Fetch dashboard metrics to get recent PRs and findings
-      const dashRes = await fetch(`${window.API_BASE_URL}/api/analytics/dashboard?repoId=${repoId}`, {
+      const dashRes = await fetch(`${API_BASE_URL}/api/analytics/dashboard?repoId=${repoId}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       })
       if (dashRes.ok) {
@@ -64,7 +65,7 @@ export default function RepositoryPage() {
     setIndexing(true)
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${window.API_BASE_URL}/api/repositories/${repoId}/index`, {
+      const res = await fetch(`${API_BASE_URL}/api/repositories/${repoId}/index`, {
         method: "POST",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       })

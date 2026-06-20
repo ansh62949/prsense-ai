@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import ReactFlow, { Background, Controls, Position, Handle } from "reactflow"
 import "reactflow/dist/style.css"
@@ -280,7 +281,7 @@ export default function AIAgentCenter() {
     try {
       const token = localStorage.getItem("authToken")
       const headers = token ? { "Authorization": `Bearer ${token}` } : {}
-      const res = await fetch(`${window.API_BASE_URL}/api/repositories/${id}`, { headers })
+      const res = await fetch(`${API_BASE_URL}/api/repositories/${id}`, { headers })
       if (res.ok) {
         const data = await res.json()
         setActiveRepo(data)
@@ -298,7 +299,7 @@ export default function AIAgentCenter() {
     try {
       const token = localStorage.getItem("authToken")
       const headers = token ? { "Authorization": `Bearer ${token}` } : {}
-      const res = await fetch(`${window.API_BASE_URL}/api/analytics/timeline/${repoId}`, { headers })
+      const res = await fetch(`${API_BASE_URL}/api/analytics/timeline/${repoId}`, { headers })
       if (res.ok) {
         const data = await res.json()
         if (data.timeline && data.timeline.length > 0) {
@@ -306,7 +307,7 @@ export default function AIAgentCenter() {
           setLatestReview(latest)
           setLiveMode(true)
           
-          const detailsRes = await fetch(`${window.API_BASE_URL}/api/reviews/${latest.reviewId}`, { headers })
+          const detailsRes = await fetch(`${API_BASE_URL}/api/reviews/${latest.reviewId}`, { headers })
           if (detailsRes.ok) {
             const detailsData = await detailsRes.json()
             setLatestReviewDetails(detailsData)
