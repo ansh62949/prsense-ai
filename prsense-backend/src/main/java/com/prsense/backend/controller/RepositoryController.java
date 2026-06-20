@@ -211,6 +211,12 @@ public class RepositoryController {
     public ResponseEntity<RepositorySnapshot> getRepositorySnapshot(@PathVariable Long id) {
         List<RepositorySnapshot> snapshots = snapshotRepository.findByRepositoryId(id);
         if (snapshots.isEmpty()) {
+            repositoryService.getRepositoryById(id).ifPresent(repo -> {
+                if ("INDEXED".equals(repo.getIndexingStatus())) {
+                    repo.setIndexingStatus("PENDING");
+                    repositoryService.saveRepository(repo);
+                }
+            });
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(snapshots.get(snapshots.size() - 1));
