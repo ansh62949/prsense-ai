@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks
-from models.schemas import ReviewRequest, ReviewResponse
+from models.schemas import ReviewRequest, ReviewResponse, ReviewFinding
 from services.review_service import review_service
 from services.async_task_service import process_review_event
 from pydantic import BaseModel
@@ -60,8 +60,24 @@ async def review_pr(request: ReviewRequest):
             retrieved_documents=res["retrieved_documents"]
         )
     except Exception as exc:
-        logger.error(f"Review execution failed: {exc}")
-        raise HTTPException(status_code=500, detail="Failed to execute PR review workflow.")
+        logger.error(f"Review PR failed: {exc}")
+        return ReviewResponse(
+            findings=[
+                ReviewFinding(
+                    agent="PRSense AI System",
+                    category="System Limit",
+                    severity="LOW",
+                    recommendation="Wait a moment and try review trigger again.",
+                    confidence=0.5,
+                    description=f"PR review execution failed because the AI service API quota was exhausted or an unexpected error occurred. Details: {exc}"
+                )
+            ],
+            overall_severity="LOW",
+            summary=f"PR review was not fully completed because the AI service API quota has been exhausted. Details: {exc}",
+            confidence=0.5,
+            rag_context="Fallback context: Quota exhausted.",
+            retrieved_documents=[]
+        )
 
 from pydantic import BaseModel
 

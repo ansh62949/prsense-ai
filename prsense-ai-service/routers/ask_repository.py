@@ -138,4 +138,8 @@ async def ask_repository_copilot(request: AskRepositoryRequest):
         )
     except Exception as exc:
         logger.error(f"Ask Repository failed: {exc}")
-        raise HTTPException(status_code=500, detail=str(exc))
+        return AskRepositoryResponse(
+            answer=f"I'm sorry, I am unable to answer your query because the AI service API quota has been exhausted. Please try again later. Details: {exc}",
+            reasoning=f"Error encountered during API request execution: {exc}",
+            retrieved_documents=[]
+        )

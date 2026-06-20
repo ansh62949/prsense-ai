@@ -159,6 +159,19 @@ class RAGService:
                         """)
                     except Exception as idx_exc:
                         logger.warning(f"Could not create HNSW index for memory_documents: {idx_exc}")
+                        
+                    # Repository Summaries Cache Table
+                    cur.execute("""
+                        CREATE TABLE IF NOT EXISTS repository_summaries (
+                            id SERIAL PRIMARY KEY,
+                            repo_name VARCHAR(100) UNIQUE NOT NULL,
+                            summary TEXT,
+                            technology_stack TEXT,
+                            architecture_patterns TEXT,
+                            coding_conventions TEXT,
+                            generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                        );
+                    """)
                 
                 logger.info("RAGService successfully initialized tables and verified connection to PostgreSQL")
             except Exception as exc:
@@ -513,5 +526,91 @@ class RAGService:
         except Exception as exc:
             logger.warning(f"Failed to fetch learned patterns: {exc}")
             return patterns
+
+    def fetch_cached_summary(self, repo_name: str, ignore_age: bool = False) -> Optional[Dict[str, Any]]:
+        conn = self._get_conn()
+        if conn is None:
+            return None
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT summary, technology_stack, architecture_patterns, coding_conventions, generated_at "
+                    "FROM repository_summaries WHERE repo_name = %s",
+                    (repo_name,)
+                )
+                row = cur.fetchone()
+                if row:
+                    from datetime import datetime, timedelta
+                    import json
+                    
+                    def safe_parse_list(val):
+                        if not val:
+                            return []
+                        if isinstance(val, list):
+                            return val
+                        try:
+                            parsed = json.loads(val)
+                            if isinstance(parsed, list):
+                                return [str(item) for item in parsed]
+                        except Exception:
+                            pass
+                        cleaned = val.strip("[]'\" ")
+                        if not cleaned:
+                            return []
+                        return [item.strip("'\" ") for item in cleaned.split(",")]
+
+                    generated_at = row[4]
+                    # Check age < 24 hours
+                    if ignore_age or (datetime.utcnow() - generated_at < timedelta(hours=24)):
+                        return {
+                            "summary": row[0],
+                            "technology_stack": safe_parse_list(row[1]),
+                            "architecture_patterns": safe_parse_list(row[2]),
+                            "coding_conventions": safe_parse_list(row[3])
+                        }
+                    else:
+                        logger.info(f"Cached summary for {repo_name} is expired (> 24h)")
+        except Exception as e:
+            logger.warning(f"Failed to fetch cached summary: {e}")
+        return None
+
+    def save_cached_summary(self, repo_name: str, data: Dict[str, Any]):
+        conn = self._get_conn()
+        if conn is None:
+            return
+        try:
+            import json
+            
+            def safe_serialize_list(val):
+                if isinstance(val, list):
+                    return json.dumps(val)
+                return str(val) if val is not None else "[]"
+
+            with conn.cursor() as cur:
+                cur.execute(
+                    "INSERT INTO repository_summaries (repo_name, summary, technology_stack, architecture_patterns, coding_conventions, generated_at) "
+                    "VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP) "
+                    "ON CONFLICT (repo_name) DO UPDATE SET "
+                    "summary = EXCLUDED.summary, "
+                    "technology_stack = EXCLUDED.technology_stack, "
+                    "architecture_patterns = EXCLUDED.architecture_patterns, "
+                    "coding_conventions = EXCLUDED.coding_conventions, "
+                    "generated_at = CURRENT_TIMESTAMP",
+                    (
+                        repo_name,
+                        data.get("summary"),
+                        safe_serialize_list(data.get("technology_stack")),
+                        safe_serialize_list(data.get("architecture_patterns")),
+                        safe_serialize_list(data.get("coding_conventions"))
+                    )
+                )
+                conn.commit()
+            logger.info(f"Successfully saved summary to cache for repo {repo_name}")
+        except Exception as e:
+            logger.warning(f"Failed to save cached summary: {e}")
+            try:
+                conn.rollback()
+            except Exception:
+                pass
 
 rag_service = RAGService()
