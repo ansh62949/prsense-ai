@@ -18,14 +18,12 @@ import java.util.*;
 public class WebhookController {
 
     private final RepositoryRepository repositoryRepository;
-    private
-
-    final PullRequestRepository pullRequestRepository;
+    private final PullRequestRepository pullRequestRepository;
     private final ReviewRepository reviewRepository;
     private final ReviewFindingRepository reviewFindingRepository;
     private final LearnedPatternRepository learnedPatternRepository;
     private final com.prsense.backend.service.GitHubService githubService;
-    private final com.prsense.backend.service.CeleryProducerService celeryProducerService;
+    private final com.prsense.backend.service.AiIndexingClient aiIndexingClient;
 
     @PostMapping("/github")
     public ResponseEntity<String> handleGithubWebhook(
@@ -112,46 +110,61 @@ public class WebhookController {
     }
 
     private void triggerAiReviewFlow(PullRequest pr, String repoFullName, String prTitle) {
-        log.info("Initiating asynchronous Celery-based review flow for PR #{} in {}", pr.getPrNumber(), repoFullName);
+        log.info("Initiating asynchronous direct review flow for PR #{} in {}", pr.getPrNumber(), repoFullName);
         
         // Create Review in IN_PROGRESS state
         Review review = Review.builder()
                 .pullRequest(pr)
                 .status("IN_PROGRESS")
                 .aiDecision("COMMENTED")
-                .summaryReport("Queued in Redis. Worker execution in progress...")
+                .summaryReport("Direct AI review execution in progress...")
                 .totalFindings(0)
                 .criticalFindings(0)
                 .confidenceScore(0.0)
                 .executionTimeMs(0L)
                 .organizationId(pr.getRepository().getOrganizationId())
                 .build();
-        review = reviewRepository.save(review);
-
+        final Review savedReview = reviewRepository.save(review);
+ 
         String mockDiff = "";
-
-        // Queue in Redis/Celery via CeleryProducerService
-        celeryProducerService.publishReviewTask(
-                review.getId(),
-                repoFullName,
-                prTitle,
-                mockDiff,
-                review.getOrganizationId(),
-                pr.getHeadSha()
-        );
+ 
+        // Call direct indexing service asynchronously
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            try {
+                aiIndexingClient.runReview(
+                        savedReview.getId(),
+                        repoFullName,
+                        prTitle,
+                        mockDiff,
+                        savedReview.getOrganizationId(),
+                        pr.getHeadSha()
+                );
+            } catch (Exception e) {
+                log.error("Failed to execute async direct review for review ID: {}", savedReview.getId(), e);
+                savedReview.setStatus("FAILED");
+                savedReview.setSummaryReport("Direct review call failed: " + e.getMessage());
+                reviewRepository.save(savedReview);
+            }
+        });
     }
-
+ 
     private void triggerLearnerFlow(Repository repository, String prTitle) {
-        log.info("Triggering asynchronous Celery learning task for repo: {}", repository.getFullName());
+        log.info("Triggering asynchronous direct learning task for repo: {}", repository.getFullName());
         
         String mockMergedDiff = "";
-
-        // Queue in Redis/Celery via CeleryProducerService
-        celeryProducerService.publishLearnerTask(
-                repository.getFullName(),
-                prTitle,
-                mockMergedDiff,
-                repository.getOrganizationId()
-        );
+ 
+        // Call direct learning service asynchronously
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            try {
+                aiIndexingClient.runLearner(
+                        repository.getFullName(),
+                        prTitle,
+                        mockMergedDiff,
+                        repository.getOrganizationId()
+                );
+            } catch (Exception e) {
+                log.error("Failed to execute async direct learner for repo: {}", repository.getFullName(), e);
+            }
+        });
     }
 }

@@ -13,26 +13,6 @@ services:
         sync: false
       - key: DATABASE_URL
         sync: false
-      - key: REDIS_URL
-        sync: false
-
-  # Celery Background Worker
-  - type: worker
-    name: prsense-ai-worker
-    env: docker
-    rootDir: prsense-ai-service
-    dockerfilePath: Dockerfile
-    dockerContext: .
-    dockerCommand: "celery -A celery_worker.celery_app worker --loglevel=info"
-    envVars:
-      - key: LLM_PROVIDER
-        value: gemini
-      - key: GEMINI_API_KEY
-        sync: false
-      - key: DATABASE_URL
-        sync: false
-      - key: REDIS_URL
-        sync: false
       - key: BACKEND_URL
         fromService:
           name: prsense-backend
@@ -52,8 +32,6 @@ services:
       - key: SPRING_DATASOURCE_USERNAME
         sync: false
       - key: SPRING_DATASOURCE_PASSWORD
-        sync: false
-      - key: REDIS_URL
         sync: false
       - key: AI_SERVICE_URL
         fromService:

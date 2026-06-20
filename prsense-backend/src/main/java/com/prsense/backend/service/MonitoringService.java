@@ -6,7 +6,6 @@ import com.prsense.backend.repository.ReviewRepository;
 import com.prsense.backend.repository.ReviewTimelineRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +20,6 @@ public class MonitoringService {
 
     private final ReviewRepository reviewRepository;
     private final ReviewTimelineRepository timelineRepository;
-    private final StringRedisTemplate redisTemplate;
 
     @Transactional(readOnly = true)
     public Map<String, Object> getSystemObservabilityStats(Long repoId) {
@@ -68,14 +66,8 @@ public class MonitoringService {
         int totalTokens = timelines.stream().mapToInt(ReviewTimeline::getTokenUsage).sum();
         double totalCost = timelines.stream().mapToDouble(ReviewTimeline::getCost).sum();
 
-        // Queue size directly from Redis list size
+        // Queue size set to 0 as Redis has been removed
         Long queueSize = 0L;
-        try {
-            queueSize = redisTemplate.opsForList().size("celery");
-            if (queueSize == null) queueSize = 0L;
-        } catch (Exception e) {
-            log.warn("Failed to get celery queue size from Redis", e);
-        }
 
         Map<String, Object> agentLatencies = new HashMap<>();
         agentLatencies.put("static_analysis", Math.round(avgStaticLatency));

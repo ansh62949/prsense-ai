@@ -4,18 +4,15 @@ import time
 import logging
 import requests
 import json
-from celery import Celery
-from dotenv import load_dotenv
+import subprocess
+import tempfile
+import shutil
+import glob
+import re
+import asyncio
+from typing import Dict, Any, Optional
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-# Load environment variables
-load_dotenv()
-load_dotenv(dotenv_path="../.env")
-
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("PRSenseCeleryWorker")
+logger = logging.getLogger("PRSenseAsyncTaskService")
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 BACKEND_CALLBACK_URL = os.getenv("BACKEND_CALLBACK_URL")
@@ -26,22 +23,7 @@ if not BACKEND_CALLBACK_URL:
     else:
         BACKEND_CALLBACK_URL = "http://localhost:8080/api/reviews/callback"
 
-celery_app = Celery(
-    "prsense_tasks",
-    broker=REDIS_URL,
-    backend=REDIS_URL
-)
-
-# Configure Celery settings
-celery_app.conf.update(
-    task_serializer="json",
-    accept_content=["json"],
-    result_serializer="json",
-    timezone="UTC",
-    enable_utc=True
-)
-
-# Import services after Celery initialization
+# Import services
 from services.review_service import review_service
 from services.learner_service import learner_service
 from services.rag_service import rag_service
@@ -101,10 +83,6 @@ def fetch_github_pr_diff_local_fallback(repo_full_name: str, pr_number: int) -> 
     """
     Clones the repository locally and extracts the diff for the PR branch using git commands.
     """
-    import subprocess
-    import tempfile
-    import shutil
-    
     logger.info(f"Using local clone fallback to get diff for PR #{pr_number} in {repo_full_name}")
     
     github_token = os.getenv("GITHUB_TOKEN") or os.getenv("GITHUB_ACCESS_TOKEN")
@@ -303,7 +281,6 @@ def process_review_event(payload: dict) -> str:
     if not pr_diff or not pr_diff.strip():
         raise RuntimeError("No PR diff provided or found, and failed to fetch diff from GitHub API.")
 
-
     # 3. Apply Cost and Size controls
     limit_error = check_pr_limits(pr_diff)
     if limit_error:
@@ -320,7 +297,6 @@ def process_review_event(payload: dict) -> str:
         return f"Rejected: {limit_error}"
 
     # 4. Execute Review Flow
-    import asyncio
     try:
         loop = asyncio.get_event_loop()
     except RuntimeError:
@@ -383,7 +359,6 @@ def process_learner_event(payload: dict) -> str:
     pr_diff = payload.get("pr_diff")
     pr_number = payload.get("pr_number")
 
-
     # Fetch diff if missing
     if repo_full_name and pr_number and not pr_diff:
         try:
@@ -395,7 +370,6 @@ def process_learner_event(payload: dict) -> str:
         logger.warning("No diff found for learner event. Aborting.")
         return "Failed: No diff available"
 
-    import asyncio
     try:
         loop = asyncio.get_event_loop()
     except RuntimeError:
@@ -417,11 +391,6 @@ def process_learner_event(payload: dict) -> str:
         return f"Failed: {str(exc)}"
 
 def analyze_codebase_features(repo_dir: str, repo_full_name: str) -> dict:
-    import os
-    import glob
-    import re
-    import json
-
     logger.info(f"Analyzing codebase features for clone: {repo_dir}")
     frameworks = []
     databases = []
@@ -724,14 +693,12 @@ def analyze_codebase_features(repo_dir: str, repo_full_name: str) -> dict:
 def process_index_event(payload: dict) -> str:
     import shutil
     import subprocess
-    import glob
     from config import sanitize_repo_name
     
     repo_id = payload.get("repo_id")
     repo_full_name = sanitize_repo_name(payload.get("repo_full_name"))
     organization_id = payload.get("organization_id")
     commit_sha = payload.get("commit_sha")
-
     
     logger.info(f"Running repository indexing event for repo: {repo_full_name}")
     start_time = time.time()
@@ -770,7 +737,7 @@ def process_index_event(payload: dict) -> str:
         clone_url = f"https://github.com/{repo_full_name}.git"
 
     # Clone repo locally inside the workspace
-    clones_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "temp_clones")
+    clones_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "temp_clones")
     os.makedirs(clones_dir, exist_ok=True)
     repo_dir = os.path.join(clones_dir, f"repo_{repo_id}_{int(time.time())}")
 
@@ -906,7 +873,6 @@ def process_index_event(payload: dict) -> str:
                 "Respond ONLY with the JSON object. Do not wrap in markdown or add comments."
             )
             
-            import asyncio
             try:
                 loop = asyncio.get_event_loop()
             except RuntimeError:
@@ -980,70 +946,3 @@ def process_index_event(payload: dict) -> str:
                 logger.info(f"Cleaned up temp cloned repository directory: {repo_dir}")
             except Exception as clean_exc:
                 logger.warning(f"Failed to clean up clone dir {repo_dir}: {clean_exc}")
-
-
-@celery_app.task(
-    name="celery_worker.handle_event",
-    bind=True,
-    max_retries=3,
-    default_retry_delay=10
-)
-def handle_event(self, event_type: str, payload: dict) -> str:
-    logger.info(f"Received Celery event: '{event_type}' (attempt {self.request.retries + 1})")
-    try:
-        if event_type == "review":
-            return process_review_event(payload)
-        elif event_type == "index":
-            return process_index_event(payload)
-        elif event_type == "learner":
-            return process_learner_event(payload)
-        else:
-            logger.error(f"Unknown event type: {event_type}")
-            return f"Error: Unknown event type {event_type}"
-    except Exception as exc:
-        logger.error(f"Error executing task handle_event: {exc}")
-        if self.request.retries >= self.max_retries:
-            logger.error("Max retries exceeded for task handle_event. Routing to Dead Letter Queue (DLQ).")
-            try:
-                import redis
-                import json
-                redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-                r = redis.Redis.from_url(redis_url)
-                dlq_payload = {
-                    "event_type": event_type,
-                    "payload": payload,
-                    "error": str(exc),
-                    "failed_at": time.time()
-                }
-                r.rpush("celery_dlq", json.dumps(dlq_payload))
-                logger.info("Task successfully pushed to 'celery_dlq'")
-            except Exception as dlq_exc:
-                logger.error(f"Failed to route to DLQ: {dlq_exc}")
-            raise exc
-        raise self.retry(exc=exc)
-
-
-# Backward compatibility wrappers for direct task calls
-@celery_app.task(name="celery_worker.run_review_task")
-def run_review_task(review_id: int, repo_full_name: str, pr_title: str, pr_diff: str):
-    return handle_event("review", {
-        "review_id": review_id,
-        "repo_full_name": repo_full_name,
-        "pr_title": pr_title,
-        "pr_diff": pr_diff
-    })
-
-@celery_app.task(name="celery_worker.run_learner_task")
-def run_learner_task(repo_full_name: str, pr_title: str, pr_diff: str):
-    return handle_event("learner", {
-        "repo_full_name": repo_full_name,
-        "pr_title": pr_title,
-        "pr_diff": pr_diff
-    })
-
-@celery_app.task(name="celery_worker.run_indexing_task")
-def run_indexing_task(repo_id: int, repo_full_name: str):
-    return handle_event("index", {
-        "repo_id": repo_id,
-        "repo_full_name": repo_full_name
-    })

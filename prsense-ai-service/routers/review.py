@@ -1,11 +1,42 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, BackgroundTasks
 from models.schemas import ReviewRequest, ReviewResponse
 from services.review_service import review_service
+from services.async_task_service import process_review_event
+from pydantic import BaseModel
+from typing import Optional
 import logging
+
+class DirectReviewRequest(BaseModel):
+    review_id: int
+    repo_full_name: str
+    pr_title: Optional[str] = None
+    pr_diff: Optional[str] = None
+    organization_id: Optional[str] = None
+    commit_sha: Optional[str] = None
 
 logger = logging.getLogger("PRSenseReviewRouter")
 router = APIRouter()
 
+@router.post("/api/review/run")
+async def run_direct_review(request: DirectReviewRequest, background_tasks: BackgroundTasks):
+    try:
+        logger.info(f"Direct API request to execute review ID: {request.review_id} for {request.repo_full_name}")
+        payload = {
+            "review_id": request.review_id,
+            "repo_full_name": request.repo_full_name,
+            "pr_title": request.pr_title,
+            "pr_diff": request.pr_diff,
+            "organization_id": request.organization_id,
+            "commit_sha": request.commit_sha
+        }
+        background_tasks.add_task(process_review_event, payload)
+        return {
+            "success": True,
+            "message": "Review execution successfully triggered in background."
+        }
+    except Exception as exc:
+        logger.error(f"Failed to queue review execution: {exc}")
+        raise HTTPException(status_code=500, detail=str(exc))
 from config import sanitize_repo_name
 
 @router.post("/review", response_model=ReviewResponse)

@@ -29,7 +29,7 @@ public class RepositoryController {
 
     private final RepositoryService repositoryService;
     private final KnowledgeService knowledgeService;
-    private final CeleryProducerService celeryProducerService;
+    private final AiIndexingClient aiIndexingClient;
     private final RepositorySnapshotRepository snapshotRepository;
     private final KnowledgeDocumentRepository knowledgeDocumentRepository;
     private final GitHubOAuthService gitHubOAuthService;
@@ -161,16 +161,51 @@ public class RepositoryController {
     public ResponseEntity<Repository> triggerIndexing(@PathVariable Long id) {
         return repositoryService.getRepositoryById(id)
                 .map(repo -> {
-                    repo.setIndexingStatus("PENDING");
+                    repo.setIndexingStatus("INDEXING");
                     repo.setIndexingProgress(0);
                     repo.setIndexingError(null);
                     Repository updated = repositoryService.saveRepository(repo);
-                    celeryProducerService.publishIndexingTask(
-                            updated.getId(),
-                            updated.getFullName(),
-                            updated.getOrganizationId(),
-                            updated.getLatestCommitSha()
-                    );
+                    
+                    java.util.concurrent.CompletableFuture.runAsync(() -> {
+                        try {
+                            long startTime = System.currentTimeMillis();
+                            Map<String, Object> result = aiIndexingClient.indexRepository(
+                                    updated.getId(),
+                                    updated.getFullName(),
+                                    updated.getOrganizationId(),
+                                    updated.getLatestCommitSha()
+                            );
+                            
+                            Repository currentRepo = repositoryService.getRepositoryById(updated.getId()).orElse(null);
+                            if (currentRepo != null) {
+                                boolean success = Boolean.TRUE.equals(result.get("success"));
+                                if (success) {
+                                    currentRepo.setIndexingStatus("INDEXED");
+                                    currentRepo.setIndexingProgress(100);
+                                    if (result.get("files_indexed") != null) {
+                                        currentRepo.setFilesIndexed(((Number) result.get("files_indexed")).intValue());
+                                    }
+                                    if (result.get("embeddings_generated") != null) {
+                                        currentRepo.setEmbeddingsGenerated(((Number) result.get("embeddings_generated")).intValue());
+                                    }
+                                    currentRepo.setLastIndexedAt(LocalDateTime.now());
+                                    currentRepo.setIndexingDurationMs(System.currentTimeMillis() - startTime);
+                                } else {
+                                    currentRepo.setIndexingStatus("FAILED");
+                                    currentRepo.setIndexingError((String) result.getOrDefault("error", "Indexing failed"));
+                                }
+                                repositoryService.saveRepository(currentRepo);
+                            }
+                        } catch (Exception e) {
+                            log.error("Failed to run async repository indexing for repo {}", updated.getFullName(), e);
+                            repositoryService.getRepositoryById(updated.getId()).ifPresent(r -> {
+                                r.setIndexingStatus("FAILED");
+                                r.setIndexingError(e.getMessage());
+                                repositoryService.saveRepository(r);
+                            });
+                        }
+                    });
+                    
                     return ResponseEntity.ok(updated);
                 })
                 .orElse(ResponseEntity.notFound().build());

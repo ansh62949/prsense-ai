@@ -1,5 +1,5 @@
 import logging
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, BackgroundTasks
 from models.schemas import (
     GuidelineRequest,
     GuidelineResponse,
@@ -9,9 +9,37 @@ from models.schemas import (
 )
 from services.rag_service import rag_service
 from services.learner_service import learner_service
+from services.async_task_service import process_learner_event
+from pydantic import BaseModel
+from typing import Optional
+
+class DirectLearnerRequest(BaseModel):
+    repo_full_name: str
+    pr_title: Optional[str] = None
+    pr_diff: Optional[str] = None
+    organization_id: Optional[str] = None
 
 logger = logging.getLogger("PRSenseLearnerRouter")
 router = APIRouter()
+
+@router.post("/api/learner/run")
+async def run_direct_learner(request: DirectLearnerRequest, background_tasks: BackgroundTasks):
+    try:
+        logger.info(f"Direct API request to execute learner for repo {request.repo_full_name}")
+        payload = {
+            "repo_full_name": request.repo_full_name,
+            "pr_title": request.pr_title,
+            "pr_diff": request.pr_diff,
+            "organization_id": request.organization_id
+        }
+        background_tasks.add_task(process_learner_event, payload)
+        return {
+            "success": True,
+            "message": "Learner task successfully triggered in background."
+        }
+    except Exception as exc:
+        logger.error(f"Failed to queue learner execution: {exc}")
+        raise HTTPException(status_code=500, detail=str(exc))
 
 from config import sanitize_repo_name
 

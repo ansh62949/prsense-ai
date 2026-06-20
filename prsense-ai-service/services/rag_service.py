@@ -5,10 +5,7 @@ import hashlib
 from typing import Dict, Any, List, Optional
 from services.embedding_service import embedding_service
 
-try:
-    import redis
-except ImportError:
-    redis = None
+# Redis imports removed
 
 try:
     import psycopg2
@@ -95,25 +92,6 @@ class RAGService:
         self.enabled = False
         self.conn = None
         self.redis_client = None
-
-        # Setup Redis Client for RAG caching
-        if redis is not None:
-            try:
-                from redis.retry import Retry
-                from redis.backoff import ExponentialBackoff
-                
-                redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-                retry = Retry(ExponentialBackoff(cap=2, initial=0.1), 3)
-                self.redis_client = redis.Redis.from_url(
-                    redis_url,
-                    decode_responses=True,
-                    retry=retry,
-                    retry_on_timeout=True,
-                    socket_connect_timeout=5.0
-                )
-                logger.info("RAGService successfully connected to Redis for caching")
-            except Exception as e:
-                logger.warning(f"Failed to connect RAGService to Redis cache: {e}")
 
         if psycopg2 is None or register_vector is None:
             logger.warning("psycopg2 or pgvector not available, pgvector store disabled.")
@@ -370,17 +348,7 @@ class RAGService:
         if conn is None:
             return {"context_block": "Vector database not connected.", "documents": []}
             
-        # Redis cache check
-        query_hash = hashlib.md5(query.encode('utf-8')).hexdigest()
-        cache_key = f"rag_cache:{organization_id or 'default'}:{repo_name or 'any'}:{content_type or 'any'}:{query_hash}"
-        if self.redis_client:
-            try:
-                cached = self.redis_client.get(cache_key)
-                if cached:
-                    logger.info("RAG context successfully hit and loaded from Redis cache")
-                    return json.loads(cached)
-            except Exception as cache_err:
-                logger.warning(f"Failed to load RAG cache from Redis: {cache_err}")
+        # Redis cache check removed
 
         embedding = embedding_service.embed_text(query)
         if not embedding:
@@ -442,11 +410,7 @@ class RAGService:
                 "context_block": context_block,
                 "documents": documents
             }
-            if self.redis_client:
-                try:
-                    self.redis_client.setex(cache_key, 1800, json.dumps(res))
-                except Exception as cache_err:
-                    logger.warning(f"Failed to save RAG context to Redis cache: {cache_err}")
+            # Redis cache set removed
             return res
         except Exception as exc:
             logger.warning(f"pgvector semantic query search failed: {exc}")

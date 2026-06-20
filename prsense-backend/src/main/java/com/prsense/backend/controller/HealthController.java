@@ -2,7 +2,6 @@ package com.prsense.backend.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,15 +20,13 @@ import java.util.Map;
 public class HealthController {
 
     private final DataSource dataSource;
-    private final StringRedisTemplate redisTemplate;
 
     @GetMapping
     public ResponseEntity<Map<String, String>> checkHealth() {
         Map<String, String> healthReport = new HashMap<>();
         boolean isDbUp = false;
-        boolean isRedisUp = false;
 
-        // 1. Check Database
+        // Check Database
         try (Connection conn = dataSource.getConnection()) {
             if (conn.isValid(2)) {
                 isDbUp = true;
@@ -42,21 +39,7 @@ public class HealthController {
             healthReport.put("database", "DOWN - " + e.getMessage());
         }
 
-        // 2. Check Redis
-        try {
-            String pingResult = redisTemplate.getConnectionFactory().getConnection().ping();
-            if ("PONG".equalsIgnoreCase(pingResult)) {
-                isRedisUp = true;
-                healthReport.put("redis", "UP");
-            } else {
-                healthReport.put("redis", "DOWN");
-            }
-        } catch (Exception e) {
-            log.error("Redis health check failed", e);
-            healthReport.put("redis", "DOWN - " + e.getMessage());
-        }
-
-        if (isDbUp && isRedisUp) {
+        if (isDbUp) {
             healthReport.put("status", "UP");
             return ResponseEntity.ok(healthReport);
         } else {
