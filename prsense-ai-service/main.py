@@ -1,5 +1,10 @@
 import logging
 import os
+
+# Initialize logging configuration before any local imports
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("PRSenseAPI")
+
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -10,9 +15,6 @@ from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from routers import review, ask_repository, repository_profile, learner, monitoring, indexing
 from services.rag_service import rag_service
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("PRSenseAPI")
 
 app = FastAPI(
     title="PRSense AI Service",
@@ -46,6 +48,16 @@ async def startup_event():
     
     logger.info(f"Starting PRSense AI Service with provider: {provider}")
     
+    # Validate BACKEND_URL
+    backend_url = os.getenv("BACKEND_URL")
+    if not backend_url:
+        if os.getenv("RENDER") == "true" or os.getenv("PORT") is not None:
+            raise RuntimeError("BACKEND_URL environment variable is required in production!")
+        else:
+            logger.warning("WARNING: BACKEND_URL environment variable is missing! Callbacks will default to localhost:8080.")
+    else:
+        logger.info(f"BACKEND_URL configured: {backend_url}")
+        
     if provider == "gemini" and not gemini_key:
         logger.warning("WARNING: GEMINI_API_KEY is not configured but provider is set to gemini!")
     elif provider == "openai" and not openai_key:

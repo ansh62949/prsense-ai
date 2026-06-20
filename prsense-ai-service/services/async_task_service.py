@@ -15,28 +15,26 @@ from typing import Dict, Any, Optional
 logger = logging.getLogger("PRSenseAsyncTaskService")
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-BACKEND_CALLBACK_URL = os.getenv("BACKEND_CALLBACK_URL")
 backend_url = os.getenv("BACKEND_URL")
 
-# Override local callback URL in production if a real BACKEND_URL is configured
-is_local_callback = BACKEND_CALLBACK_URL and ("localhost" in BACKEND_CALLBACK_URL or "127.0.0.1" in BACKEND_CALLBACK_URL)
-is_prod_backend = backend_url and "localhost" not in backend_url and "127.0.0.1" not in backend_url
-
-if is_local_callback and is_prod_backend:
-    logger.info(f"Overriding local BACKEND_CALLBACK_URL ({BACKEND_CALLBACK_URL}) with production BACKEND_URL ({backend_url})")
-    BACKEND_CALLBACK_URL = None
-
-if not BACKEND_CALLBACK_URL:
-    if backend_url:
-        if not backend_url.startswith("http://") and not backend_url.startswith("https://"):
-            if "localhost" in backend_url or "127.0.0.1" in backend_url:
-                backend_url = f"http://{backend_url}"
-            else:
-                backend_url = f"https://{backend_url}"
-        BACKEND_CALLBACK_URL = f"{backend_url.rstrip('/')}/api/reviews/callback"
+# Enforce BACKEND_URL configuration
+if not backend_url:
+    # Fail immediately in Render production environment
+    if os.getenv("RENDER") == "true" or os.getenv("PORT") is not None:
+        raise RuntimeError("BACKEND_URL environment variable is required in production!")
     else:
-        BACKEND_CALLBACK_URL = "http://localhost:8080/api/reviews/callback"
+        logger.warning("BACKEND_URL environment variable is missing. Defaulting to http://localhost:8080 for local development.")
+        backend_url = "http://localhost:8080"
 
+# Normalize backend_url scheme
+if not backend_url.startswith("http://") and not backend_url.startswith("https://"):
+    if "localhost" in backend_url or "127.0.0.1" in backend_url:
+        backend_url = f"http://{backend_url}"
+    else:
+        backend_url = f"https://{backend_url}"
+
+# Build direct callback URLs relative to the backend_url configuration
+BACKEND_CALLBACK_URL = f"{backend_url.rstrip('/')}/api/reviews/callback"
 logger.info(f"PRSenseAsyncTaskService initialized. Resolved BACKEND_CALLBACK_URL: {BACKEND_CALLBACK_URL}")
 
 # Import services
