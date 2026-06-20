@@ -4,8 +4,11 @@
 ![License](https://img.shields.io/badge/license-proprietary-red)
 ![Status](https://img.shields.io/badge/status-actively%20developed-green)
 
-🚀 **Live Code Analyzer Service**: [https://prsense.onrender.com/](https://prsense.onrender.com/)  
-📝 **Interactive API Testing (Swagger UI)**: [https://prsense.onrender.com/docs](https://prsense.onrender.com/docs)
+🚀 **Live Frontend Portal**: [https://prsense-ai.vercel.app/](https://prsense-ai.vercel.app/)  
+🚀 **Live Code Analyzer Service**: [https://prsense-ai.onrender.com/](https://prsense-ai.onrender.com/)  
+📝 **Code Analyzer API Docs (Swagger UI)**: [https://prsense-ai.onrender.com/docs](https://prsense-ai.onrender.com/docs)  
+📝 **Backend API Docs (Swagger UI)**: [https://prsense-ai-1.onrender.com/swagger-ui/index.html](https://prsense-ai-1.onrender.com/swagger-ui/index.html)
+
 
 PRSense is a **premium, Automated SaaS platform** designed to automate GitHub Pull Request reviews, analyze code safety, styles, and architectures, and provide deep repository-wide conversational intelligence. Built with a Spring Boot Java backend, a Vite + React + Framer Motion premium frontend, and a FastAPI + Workflow Engine Python AI service.
 
@@ -111,10 +114,11 @@ prsense/
 
 | Service | Local Address | Live/Production Address | Description |
 |---------|---------------|-------------------------|-------------|
-| **Frontend** | `http://localhost:3000` | - | React web application portal |
-| **Backend API** | `http://localhost:8080` | - | Spring Boot orchestrator, user accounts, OAuth |
-| **Code Analyzer Service** | `http://localhost:8000` | [https://prsense.onrender.com/](https://prsense.onrender.com/) | FastAPI Workflow Engine agent microservice |
-| **Swagger UI** | `http://localhost:8000/docs` | [https://prsense.onrender.com/docs](https://prsense.onrender.com/docs) | Interactive API testing documentation |
+| **Frontend** | `http://localhost:3000` | [https://prsense-ai.vercel.app/](https://prsense-ai.vercel.app/) | React web application portal |
+| **Backend API** | `http://localhost:8080` | [https://prsense-ai-1.onrender.com/](https://prsense-ai-1.onrender.com/) | Spring Boot orchestrator, user accounts, OAuth |
+| **Backend Swagger UI** | `http://localhost:8080/swagger-ui.html` | [https://prsense-ai-1.onrender.com/swagger-ui/index.html](https://prsense-ai-1.onrender.com/swagger-ui/index.html) | Spring Boot interactive API testing documentation |
+| **Code Analyzer Service** | `http://localhost:8000` | [https://prsense-ai.onrender.com/](https://prsense-ai.onrender.com/) | FastAPI Workflow Engine agent microservice |
+| **Analyzer Swagger UI** | `http://localhost:8000/docs` | [https://prsense-ai.onrender.com/docs](https://prsense-ai.onrender.com/docs) | FastAPI interactive API testing documentation |
 
 ---
 
