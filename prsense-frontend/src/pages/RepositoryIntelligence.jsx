@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { backendApi, aiApi } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { 
   Cpu, 
@@ -76,38 +76,26 @@ export default function RepositoryIntelligence() {
     setLoading(true)
     setProfileExists(true)
     try {
-      const repoRes = await fetch(`${API_BASE_URL}/api/repositories/${id}`)
-      if (repoRes.ok) {
-        const repoData = await repoRes.json()
-        setActiveRepo(repoData)
-      }
+      const repoRes = await backendApi.get(`/api/repositories/${id}`)
+      const repoData = repoRes.data
+      setActiveRepo(repoData)
 
       // Check snapshot
-      const snapshotRes = await fetch(`${API_BASE_URL}/api/repositories/${id}/snapshot`)
-      if (snapshotRes.status === 404) {
-        setProfileExists(false)
-        setSnapshot(null)
-      } else if (snapshotRes.ok) {
-        const snapshotData = await snapshotRes.json()
-        setSnapshot(snapshotData)
+      try {
+        const snapshotRes = await backendApi.get(`/api/repositories/${id}/snapshot`)
+        setSnapshot(snapshotRes.data)
         setProfileExists(true)
-      } else {
+      } catch (err) {
         setProfileExists(false)
         setSnapshot(null)
       }
 
       // Fetch dynamic files
-      const filesRes = await fetch(`${API_BASE_URL}/api/repositories/${id}/files`)
-      if (filesRes.ok) {
-        const filesData = await filesRes.json()
-        setFiles(filesData)
-      }
+      const filesRes = await backendApi.get(`/api/repositories/${id}/files`)
+      setFiles(filesRes.data)
 
-      const summaryRes = await fetch(`${API_BASE_URL}/api/repositories/${id}/summary`)
-      if (summaryRes.ok) {
-        const summaryData = await summaryRes.json()
-        setSummary(summaryData)
-      }
+      const summaryRes = await aiApi.get('/api/repository/summary', { params: { repo_name: repoData.fullName } })
+      setSummary(summaryRes.data)
     } catch (e) {
       console.error("Failed to load repository intelligence details", e)
       setProfileExists(false)
@@ -121,10 +109,8 @@ export default function RepositoryIntelligence() {
     setIndexing(true)
     setMsg("")
     try {
-      const res = await fetch(`${API_BASE_URL}/api/repositories/${activeRepo.id}/index`, {
-        method: "POST"
-      })
-      if (res.ok) {
+      const res = await backendApi.post(`/api/repositories/${activeRepo.id}/index`)
+      if (res) {
         setMsg("Indexing task submitted to queue successfully! Please wait while the workers analyze the codebase...")
         setTimeout(() => {
           loadRepositoryData(activeRepo.id)
@@ -146,17 +132,14 @@ export default function RepositoryIntelligence() {
     setIndexing(true)
     setMsg("")
     try {
-      const res = await fetch(`${API_BASE_URL}/api/repositories/${activeRepo.id}/profile`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          readme,
-          architecture,
-          standards
-        })
+      const res = await aiApi.post('/api/repository/profile', {
+        repo_name: activeRepo.fullName,
+        readme_content: readme,
+        architecture_content: architecture,
+        standards_content: standards
       })
-      if (res.ok) {
-        const data = await res.json()
+      if (res) {
+        const data = res.data
         setMsg(data.message || "Repository profile custom rules successfully ingested!")
         loadRepositoryData(activeRepo.id)
         setReadme("")

@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { backendApi } from "@/config/api";
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
@@ -47,17 +47,8 @@ export default function Login() {
   const handleGitHubCallback = async (code) => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE_URL}/api/auth/github/callback`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
-      })
-
-      if (!response.ok) {
-        throw new Error('GitHub authentication failed')
-      }
-
-      const data = await response.json()
+      const response = await backendApi.post('/api/auth/github/callback', { code })
+      const data = response.data
       login(data.token, {
         email: data.email,
         githubUsername: data.githubUsername,
@@ -76,17 +67,8 @@ export default function Login() {
       setError('')
       setLoading(true)
 
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Login failed')
-      }
-
-      const data = await response.json()
+      const response = await backendApi.post('/api/auth/login', { email, password })
+      const data = response.data
       login(data.token, {
         email: data.email,
         role: data.role,
@@ -102,8 +84,8 @@ export default function Login() {
   const handleGitHubLogin = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE_URL}/api/auth/github/login-url`)
-      const data = await response.json()
+      const response = await backendApi.get('/api/auth/github/login-url')
+      const data = response.data
       window.location.href = data.authUrl
     } catch (err) {
       setError('Failed to initiate GitHub login')

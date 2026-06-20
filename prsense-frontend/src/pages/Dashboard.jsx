@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { backendApi } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { 
@@ -42,9 +42,9 @@ export default function Dashboard() {
       const url = repoId 
         ? `${API_BASE_URL}/api/analytics/dashboard?repoId=${repoId}`
         : `${API_BASE_URL}/api/analytics/dashboard`
-      const res = await fetch(url)
-      if (res.ok) {
-        const data = await res.json()
+      const res = await backendApi.get(url.replace(`${API_BASE_URL}`, ''))
+      if (res) {
+        const data = res.data
         setMetrics(data)
       }
     } catch (e) {

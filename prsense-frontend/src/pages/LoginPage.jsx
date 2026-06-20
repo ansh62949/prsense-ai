@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { backendApi, API_CONFIG } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
@@ -71,28 +71,13 @@ export default function LoginPage() {
     setError(null)
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-      })
-
-      if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-          throw new Error("Invalid credentials.")
-        } else {
-          throw new Error("Server error occurred.")
-        }
-      }
-
-      const data = await response.json()
+      const response = await backendApi.post('/api/auth/login', { email, password })
+      const data = response.data
       login(data.token, { email: data.email, role: data.role, githubUsername: data.githubUsername })
       navigate("/dashboard")
     } catch (err) {
       console.error("Login failed:", err)
-      setError(`Connection to API backend failed. Backend URL: ${API_BASE_URL}`)
+      setError(`Connection to API backend failed. Backend URL: ${API_CONFIG.BACKEND_URL}`)
     } finally {
       setLoading(false)
     }

@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { backendApi } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { 
   Key, 
@@ -46,11 +46,9 @@ export default function DeveloperPortal() {
     setLoading(true)
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${API_BASE_URL}/api/developer/keys/${selectedOrgId}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      })
-      if (res.ok) {
-        const data = await res.json()
+      const res = await backendApi.get(`/api/developer/keys/${selectedOrgId}`)
+      if (res) {
+        const data = res.data
         setKeys(data)
       }
       
@@ -73,16 +71,9 @@ export default function DeveloperPortal() {
     if (!newKeyName.trim()) return
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${API_BASE_URL}/api/developer/keys/${selectedOrgId}`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({ name: newKeyName })
-      })
-      if (res.ok) {
-        const data = await res.json()
+      const res = await backendApi.get(`/api/developer/keys/${selectedOrgId}`)
+      if (res) {
+        const data = res.data
         setGeneratedKey(data.token)
         setNewKeyName("")
         await fetchApiKeys()
@@ -96,11 +87,8 @@ export default function DeveloperPortal() {
     if (!confirm("Are you sure you want to revoke this API token? It will stop working immediately.")) return
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${API_BASE_URL}/api/developer/keys/${id}`, {
-        method: "DELETE",
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      })
-      if (res.ok) {
+      const res = await backendApi.delete(`/api/developer/keys/${id}`)
+      if (res) {
         await fetchApiKeys()
       }
     } catch (e) {

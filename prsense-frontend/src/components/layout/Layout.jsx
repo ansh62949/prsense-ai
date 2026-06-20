@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { backendApi, aiApi } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
@@ -56,9 +56,13 @@ export function Layout({ children }) {
   const [selectedRepoId, setSelectedRepoId] = useState(() => {
     return localStorage.getItem("prsense_selected_repo_id") || ""
   })
+  
+  const [backendStatus, setBackendStatus] = useState("checking")
+  const [aiStatus, setAiStatus] = useState("checking")
 
   useEffect(() => {
     fetchRepos()
+    checkHealth()
     
     // Listen for local triggers to sync selector
     const syncSelector = () => {
@@ -68,20 +72,30 @@ export function Layout({ children }) {
     return () => window.removeEventListener("repoChanged", syncSelector)
   }, [])
 
+  const checkHealth = async () => {
+    try {
+      await backendApi.get("/api/health")
+      setBackendStatus("connected")
+    } catch (e) {
+      setBackendStatus("disconnected")
+    }
+
+    try {
+      await aiApi.get("/")
+      setAiStatus("connected")
+    } catch (e) {
+      setAiStatus("disconnected")
+    }
+  }
+
   const fetchRepos = async () => {
     try {
-      const token = localStorage.getItem("authToken")
-      const res = await fetch(`${API_BASE_URL}/api/repositories`, {
-        headers: token ? { "Authorization": `Bearer ${token}` } : {}
-      })
-      if (res.ok) {
-        const data = await res.json()
-        setRepos(data)
-        if (data.length > 0 && !localStorage.getItem("prsense_selected_repo_id")) {
-          localStorage.setItem("prsense_selected_repo_id", data[0].id.toString())
-          setSelectedRepoId(data[0].id.toString())
-          window.dispatchEvent(new Event("repoChanged"))
-        }
+      const res = await backendApi.get("/api/repositories")
+      setRepos(res.data)
+      if (res.data.length > 0 && !localStorage.getItem("prsense_selected_repo_id")) {
+        localStorage.setItem("prsense_selected_repo_id", res.data[0].id.toString())
+        setSelectedRepoId(res.data[0].id.toString())
+        window.dispatchEvent(new Event("repoChanged"))
       }
     } catch (e) {
       console.error(e)
@@ -196,6 +210,34 @@ export function Layout({ children }) {
           </div>
 
           <div className="flex items-center space-x-4">
+            {backendStatus === "connected" ? (
+              <div className="hidden md:flex items-center gap-1.5 text-[10px] text-green-500 bg-green-500/5 border border-green-500/20 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">
+                <span>🟢 Backend Connected</span>
+              </div>
+            ) : backendStatus === "checking" ? (
+              <div className="hidden md:flex items-center gap-1.5 text-[10px] text-yellow-500 bg-yellow-500/5 border border-yellow-500/20 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider animate-pulse">
+                <span>Checking Backend...</span>
+              </div>
+            ) : (
+              <div className="hidden md:flex items-center gap-1.5 text-[10px] text-red-500 bg-red-500/5 border border-red-500/20 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">
+                <span>🔴 Backend Offline</span>
+              </div>
+            )}
+
+            {aiStatus === "connected" ? (
+              <div className="hidden md:flex items-center gap-1.5 text-[10px] text-green-500 bg-green-500/5 border border-green-500/20 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">
+                <span>🟢 AI Service Connected</span>
+              </div>
+            ) : aiStatus === "checking" ? (
+              <div className="hidden md:flex items-center gap-1.5 text-[10px] text-yellow-500 bg-yellow-500/5 border border-yellow-500/20 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider animate-pulse">
+                <span>Checking AI...</span>
+              </div>
+            ) : (
+              <div className="hidden md:flex items-center gap-1.5 text-[10px] text-red-500 bg-red-500/5 border border-red-500/20 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">
+                <span>🔴 AI Service Offline</span>
+              </div>
+            )}
+
             {activeRepo && (
               <div className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground font-semibold bg-secondary/40 border border-border px-3 py-1.5 rounded-xl">
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />

@@ -1,4 +1,4 @@
-import { API_BASE_URL, AI_BASE_URL } from "@/config/api";
+import { backendApi, aiApi } from "@/config/api";
 import { useState, useEffect } from "react"
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts"
 import { 
@@ -79,11 +79,8 @@ export default function LearnerDashboard() {
 
   const fetchRepositoryDetails = async (id) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/repositories/${id}`)
-      if (res.ok) {
-        const data = await res.json()
-        setActiveRepo(data)
-      }
+      const res = await backendApi.get(`/api/repositories/${id}`)
+      setActiveRepo(res.data)
     } catch (e) {
       console.error("Failed to fetch repository metadata", e)
     }
@@ -93,41 +90,12 @@ export default function LearnerDashboard() {
   const fetchPatterns = async () => {
     setLoadingPatterns(true)
     try {
-      const url = activeRepo 
-        ? `${API_BASE}/api/learner/patterns?repo_name=${activeRepo.fullName}`
-        : `${API_BASE}/api/learner/patterns`
-      const response = await fetch(url)
-      if (response.ok) {
-        const data = await response.json()
-        setPatterns(data || [])
-      }
-    } catch (error) {
-      console.error("Failed to fetch learned patterns:", error)
-    } finally {
-      setLoadingPatterns(false)
-    }
-  }
-
-  // Fetch Knowledge Base Stats
-  const fetchStats = async () => {
-    try {
-      const urlKb = activeRepo 
-        ? `${API_BASE}/api/semantic search/knowledge-base-stats?repo_name=${activeRepo.fullName}`
-        : `${API_BASE}/api/semantic search/knowledge-base-stats`
-      const response = await fetch(urlKb)
-      if (response.ok) {
-        const data = await response.json()
-        setTotalKBDocs(data.total_documents || 0)
-      }
-      
-      const token = localStorage.getItem("authToken")
-      const headers = token ? { "Authorization": `Bearer ${token}` } : {}
-      const url = activeRepo 
-        ? `${API_BASE_URL}/api/analytics/dashboard?repoId=${activeRepo.id}`
-        : `${API_BASE_URL}/api/analytics/dashboard`
-      const dashRes = await fetch(url, { headers })
-      if (dashRes.ok) {
-        const dashData = await dashRes.json()
+      const url = activeRepo
+        ? `/api/analytics/dashboard?repoId=${activeRepo.id}`
+        : '/api/analytics/dashboard'
+      const dashRes = await backendApi.get(url)
+      if (dashRes) {
+        const dashData = dashRes.data
         setDashboardData(dashData)
         setLearningTrends(dashData.learningTrends || [])
       }
@@ -151,16 +119,9 @@ export default function LearnerDashboard() {
         pr_title: prTitle.trim() ? prTitle : "Merged Pull Request",
         repo_name: activeRepo.fullName
       }
-      const response = await fetch(`${API_BASE}/api/learner/learn`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload)
-      })
-
-      if (response.ok) {
-        const data = await response.json()
+      const response = await aiApi.post('/api/learner/learn', payload)
+      if (response) {
+        const data = response.data
         setLearnResult({
           success: true,
           text: `Style analysis complete! Successfully extracted and stored ${data.patterns.length} coding preferences in your repository profile.`,

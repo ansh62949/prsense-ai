@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { backendApi } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import ReactFlow, { Background, Controls, Position, Handle } from "reactflow"
 import "reactflow/dist/style.css"
@@ -279,15 +279,8 @@ export default function AIAgentCenter() {
 
   const fetchRepositoryDetails = async (id) => {
     try {
-      const token = localStorage.getItem("authToken")
-      const headers = token ? { "Authorization": `Bearer ${token}` } : {}
-      const res = await fetch(`${API_BASE_URL}/api/repositories/${id}`, { headers })
-      if (res.ok) {
-        const data = await res.json()
-        setActiveRepo(data)
-      } else {
-        setActiveRepo(null)
-      }
+      const res = await backendApi.get(`/api/repositories/${id}`)
+      setActiveRepo(res.data)
     } catch (e) {
       console.error("Failed to fetch repository metadata", e)
       setActiveRepo(null)
@@ -297,27 +290,18 @@ export default function AIAgentCenter() {
   const fetchLatestReview = async (repoId) => {
     if (simulationActive) return
     try {
-      const token = localStorage.getItem("authToken")
-      const headers = token ? { "Authorization": `Bearer ${token}` } : {}
-      const res = await fetch(`${API_BASE_URL}/api/analytics/timeline/${repoId}`, { headers })
-      if (res.ok) {
-        const data = await res.json()
-        if (data.timeline && data.timeline.length > 0) {
-          const latest = data.timeline[0]
-          setLatestReview(latest)
-          setLiveMode(true)
-          
-          const detailsRes = await fetch(`${API_BASE_URL}/api/reviews/${latest.reviewId}`, { headers })
-          if (detailsRes.ok) {
-            const detailsData = await detailsRes.json()
-            setLatestReviewDetails(detailsData)
-          } else {
-            setLatestReviewDetails(null)
-          }
-        } else {
-          setLatestReview(null)
+      const res = await backendApi.get(`/api/analytics/timeline/${repoId}`)
+      const data = res.data
+      if (data.timeline && data.timeline.length > 0) {
+        const latest = data.timeline[0]
+        setLatestReview(latest)
+        setLiveMode(true)
+        
+        try {
+          const detailsRes = await backendApi.get(`/api/reviews/${latest.reviewId}`)
+          setLatestReviewDetails(detailsRes.data)
+        } catch (detailsErr) {
           setLatestReviewDetails(null)
-          setLiveMode(false)
         }
       } else {
         setLatestReview(null)

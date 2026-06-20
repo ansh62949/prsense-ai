@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { backendApi } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { 
   Clock, 
@@ -84,9 +84,9 @@ export default function ReviewTimeline() {
     try {
       const token = localStorage.getItem("authToken")
       const headers = token ? { "Authorization": `Bearer ${token}` } : {}
-      const res = await fetch(`${API_BASE_URL}/api/repositories/${id}`, { headers })
-      if (res.ok) {
-        const data = await res.json()
+      const res = await backendApi.get(`/api/repositories/${id}`)
+      if (res) {
+        const data = res.data
         setActiveRepo(data)
       } else {
         setActiveRepo(null)
@@ -102,9 +102,9 @@ export default function ReviewTimeline() {
     try {
       const token = localStorage.getItem("authToken")
       const headers = token ? { "Authorization": `Bearer ${token}` } : {}
-      const res = await fetch(`${API_BASE_URL}/api/analytics/timeline/${repoId}`, { headers })
-      if (res.ok) {
-        const data = await res.json()
+      const res = await backendApi.get(`/api/analytics/timeline/${repoId}`)
+      if (res) {
+        const data = res.data
         const items = data.timeline || []
         setTimeline(items)
         if (items.length > 0) {
@@ -129,9 +129,9 @@ export default function ReviewTimeline() {
     try {
       const token = localStorage.getItem("authToken")
       const headers = token ? { "Authorization": `Bearer ${token}` } : {}
-      const res = await fetch(`${API_BASE_URL}/api/reviews/${reviewId}`, { headers })
-      if (res.ok) {
-        const data = await res.json()
+      const res = await backendApi.get(`/api/reviews/${reviewId}`)
+      if (res) {
+        const data = res.data
         setReviewDetails(data)
       } else {
         setReviewDetails(null)

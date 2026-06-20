@@ -67,8 +67,12 @@ export function LayoutPremium({ children }) {
     { id: 3, text: "Repository indexing completed", unread: false, time: "2h ago" },
   ])
 
+  const [backendStatus, setBackendStatus] = useState("checking")
+  const [aiStatus, setAiStatus] = useState("checking")
+
   useEffect(() => {
     fetchRepos()
+    checkHealth()
 
     const syncSelector = () => {
       setSelectedRepoId(localStorage.getItem("prsense_selected_repo_id") || "")
@@ -77,20 +81,30 @@ export function LayoutPremium({ children }) {
     return () => window.removeEventListener("repoChanged", syncSelector)
   }, [])
 
+  const checkHealth = async () => {
+    try {
+      await backendApi.get("/api/health")
+      setBackendStatus("connected")
+    } catch (e) {
+      setBackendStatus("disconnected")
+    }
+
+    try {
+      await aiApi.get("/")
+      setAiStatus("connected")
+    } catch (e) {
+      setAiStatus("disconnected")
+    }
+  }
+
   const fetchRepos = async () => {
     try {
-      const token = localStorage.getItem("authToken")
-      const res = await fetch(`${API_BASE_URL}/api/repositories`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      })
-      if (res.ok) {
-        const data = await res.json()
-        setRepos(data)
-        if (data.length > 0 && !localStorage.getItem("prsense_selected_repo_id")) {
-          localStorage.setItem("prsense_selected_repo_id", data[0].id.toString())
-          setSelectedRepoId(data[0].id.toString())
-          window.dispatchEvent(new Event("repoChanged"))
-        }
+      const res = await backendApi.get("/api/repositories")
+      setRepos(res.data)
+      if (res.data.length > 0 && !localStorage.getItem("prsense_selected_repo_id")) {
+        localStorage.setItem("prsense_selected_repo_id", res.data[0].id.toString())
+        setSelectedRepoId(res.data[0].id.toString())
+        window.dispatchEvent(new Event("repoChanged"))
       }
     } catch (e) {
       console.error(e)
@@ -275,6 +289,36 @@ export function LayoutPremium({ children }) {
                 ⌘K
               </span>
             </div>
+
+            {/* Backend Connection Status */}
+            {backendStatus === "connected" ? (
+              <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20 text-emerald-400 font-bold tracking-wider uppercase text-[10px]">
+                <span>🟢 Backend Connected</span>
+              </div>
+            ) : backendStatus === "checking" ? (
+              <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-yellow-500/5 border border-yellow-500/20 text-yellow-500 font-bold tracking-wider uppercase text-[10px] animate-pulse">
+                <span>Checking Backend...</span>
+              </div>
+            ) : (
+              <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-red-500/5 border border-red-500/20 text-red-500 font-bold tracking-wider uppercase text-[10px]">
+                <span>🔴 Backend Offline</span>
+              </div>
+            )}
+
+            {/* AI Service Connection Status */}
+            {aiStatus === "connected" ? (
+              <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20 text-emerald-400 font-bold tracking-wider uppercase text-[10px]">
+                <span>🟢 AI Service Connected</span>
+              </div>
+            ) : aiStatus === "checking" ? (
+              <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-yellow-500/5 border border-yellow-500/20 text-yellow-500 font-bold tracking-wider uppercase text-[10px] animate-pulse">
+                <span>Checking AI...</span>
+              </div>
+            ) : (
+              <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-red-500/5 border border-red-500/20 text-red-500 font-bold tracking-wider uppercase text-[10px]">
+                <span>🔴 AI Service Offline</span>
+              </div>
+            )}
 
             {/* Webhook Status */}
             <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20">

@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { backendApi } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { 
   Building2, 
@@ -79,9 +79,9 @@ export default function Settings() {
     try {
       const token = localStorage.getItem("authToken")
       const headers = token ? { Authorization: `Bearer ${token}` } : {}
-      const res = await fetch(`${API_BASE_URL}/api/organizations`, { headers })
-      if (res.ok) {
-        const data = await res.json()
+      const res = await backendApi.get('/api/organizations')
+      if (res) {
+        const data = res.data
         setOrganizations(data)
         if (data.length > 0) {
           const storedOrg = localStorage.getItem("prsense_selected_org_id")
@@ -104,42 +104,9 @@ export default function Settings() {
     if (!newOrgName.trim()) return
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${API_BASE_URL}/api/organizations`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({ name: newOrgName, description: newOrgDesc })
-      })
-      if (res.ok) {
-        const newOrg = await res.json()
-        showInfo(`Organization "${newOrg.name}" created successfully.`)
-        setNewOrgName("")
-        setNewOrgDesc("")
-        await fetchOrganizations()
-        setSelectedOrgId(newOrg.id.toString())
-        localStorage.setItem("prsense_selected_org_id", newOrg.id.toString())
-      }
-    } catch (e) {
-      console.error(e)
-      showError("Failed to create organization")
-    }
-  }
-
-  const handleOrgSwitch = (orgId) => {
-    setSelectedOrgId(orgId)
-    localStorage.setItem("prsense_selected_org_id", orgId)
-    showInfo("Switched organization context.")
-  }
-
-  const fetchWorkspaces = async (orgId) => {
-    try {
-      const token = localStorage.getItem("authToken")
-      const headers = token ? { Authorization: `Bearer ${token}` } : {}
-      const res = await fetch(`${API_BASE_URL}/api/organizations/${orgId}/workspaces`, { headers })
-      if (res.ok) {
-        const data = await res.json()
+      const res = await backendApi.get('/api/organizations')
+      if (res) {
+        const data = res.data
         setWorkspaces(data)
         if (data.length > 0) {
           const storedWs = localStorage.getItem("prsense_selected_workspace_id")
@@ -163,48 +130,13 @@ export default function Settings() {
     if (!newWsName.trim() || !selectedOrgId) return
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${API_BASE_URL}/api/organizations/${selectedOrgId}/workspaces`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({ 
-          name: newWsName, 
-          description: newWsDesc, 
-          webhookUrl: newWsWebhook || `${API_BASE_URL}/api/webhooks/github` 
-        })
+      const res = await backendApi.post(`/api/organizations/${selectedOrgId}/workspaces`, {
+        name: newWsName,
+        description: newWsDesc,
+        webhookUrl: newWsWebhook || `${API_BASE_URL}/api/webhooks/github`
       })
-      if (res.ok) {
-        const newWs = await res.json()
-        showInfo(`Workspace "${newWs.name}" created successfully.`)
-        setNewWsName("")
-        setNewWsDesc("")
-        setNewWsWebhook("")
-        await fetchWorkspaces(selectedOrgId)
-        setSelectedWorkspaceId(newWs.id.toString())
-        localStorage.setItem("prsense_selected_workspace_id", newWs.id.toString())
-      }
-    } catch (e) {
-      console.error(e)
-      showError("Failed to create workspace")
-    }
-  }
-
-  const handleWorkspaceSwitch = (wsId) => {
-    setSelectedWorkspaceId(wsId)
-    localStorage.setItem("prsense_selected_workspace_id", wsId)
-    showInfo("Switched workspace context.")
-    window.dispatchEvent(new Event("workspaceChanged"))
-  }
-
-  const fetchMembers = async (wsId) => {
-    try {
-      const token = localStorage.getItem("authToken")
-      const headers = token ? { Authorization: `Bearer ${token}` } : {}
-      const res = await fetch(`${API_BASE_URL}/api/organizations/workspaces/${wsId}/members`, { headers })
-      if (res.ok) {
-        const data = await res.json()
+      if (res) {
+        const data = res.data
         setMembers(data)
       }
     } catch (e) {
@@ -217,15 +149,11 @@ export default function Settings() {
     if (!inviteEmail.trim() || !selectedWorkspaceId) return
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${API_BASE_URL}/api/organizations/workspaces/${selectedWorkspaceId}/invites`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({ email: inviteEmail, role: inviteRole })
+      const res = await backendApi.post(`/api/organizations/workspaces/${selectedWorkspaceId}/invites`, {
+        email: inviteEmail,
+        role: inviteRole
       })
-      if (res.ok) {
+      if (res) {
         const invite = await res.json()
         showInfo(`Invitation generated for ${inviteEmail}`)
         const mockInviteLink = `${window.location.origin}/invite-accept?token=${invite.token}`

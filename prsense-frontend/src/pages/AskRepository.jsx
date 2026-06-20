@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { backendApi, aiApi } from "@/config/api";
 import React, { useState, useEffect, useRef } from "react"
 import { 
   Search, 
@@ -78,11 +78,8 @@ export default function AskRepository() {
 
   const fetchRepositoryDetails = async (id) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/repositories/${id}`)
-      if (res.ok) {
-        const data = await res.json()
-        setActiveRepo(data)
-      }
+      const res = await backendApi.get(`/api/repositories/${id}`)
+      setActiveRepo(res.data)
     } catch (e) {
       console.error("Failed to fetch repository metadata", e)
     }
@@ -97,35 +94,27 @@ export default function AskRepository() {
     setLoading(true)
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/knowledge/ask`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          repoFullName: activeRepo.fullName,
-          query: userQuery
-        })
+      const res = await aiApi.post('/api/repository/ask', {
+        repo_name: activeRepo.fullName,
+        query: userQuery
       })
-
-      if (res.ok) {
-        const data = await res.json()
-        const newMsg = {
-          sender: "copilot",
-          text: data.answer || "No response received.",
-          reasoning: data.reasoning || "Retrieved semantic documents from vector store and generated response via Analysis Engine GPT-4o-mini.",
-          citations: data.retrieved_documents || []
-        }
-        setMessages(prev => [...prev, newMsg])
-        if (newMsg.citations && newMsg.citations.length > 0) {
-          setActiveCitations(newMsg.citations)
-        }
-        if (newMsg.reasoning) {
-          setActiveReasoning(newMsg.reasoning)
-        }
-      } else {
-        setMessages(prev => [...prev, { sender: "copilot", text: "Failed to compile response. The FastAPI service or database is offline." }])
+      const data = res.data
+      const newMsg = {
+        sender: "copilot",
+        text: data.answer || "No response received.",
+        reasoning: data.reasoning || "Retrieved semantic documents from vector store and generated response via Analysis Engine GPT-4o-mini.",
+        citations: data.retrieved_documents || []
+      }
+      setMessages(prev => [...prev, newMsg])
+      if (newMsg.citations && newMsg.citations.length > 0) {
+        setActiveCitations(newMsg.citations)
+      }
+      if (newMsg.reasoning) {
+        setActiveReasoning(newMsg.reasoning)
       }
     } catch (err) {
-      setMessages(prev => [...prev, { sender: "copilot", text: "Error connecting to Spring Boot gateway." }])
+      console.error(err)
+      setMessages(prev => [...prev, { sender: "copilot", text: "Failed to compile response. The FastAPI service or database is offline." }])
     } finally {
       setLoading(false)
     }

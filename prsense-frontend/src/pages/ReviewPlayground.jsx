@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { aiApi } from "@/config/api";
 import React, { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -31,20 +31,11 @@ export default function ReviewPlayground() {
     setError(null)
     setLoading(true)
     try {
-      const res = await fetch(`${API_BASE_URL}/api/reviews/playground`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code_snippet: snippet, language: language })
-      })
-      if (res.ok) {
-        const data = await res.json()
-        setResult(data)
-      } else {
-        const errData = await res.json()
-        setError(errData.error || "Failed to execute playground code review.")
-      }
+      const res = await aiApi.post('/api/review/playground', { code_snippet: snippet, language: language })
+      setResult(res.data)
     } catch (e) {
-      setError("Failed to connect to the backend gateway. Make sure both servers are running.")
+      const errMsg = e.response?.data?.detail || e.response?.data?.error || "Failed to execute playground code review."
+      setError(errMsg)
     } finally {
       setLoading(false)
     }

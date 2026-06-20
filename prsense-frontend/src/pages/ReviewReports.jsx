@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { backendApi } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -56,11 +56,9 @@ export default function ReviewReports() {
     setLoading(true)
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${API_BASE_URL}/api/analytics/reviews`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      })
-      if (res.ok) {
-        const data = await res.json()
+      const res = await backendApi.get('/api/analytics/reviews')
+      if (res) {
+        const data = res.data
         setReviews(data)
       }
     } catch (e) {

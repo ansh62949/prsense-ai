@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { backendApi } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import {
@@ -99,14 +99,9 @@ export default function PullRequestWorkspace() {
       const selectedRepoId = localStorage.getItem("prsense_selected_repo_id")
 
       // Attempt to load PR from backend
-      const prRes = await fetch(
-        `${API_BASE_URL}/api/reviews/${prId}`,
-        {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }
-      )
-      if (prRes.ok) {
-        const data = await prRes.json()
+      const prRes = await backendApi.get(`/api/reviews/${prId}`)
+      if (prRes) {
+        const data = prRes.data
         setPr(data.pullRequest)
         setFindings(data.findings || [])
       } else {

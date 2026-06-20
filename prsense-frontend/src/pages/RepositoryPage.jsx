@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { backendApi } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import {
@@ -37,20 +37,16 @@ export default function RepositoryPage() {
     setLoading(true)
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${API_BASE_URL}/api/repositories/${repoId}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      })
-      if (res.ok) {
-        const data = await res.json()
+      const res = await backendApi.get(`/api/repositories/${repoId}`)
+      if (res) {
+        const data = res.data
         setRepo(data)
       }
 
       // Fetch dashboard metrics to get recent PRs and findings
-      const dashRes = await fetch(`${API_BASE_URL}/api/analytics/dashboard?repoId=${repoId}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      })
-      if (dashRes.ok) {
-        const dashData = await dashRes.json()
+      const dashRes = await backendApi.get(`/api/analytics/dashboard?repoId=${repoId}`)
+      if (dashRes) {
+        const dashData = dashRes.data
         setRecentPRs(dashData.recentPrs || [])
         setRecentFindings(dashData.recentSecurityFindings || [])
       }
@@ -65,11 +61,8 @@ export default function RepositoryPage() {
     setIndexing(true)
     try {
       const token = localStorage.getItem("authToken")
-      const res = await fetch(`${API_BASE_URL}/api/repositories/${repoId}/index`, {
-        method: "POST",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      })
-      if (res.ok) {
+      const res = await backendApi.post(`/api/repositories/${repoId}/index`)
+      if (res) {
         const updated = await res.json()
         setRepo(updated)
       }

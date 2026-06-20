@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { backendApi } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import {
   GitPullRequest,
@@ -43,12 +43,9 @@ export default function CommandCenter() {
         ? `${API_BASE_URL}/api/analytics/dashboard?repoId=${selectedRepoId}` 
         : `${API_BASE_URL}/api/analytics/dashboard`
       
-      const res = await fetch(url, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      })
-      
-      if (res.ok) {
-        const json = await res.json()
+      const res = await backendApi.get(url.replace(`${API_BASE_URL}`, ''))
+      if (res) {
+        const json = res.data
         setData(json)
       }
     } catch (e) {

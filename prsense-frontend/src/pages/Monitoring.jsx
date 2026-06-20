@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config/api";
+import { backendApi } from "@/config/api";
 import React, { useState, useEffect } from "react"
 import { 
   Activity, 
@@ -59,18 +59,14 @@ export default function Monitoring() {
         ? `${API_BASE_URL}/api/monitoring/stats?repoId=${selectedRepoId}`
         : `${API_BASE_URL}/api/monitoring/stats`
       const [statsRes, reposRes] = await Promise.all([
-        fetch(statsUrl),
-        fetch(`${API_BASE_URL}/api/repositories`)
+        backendApi.get(statsUrl.replace(`${API_BASE_URL}`, '')),
+        backendApi.get('/api/repositories')
       ])
-      
-      if (statsRes.ok) {
-        const data = await statsRes.json()
-        setStats(data)
+      if (statsRes) {
+        setStats(statsRes.data)
       }
-      
-      if (reposRes.ok) {
-        const data = await reposRes.json()
-        setRepos(data)
+      if (reposRes) {
+        setRepos(reposRes.data)
       }
     } catch (e) {
       console.error("Failed to fetch system observability stats", e)
@@ -82,10 +78,8 @@ export default function Monitoring() {
   const handleIndexRepo = async (id) => {
     setTriggeringIndex(prev => ({ ...prev, [id]: true }))
     try {
-      const res = await fetch(`${API_BASE_URL}/api/repositories/${id}/index`, {
-        method: "POST"
-      })
-      if (res.ok) {
+      const res = await backendApi.post(`/api/repositories/${id}/index`)
+      if (res) {
         fetchStats()
       }
     } catch (e) {
