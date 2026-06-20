@@ -307,10 +307,6 @@ class PRSenseAgent:
         from services.prompt_registry import prompt_registry
         system_instruction = prompt_registry.get_prompt(agent_name)
         model_name = prompt_registry.route_model(agent_name)
-        
-        # Route model dynamically if possible
-        if self.llm and hasattr(self.llm, "model_name"):
-            self.llm.model_name = model_name
             
         prompt = (
             f"System Instruction: {system_instruction}\n"

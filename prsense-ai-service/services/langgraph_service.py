@@ -5,6 +5,7 @@ from typing import Dict, Any, List
 from langgraph.graph import StateGraph, END
 from services.rag_service import rag_service
 from services.langfuse_service import langfuse_service
+from services.llm_provider import llm_provider
 from graph.nodes import PRSenseAgent
 
 logger = logging.getLogger("PRSenseLangGraphService")
@@ -59,7 +60,7 @@ class TelemetryPRSenseAgent(PRSenseAgent):
                     name=step_name,
                     prompt=prompt,
                     completion=response,
-                    model=getattr(self.llm, "model_name", "gpt-4o-mini"),
+                    model=llm_provider.llm_model,
                     tokens_in=tokens_in,
                     tokens_out=tokens_out,
                     cost=cost,
