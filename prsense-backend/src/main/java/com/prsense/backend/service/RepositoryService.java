@@ -41,6 +41,17 @@ public class RepositoryService {
     }
 
     @Transactional
+    public void resetIndexingStatus(Long id) {
+        repositoryRepository.findById(id).ifPresent(repo -> {
+            if ("INDEXED".equals(repo.getIndexingStatus())) {
+                repo.setIndexingStatus("PENDING");
+                repositoryRepository.save(repo);
+                log.info("Reset repository {} indexing status to PENDING due to missing snapshot", repo.getFullName());
+            }
+        });
+    }
+
+    @Transactional
     public Repository registerOrUpdateRepository(String fullName, String name, Long installationId, String language) {
         fullName = normalizeRepoFullName(fullName);
         log.info("Registering/Updating repository: {}, installation: {}", fullName, installationId);
