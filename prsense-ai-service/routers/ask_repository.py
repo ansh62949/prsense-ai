@@ -110,7 +110,7 @@ async def get_kb_stats(repo_name: str = None):
             "document_counts": stats.get("document_counts", {}),
             "is_database_connected": rag_service.enabled,
             "indexing_method": "pgvector_hnsw",
-            "embeddings_dimension": 3072,
+            "embeddings_dimension": 1536,
             "timestamp": datetime.utcnow().isoformat()
         }
     except Exception as exc:

@@ -47,9 +47,9 @@ class GeminiEmbeddings:
                 
                 if r.status_code == 200:
                     values = r.json().get("embedding", {}).get("values", [])
-                    if len(values) < 3072:
-                        # Pad to 3072 dimensions to match database schema columns
-                        values = values + [0.0] * (3072 - len(values))
+                    if len(values) < 1536:
+                        # Pad to 1536 dimensions to match database schema columns
+                        values = values + [0.0] * (1536 - len(values))
                     return values
                 elif r.status_code == 429:
                     logger.warning(f"Gemini embeddings rate limit (429) on attempt {attempt+1}/{max_retries}. Retrying in {backoff}s...")
@@ -64,7 +64,7 @@ class GeminiEmbeddings:
                 time.sleep(backoff)
                 backoff *= 2
                 
-        return [0.0] * 3072
+        return [0.0] * 1536
 
 class LLMProvider:
     def __init__(self):

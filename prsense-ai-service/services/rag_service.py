@@ -126,13 +126,26 @@ class RAGService:
                 with conn.cursor() as cur:
                     cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
                     
+                    # Check if table style_guidelines exists to verify dimensions match
+                    cur.execute("SELECT EXISTS (SELECT FROM pg_tables WHERE tablename = 'style_guidelines');")
+                    if cur.fetchone()[0]:
+                        cur.execute("""
+                            SELECT atttypmod FROM pg_attribute 
+                            WHERE attrelid = 'style_guidelines'::regclass AND attname = 'embedding';
+                        """)
+                        row = cur.fetchone()
+                        if row and row[0] != 1536:
+                            logger.info("Detected old 3072 dimension column. Dropping tables for schema upgrade...")
+                            cur.execute("DROP TABLE IF EXISTS style_guidelines CASCADE;")
+                            cur.execute("DROP TABLE IF EXISTS memory_documents CASCADE;")
+
                     # Style Guidelines Table with Multi-Tenant & Commit Versioning Schema Upgrades
                     cur.execute("""
                         CREATE TABLE IF NOT EXISTS style_guidelines (
                             id SERIAL PRIMARY KEY,
                             guideline_text TEXT NOT NULL,
                             source_file VARCHAR(255),
-                            embedding vector(3072)
+                            embedding vector(1536)
                         );
                     """)
                     cur.execute("ALTER TABLE style_guidelines ADD COLUMN IF NOT EXISTS organization_id VARCHAR(50);")
@@ -154,7 +167,7 @@ class RAGService:
                             content TEXT NOT NULL,
                             content_type VARCHAR(50) NOT NULL,
                             repo_name VARCHAR(100),
-                            embedding vector(3072),
+                            embedding vector(1536),
                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                         );
                     """)
