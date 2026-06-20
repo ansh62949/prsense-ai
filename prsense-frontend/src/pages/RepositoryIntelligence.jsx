@@ -72,8 +72,20 @@ export default function RepositoryIntelligence() {
     return () => window.removeEventListener("repoChanged", handleRepoChange)
   }, [selectedRepoId])
 
-  const loadRepositoryData = async (id) => {
-    setLoading(true)
+  useEffect(() => {
+    let intervalId = null
+    if (selectedRepoId && activeRepo?.indexingStatus === "INDEXING") {
+      intervalId = setInterval(() => {
+        loadRepositoryData(selectedRepoId, true)
+      }, 5000)
+    }
+    return () => {
+      if (intervalId) clearInterval(intervalId)
+    }
+  }, [selectedRepoId, activeRepo?.indexingStatus])
+
+  const loadRepositoryData = async (id, quiet = false) => {
+    if (!quiet) setLoading(true)
     setProfileExists(true)
     try {
       const repoRes = await backendApi.get(`/api/repositories/${id}`)
@@ -100,7 +112,7 @@ export default function RepositoryIntelligence() {
       console.error("Failed to load repository intelligence details", e)
       setProfileExists(false)
     } finally {
-      setLoading(false)
+      if (!quiet) setLoading(false)
     }
   }
 
@@ -112,9 +124,10 @@ export default function RepositoryIntelligence() {
       const res = await backendApi.post(`/api/repositories/${activeRepo.id}/index`)
       if (res) {
         setMsg("Indexing task submitted to queue successfully! Please wait while the workers analyze the codebase...")
+        setActiveRepo(prev => prev ? { ...prev, indexingStatus: "INDEXING", indexingProgress: 10 } : null)
         setTimeout(() => {
-          loadRepositoryData(activeRepo.id)
-        }, 3000)
+          loadRepositoryData(activeRepo.id, true)
+        }, 1500)
       } else {
         setMsg("Failed to submit indexing task.")
       }
@@ -378,6 +391,39 @@ export default function RepositoryIntelligence() {
           <RefreshCw className="w-10 h-10 text-purple-500 animate-spin" />
           <p className="text-xs text-slate-500 font-bold tracking-widest uppercase animate-pulse">Compiling repository structure...</p>
         </div>
+      ) : activeRepo.indexingStatus === "INDEXING" ? (
+        /* Indexing Progress Screen */
+        <div className="flex-1 flex flex-col justify-center items-center text-center p-8 space-y-6 max-w-md mx-auto">
+          <RefreshCw className="w-16 h-16 text-purple-500 animate-spin" />
+          <div>
+            <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider">Analyzing Codebase</h3>
+            <p className="text-xs text-slate-500 mt-2 leading-relaxed">
+              We are cloning the repository, generating RAG vector embeddings, and creating the architecture snapshot. This may take up to a minute...
+            </p>
+          </div>
+          <div className="w-full bg-[#090d16] border border-slate-800 rounded-xl p-4 space-y-3 text-left">
+            <div className="flex justify-between text-[11px] font-mono text-slate-400">
+              <span>Status: <span className="text-purple-400 font-bold">INDEXING</span></span>
+              <span>Progress: <span className="text-white font-bold">{activeRepo.indexingProgress || 10}%</span></span>
+            </div>
+            {/* Progress Bar */}
+            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+              <div 
+                className="bg-gradient-to-r from-purple-500 to-indigo-500 h-1.5 rounded-full transition-all duration-500" 
+                style={{ width: `${activeRepo.indexingProgress || 10}%` }}
+              />
+            </div>
+            {activeRepo.filesIndexed !== undefined && activeRepo.filesIndexed > 0 && (
+              <div className="text-[10px] font-mono text-slate-500 flex justify-between">
+                <span>Files indexed: <span className="text-slate-300 font-semibold">{activeRepo.filesIndexed}</span></span>
+                {activeRepo.embeddingsGenerated !== undefined && (
+                  <span>Embeddings: <span className="text-slate-300 font-semibold">{activeRepo.embeddingsGenerated}</span></span>
+                )}
+              </div>
+            )}
+          </div>
+          <p className="text-[10px] text-slate-500 italic">This screen will update automatically. Please do not close the page.</p>
+        </div>
       ) : !profileExists ? (
         /* Fail Loudly screen if repository profile does not exist */
         <div className="flex-1 flex flex-col justify-center items-center text-center p-8 space-y-5 max-w-md mx-auto">
@@ -390,7 +436,14 @@ export default function RepositoryIntelligence() {
           </div>
           <div className="bg-[#090d16] p-4 rounded-xl border border-slate-800 text-left w-full space-y-1.5 text-[10px] text-slate-400 font-mono">
             <div>• Repository: <span className="text-purple-400 font-bold">{activeRepo.fullName}</span></div>
-            <div>• Index Status: <span className="text-amber-400 font-bold">PROFILE_NOT_FOUND</span></div>
+            <div>• Index Status: <span className={cn("font-bold", activeRepo.indexingStatus === "FAILED" ? "text-rose-400" : "text-amber-400")}>
+              {activeRepo.indexingStatus || "PROFILE_NOT_FOUND"}
+            </span></div>
+            {activeRepo.indexingError && (
+              <div className="text-[9px] text-rose-400 mt-1 whitespace-pre-wrap max-h-20 overflow-y-auto border-t border-slate-900 pt-1.5">
+                Error: {activeRepo.indexingError}
+              </div>
+            )}
           </div>
           <button
             onClick={handleTriggerIndexing}
@@ -398,7 +451,7 @@ export default function RepositoryIntelligence() {
             className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg text-xs transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-purple-500/20"
           >
             {indexing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-            <span>Index Repository & Build Profile</span>
+            <span>{activeRepo.indexingStatus === "FAILED" ? "Retry Indexing & Build Profile" : "Index Repository & Build Profile"}</span>
           </button>
           {msg && <p className="text-[10px] text-purple-400 font-bold animate-pulse">{msg}</p>}
         </div>

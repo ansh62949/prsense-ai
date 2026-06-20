@@ -185,21 +185,12 @@ public class RepositoryController {
                             if (currentRepo != null) {
                                 boolean success = Boolean.TRUE.equals(result.get("success"));
                                 if (success) {
-                                    currentRepo.setIndexingStatus("INDEXED");
-                                    currentRepo.setIndexingProgress(100);
-                                    if (result.get("files_indexed") != null) {
-                                        currentRepo.setFilesIndexed(((Number) result.get("files_indexed")).intValue());
-                                    }
-                                    if (result.get("embeddings_generated") != null) {
-                                        currentRepo.setEmbeddingsGenerated(((Number) result.get("embeddings_generated")).intValue());
-                                    }
-                                    currentRepo.setLastIndexedAt(LocalDateTime.now());
-                                    currentRepo.setIndexingDurationMs(System.currentTimeMillis() - startTime);
+                                    log.info("Repository {} indexing successfully queued in AI service", currentRepo.getFullName());
                                 } else {
                                     currentRepo.setIndexingStatus("FAILED");
                                     currentRepo.setIndexingError((String) result.getOrDefault("error", "Indexing failed"));
+                                    repositoryService.saveRepository(currentRepo);
                                 }
-                                repositoryService.saveRepository(currentRepo);
                             }
                         } catch (Exception e) {
                             log.error("Failed to run async repository indexing for repo {}", updated.getFullName(), e);
