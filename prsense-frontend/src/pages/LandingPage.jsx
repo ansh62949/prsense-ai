@@ -64,14 +64,14 @@ export default function LandingPage() {
       color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
     },
     {
-      title: "Auto-Learning Engine",
+      title: "Auto-Rule Learner",
       description: "Learns organizational coding preferences dynamically from merged pull requests, populating vector stores automatically.",
       icon: BrainCircuit,
       color: "text-blue-400 bg-blue-500/10 border-blue-500/20"
     },
     {
-      title: "RAG Guidelines Knowledgebase",
-      description: "Feeds corporate policies, wikis, and Markdown documents into the LLM context to ensure accurate, context-aware analysis.",
+      title: "Semantic Search Guidelines Knowledgebase",
+      description: "Feeds corporate policies, wikis, and Markdown documents into the Analysis Core context to ensure accurate, context-aware analysis.",
       icon: BookOpen,
       color: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20"
     }
@@ -101,7 +101,7 @@ export default function LandingPage() {
           <div className="p-2 bg-primary/10 border border-primary/20 rounded-xl text-primary">
             <Github className="w-5 h-5" />
           </div>
-          <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">PRSense AI</span>
+          <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">PRSense</span>
         </div>
 
         <div className="flex items-center gap-6">
@@ -118,7 +118,7 @@ export default function LandingPage() {
       <section className="pt-20 pb-16 px-8 md:px-16 text-center space-y-8 max-w-5xl mx-auto">
         <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-xs font-black text-primary tracking-wide uppercase animate-pulse">
           <Cpu className="w-3.5 h-3.5" />
-          LangGraph Parallel Code Analysis
+          Workflow Engine Parallel Code Analysis
         </div>
 
         <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.15] bg-gradient-to-r from-foreground via-foreground to-muted-foreground bg-clip-text">
@@ -129,7 +129,7 @@ export default function LandingPage() {
         </h1>
 
         <p className="text-muted-foreground text-base md:text-lg max-w-3xl mx-auto leading-relaxed font-medium">
-          PRSense AI evaluates code structures using four parallel agents (Static, Security, Architecture, Style) powered by OpenAI GPT-4o-mini and Celery task execution queues.
+          PRSense evaluates code structures using four parallel agents (Static, Security, Architecture, Style) powered by Analysis Engine GPT-4o-mini and Celery task execution queues.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
@@ -180,7 +180,7 @@ export default function LandingPage() {
               <span className="text-[10px] text-primary uppercase font-black tracking-widest block">Interactive Sandbox</span>
               <h2 className="text-3xl font-black tracking-tight leading-tight">See it in Action</h2>
               <p className="text-muted-foreground text-sm font-medium leading-relaxed">
-                Watch how PRSense AI hooks into pull requests. Toggle below to review simulated results or organizational learning conventions.
+                Watch how PRSense hooks into pull requests. Toggle below to review simulated results or organizational learning conventions.
               </p>
             </div>
 
@@ -302,7 +302,7 @@ export default function LandingPage() {
               </div>
               <CardHeader className="border-b border-border pb-5">
                 <CardTitle className="text-lg font-bold">Pro Developer</CardTitle>
-                <CardDescription>Complete multi-agent pipeline power</CardDescription>
+                <CardDescription>Complete multi-stage pipeline power</CardDescription>
                 <div className="text-3xl font-black mt-4">$19 <span className="text-xs text-muted-foreground font-normal">/ developer / mo</span></div>
               </CardHeader>
               <CardContent className="pt-6 flex-1 space-y-4 text-xs font-semibold text-muted-foreground">
@@ -320,7 +320,7 @@ export default function LandingPage() {
                 </div>
                 <div className="flex items-center gap-2 text-foreground">
                   <CheckCircle2 className="w-4 h-4 text-primary" />
-                  RAG custom rules context injections
+                  Semantic Search custom rules context injections
                 </div>
               </CardContent>
               <div className="p-6 border-t border-border">
@@ -364,7 +364,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-border/80 bg-slate-950 py-12 text-center text-xs text-muted-foreground px-8">
-        <p className="font-semibold">&copy; {new Date().getFullYear()} PRSense AI. Built for production-grade engineering teams.</p>
+        <p className="font-semibold">&copy; {new Date().getFullYear()} PRSense. Built for production-grade engineering teams.</p>
       </footer>
 
     </div>

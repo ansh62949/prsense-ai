@@ -81,7 +81,7 @@ export default function Dashboard() {
             AI Insights Dashboard
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Auditing repository health, code violation trends, and multi-agent performance metrics.
+            Auditing repository health, code violation trends, and multi-stage performance metrics.
           </p>
         </div>
 

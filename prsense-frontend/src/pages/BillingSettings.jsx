@@ -95,13 +95,13 @@ export default function BillingSettings() {
       name: "FREE",
       price: "$0",
       period: "forever",
-      desc: "Perfect for exploring PRSense AI capabilities on public repositories.",
+      desc: "Perfect for exploring PRSense capabilities on public repositories.",
       features: [
         "Up to 5 pull request reviews / month",
         "100k maximum embedding tokens / month",
         "Single repo workspace mapping",
-        "Base LangGraph parallel reviews",
-        "Standard OpenAI fallback circuit breaker"
+        "Base Workflow Engine parallel reviews",
+        "Standard Analysis Engine fallback circuit breaker"
       ]
     },
     {
@@ -113,9 +113,9 @@ export default function BillingSettings() {
         "Up to 100 pull request reviews / month",
         "5M embedding tokens limit / month",
         "Up to 10 active repository integrations",
-        "Enhanced semantic memory caches (RAG)",
+        "Enhanced semantic memory caches (Semantic Search)",
         "Slack & Microsoft Teams notifications",
-        "Priority AI model failovers (Gemini ⇄ OpenAI)"
+        "Priority AI model failovers (Audit Core ⇄ Analysis Engine)"
       ],
       highlight: true
     },
@@ -130,7 +130,7 @@ export default function BillingSettings() {
         "Unlimited repositories and workspaces",
         "Developer API Portal keys & rate-limiting control",
         "Custom Prompt Registry version management",
-        "Dedicated RAG document indexing pipelines",
+        "Dedicated Semantic Search document indexing pipelines",
         "24/7 Priority SLA support"
       ]
     }
@@ -148,7 +148,7 @@ export default function BillingSettings() {
             Billing & Resource Settings
           </h1>
           <p className="text-slate-400 text-xs mt-0.5">
-            Manage organization subscriptions, monitor real-time review quotas, and control LLM token expenditures.
+            Manage organization subscriptions, monitor real-time review quotas, and control Analysis Core token expenditures.
           </p>
         </div>
       </div>
@@ -185,7 +185,7 @@ export default function BillingSettings() {
           <div className="mt-6">
             <div className="text-[10px] font-medium text-slate-500 leading-normal flex items-start gap-1.5">
               <Zap className="w-3.5 h-3.5 text-[#ff5a1f] shrink-0 mt-0.5" />
-              <span>Features sync automatically with our Celery/LangGraph queue boundary checks.</span>
+              <span>Features sync automatically with our Celery/Workflow Engine queue boundary checks.</span>
             </div>
           </div>
         </div>

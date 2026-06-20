@@ -111,8 +111,8 @@ export default function LearnerDashboard() {
   const fetchStats = async () => {
     try {
       const urlKb = activeRepo 
-        ? `${API_BASE}/api/rag/knowledge-base-stats?repo_name=${activeRepo.fullName}`
-        : `${API_BASE}/api/rag/knowledge-base-stats`
+        ? `${API_BASE}/api/semantic search/knowledge-base-stats?repo_name=${activeRepo.fullName}`
+        : `${API_BASE}/api/semantic search/knowledge-base-stats`
       const response = await fetch(urlKb)
       if (response.ok) {
         const data = await response.json()
@@ -269,7 +269,7 @@ export default function LearnerDashboard() {
             </div>
             <div className="bg-[#09090b]/40 border border-slate-900 p-4 rounded-xl backdrop-blur-md">
               <div className="flex justify-between items-center text-slate-400 text-[10px] uppercase font-bold tracking-wider font-mono">
-                <span>RAG KB Chunks</span>
+                <span>Semantic Search KB Chunks</span>
                 <BookOpen className="w-4 h-4 text-cyan-400" />
               </div>
               <div className="text-2xl font-black text-white mt-1.5">{totalKBDocs} docs</div>
@@ -518,8 +518,8 @@ diff --git a/queries.js b/queries.js
                   <div className="flex gap-3 items-start">
                     <div className="bg-slate-950 border border-slate-900 p-1 rounded font-bold text-[10px] text-[#ff5a1f] shrink-0 w-5 h-5 flex items-center justify-center">3</div>
                     <div className="space-y-1">
-                      <h4 className="font-bold text-white text-[11px]">RAG Context Matching</h4>
-                      <p className="leading-normal text-[11px]">Future code reviews query RAG vectors to check code using your actual team guidelines instead of generic defaults!</p>
+                      <h4 className="font-bold text-white text-[11px]">Semantic Search Context Matching</h4>
+                      <p className="leading-normal text-[11px]">Future code reviews query Semantic Search vectors to check code using your actual team guidelines instead of generic defaults!</p>
                     </div>
                   </div>
                 </div>

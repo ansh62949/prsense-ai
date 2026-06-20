@@ -38,11 +38,11 @@ const navigation = [
   { name: "AI Insights", href: "/dashboard", icon: LayoutDashboard },
   { name: "Repositories", href: "/repositories", icon: GitBranch },
   { name: "Repo Intelligence", href: "/intelligence", icon: BookOpen },
-  { name: "Ask Repository", href: "/ask", icon: Search },
+  { name: "Query Codebase", href: "/ask", icon: Search },
   { name: "PR Reviews", href: "/reviews", icon: GitPullRequestDraft },
   { name: "Review Playground", href: "/playground", icon: Code },
   { name: "Review Timeline", href: "/timeline", icon: Clock },
-  { name: "AI Agent Center", href: "/agents", icon: Network },
+  { name: "Analysis Pipeline Center", href: "/pipeline", icon: Network },
   { name: "Learner Dashboard", href: "/learner", icon: BrainCircuit },
   { name: "System Monitoring", href: "/monitoring", icon: Database },
 ]
@@ -109,7 +109,7 @@ export function Layout({ children }) {
       <aside className="w-64 border-r border-border bg-card/60 backdrop-blur-md flex flex-col hidden md:flex shrink-0">
         <div className="h-16 flex items-center px-6 border-b border-border">
           <Github className="w-6 h-6 mr-2 text-primary" />
-          <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">PRSense AI</span>
+          <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">PRSense</span>
         </div>
         <div className="p-4 flex-1 overflow-y-auto">
           <nav className="space-y-1.5">

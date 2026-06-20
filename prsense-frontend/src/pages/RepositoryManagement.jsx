@@ -263,7 +263,7 @@ export default function RepositoryManagement() {
                   onChange={(e) => setMaxRuntime(parseInt(e.target.value) || 30)}
                   className="bg-secondary border-border text-sm text-foreground focus:ring-primary focus:border-transparent font-medium" 
                 />
-                <span className="text-[10px] text-muted-foreground block">Timeout threshold for parallel LangGraph node checks.</span>
+                <span className="text-[10px] text-muted-foreground block">Timeout threshold for parallel Workflow Engine node checks.</span>
               </div>
 
               <div className="pt-4 border-t border-border space-y-3">

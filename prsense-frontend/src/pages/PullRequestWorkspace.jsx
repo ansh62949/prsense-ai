@@ -61,7 +61,7 @@ export default function PullRequestWorkspace() {
   const mockFindings = [
     {
       id: 101,
-      agent: "Security Agent",
+      agent: "Security Auditor",
       category: "security",
       severity: "critical",
       filePath: "src/main/java/com/app/service/UserService.java",
@@ -74,7 +74,7 @@ export default function PullRequestWorkspace() {
     },
     {
       id: 102,
-      agent: "Architecture Agent",
+      agent: "Architecture Auditor",
       category: "architecture",
       severity: "high",
       filePath: "src/main/java/com/app/controller/OrderController.java",

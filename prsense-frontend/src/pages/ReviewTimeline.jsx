@@ -141,11 +141,11 @@ export default function ReviewTimeline() {
     }
   }
 
-  // Gantt trace data representing the multi-agent LangGraph run
+  // Gantt trace data representing the multi-stage Workflow Engine run
   const defaultGanttTrace = [
     { node: "input_validator", name: "PR Input Ingest & Validator", start: 0, duration: 180, tokens: 620, cost: 0.00009, color: "from-[#ff5a1f] to-orange-400", inputs: { prNumber: 42, branch: "main", commitSha: "f4b7e740" }, outputs: { status: "VALIDATED", scope: "12 files changed" } },
     { node: "rag_retriever", name: "Semantic Context Retrieval", start: 15, duration: 320, tokens: 1850, cost: 0.00028, color: "from-yellow-500 to-amber-500", inputs: { query: " SOLID principles, naming conventions", limit: 5 }, outputs: { matchedRulesCount: 4, averageSimilarity: "0.89" } },
-    { node: "static_analysis", name: "Static Analysis Agent", start: 30, duration: 420, tokens: 2400, cost: 0.00036, color: "from-blue-500 to-cyan-500", inputs: { files: ["queries.js", "auth.js"] }, outputs: { complexityViolations: 2, earlyReturnsFollowed: true } },
+    { node: "static_analysis", name: "Code Quality Analyzer", start: 30, duration: 420, tokens: 2400, cost: 0.00036, color: "from-blue-500 to-cyan-500", inputs: { files: ["queries.js", "auth.js"] }, outputs: { complexityViolations: 2, earlyReturnsFollowed: true } },
     { node: "security_check", name: "Security Check Agent", start: 30, duration: 510, tokens: 3100, cost: 0.00047, color: "from-red-500 to-rose-500", inputs: { scope: "secrets & raw queries scan" }, outputs: { secretsFound: 1, credentialsLeaked: ["AI_COPILOT_SECRET_X99"] } },
     { node: "architecture_check", name: "Architecture Boundary Agent", start: 30, duration: 610, tokens: 4120, cost: 0.00062, color: "from-purple-500 to-indigo-500", inputs: { moduleStructure: "strict controller-service-repo" }, outputs: { violations: 0, circularDependencies: 0 } },
     { node: "style_check", name: "Style Standard Agent", start: 30, duration: 480, tokens: 2800, cost: 0.00042, color: "from-green-500 to-emerald-500", inputs: { ruleset: "eslint-recommended" }, outputs: { warningCount: 3, formattedCorrectly: false } },
@@ -193,7 +193,7 @@ export default function ReviewTimeline() {
                 Execution Trace Inspector
               </h1>
               <p className="text-slate-400 text-xs mt-0.5">
-                Inspect parallel multi-agent LangGraph flows, token footprints, and step-by-step telemetry logs.
+                Inspect parallel multi-stage Workflow Engine flows, token footprints, and step-by-step telemetry logs.
               </p>
             </div>
           </div>
@@ -242,7 +242,7 @@ export default function ReviewTimeline() {
           <div className="space-y-1 max-w-md mx-auto">
             <h3 className="font-bold text-lg text-white">No Execution Traces Yet</h3>
             <p className="text-slate-400 text-sm">
-              Configure code webhooks or run reviews in the repository to trigger multi-agent pipeline executions.
+              Configure code webhooks or run reviews in the repository to trigger multi-stage pipeline executions.
             </p>
           </div>
         </div>
@@ -395,7 +395,7 @@ export default function ReviewTimeline() {
                   <div>
                     <h3 className="text-xs font-extrabold text-white uppercase tracking-wider mb-4 flex items-center gap-1.5">
                       <Activity className="w-3.5 h-3.5 text-[#ff5a1f]" />
-                      LangGraph Execution Steps Gantt Chart
+                      Workflow Engine Execution Steps Gantt Chart
                     </h3>
 
                     {(() => {
@@ -418,7 +418,7 @@ export default function ReviewTimeline() {
                             
                             let color = "from-[#ff5a1f] to-orange-400";
                             const name = s.step_name.toLowerCase();
-                            if (name.includes("rag") || name.includes("retrieval") || name.includes("context")) color = "from-yellow-500 to-amber-500";
+                            if (name.includes("semantic search") || name.includes("retrieval") || name.includes("context")) color = "from-yellow-500 to-amber-500";
                             else if (name.includes("static")) color = "from-blue-500 to-cyan-500";
                             else if (name.includes("security")) color = "from-red-500 to-rose-500";
                             else if (name.includes("architecture")) color = "from-purple-500 to-indigo-500";
@@ -558,7 +558,7 @@ export default function ReviewTimeline() {
                               status: s.status || "COMPLETED"
                             };
                             const isCompleted = step.status === "COMPLETED";
-                            const icon = step.name.toLowerCase().includes("rag") || step.name.toLowerCase().includes("retrieval")
+                            const icon = step.name.toLowerCase().includes("semantic search") || step.name.toLowerCase().includes("retrieval")
                               ? <Database className="w-3.5 h-3.5" />
                               : step.name.toLowerCase().includes("validator") || step.name.toLowerCase().includes("ingest") || step.name.toLowerCase().includes("prepare")
                                 ? <GitPullRequest className="w-3.5 h-3.5" />
@@ -566,7 +566,7 @@ export default function ReviewTimeline() {
                                   ? <Award className="w-3.5 h-3.5" />
                                   : <Cpu className="w-3.5 h-3.5" />;
                             
-                            const colorClass = step.name.toLowerCase().includes("rag") || step.name.toLowerCase().includes("retrieval")
+                            const colorClass = step.name.toLowerCase().includes("semantic search") || step.name.toLowerCase().includes("retrieval")
                               ? "text-yellow-500 bg-yellow-500/10 border-yellow-500/20"
                               : step.name.toLowerCase().includes("validator") || step.name.toLowerCase().includes("ingest") || step.name.toLowerCase().includes("prepare")
                                 ? "text-[#ff5a1f] bg-[#ff5a1f]/10 border-[#ff5a1f]/20"

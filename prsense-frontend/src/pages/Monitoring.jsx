@@ -148,7 +148,7 @@ export default function Monitoring() {
             <div>
               <h1 className="text-2xl font-black tracking-tight text-white">System Observability</h1>
               <p className="text-slate-400 text-xs mt-0.5">
-                Real-time daemon checks, task queue latencies, AI agent execution profiles, and LLM costs.
+                Real-time daemon checks, task queue latencies, code analyzer execution profiles, and Analysis Core costs.
               </p>
             </div>
           </div>
@@ -254,7 +254,7 @@ export default function Monitoring() {
                   Agent Execution Latency (ms)
                 </h3>
                 <p className="text-slate-400 text-[10px] font-medium">
-                  Comparison metrics of execution durations across specialized agents in the LangGraph topology.
+                  Comparison metrics of execution durations across specialized agents in the Workflow Engine topology.
                 </p>
               </div>
 
@@ -286,7 +286,7 @@ export default function Monitoring() {
                   Estimated Agent Cost Breakdown (USD)
                 </h3>
                 <p className="text-slate-400 text-[10px] font-medium">
-                  Estimated LLM expense per single review pipeline run based on token count sizes.
+                  Estimated Analysis Core expense per single review pipeline run based on token count sizes.
                 </p>
               </div>
 
@@ -324,7 +324,7 @@ export default function Monitoring() {
                   Repository Knowledgebase snapshots
                 </h3>
                 <p className="text-slate-405 text-[10px] font-medium">
-                  Tracks code indexing pipelines, parsed vector embeddings, and RAG document sizes.
+                  Tracks code indexing pipelines, parsed vector embeddings, and Semantic Search document sizes.
                 </p>
               </div>
 
@@ -508,10 +508,10 @@ export default function Monitoring() {
                 <div className="space-y-1">
                   <div className="flex justify-between items-center">
                     <span className="text-xs font-extrabold text-white">Langfuse Agent Tracing</span>
-                    <span className="text-[8px] bg-blue-500/10 text-blue-400 font-black px-1.5 py-0.5 rounded border border-blue-500/20 text-blue-400">LLM LOGS</span>
+                    <span className="text-[8px] bg-blue-500/10 text-blue-400 font-black px-1.5 py-0.5 rounded border border-blue-500/20 text-blue-400">Analysis Core LOGS</span>
                   </div>
                   <p className="text-[11px] text-slate-450 leading-normal font-medium">
-                    Trace complete prompt variations, chat completions, LangGraph context states, and similarity retrieval logs.
+                    Trace complete prompt variations, chat completions, Workflow Engine context states, and similarity retrieval logs.
                   </p>
                 </div>
                 <a 
