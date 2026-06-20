@@ -17,7 +17,7 @@ import {
 
 export default function CommandCenter() {
   const [selectedRepoId, setSelectedRepoId] = useState(() => {
-    return localStosemantic searche.getItem("prsense_selected_repo_id") || ""
+    return localStorage.getItem("prsense_selected_repo_id") || ""
   })
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -26,7 +26,7 @@ export default function CommandCenter() {
     fetchDashboardData()
 
     const handleRepoChange = () => {
-      const newRepoId = localStosemantic searche.getItem("prsense_selected_repo_id") || ""
+      const newRepoId = localStorage.getItem("prsense_selected_repo_id") || ""
       setSelectedRepoId(newRepoId)
     }
 
@@ -37,7 +37,7 @@ export default function CommandCenter() {
   const fetchDashboardData = async () => {
     setLoading(true)
     try {
-      const token = localStosemantic searche.getItem("authToken")
+      const token = localStorage.getItem("authToken")
       const url = selectedRepoId 
         ? `${window.API_BASE_URL}/api/analytics/dashboard?repoId=${selectedRepoId}` 
         : `${window.API_BASE_URL}/api/analytics/dashboard`
@@ -218,7 +218,7 @@ export default function CommandCenter() {
                   <span className="font-mono text-slate-200 font-bold">{data?.celery_queue_size || 0} tasks</span>
                 </div>
                 <div className="flex justify-between items-center bg-slate-950/40 p-2.5 rounded-lg border border-slate-850">
-                  <span className="text-slate-400">Avesemantic searche Job Latency</span>
+                  <span className="text-slate-400">Average Job Latency</span>
                   <span className="font-mono text-slate-200 font-bold">~1.8s</span>
                 </div>
               </div>

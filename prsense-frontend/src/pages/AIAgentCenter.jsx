@@ -113,13 +113,13 @@ const agentPrompts = {
 Required input: { pr_title, pr_diff, file_paths }.
 Output: Router state dictionary with target analysis tracks.`,
 
-  "static_analysis": `You are the Code Quality Analyzer. Audit the source code changes for complexity, clean code principles, dead code, nesting levels, and standard functional patterns.
+  "static_analysis": `You are the Static Analysis Agent. Audit the source code changes for complexity, clean code principles, dead code, nesting levels, and standard functional patterns.
 Rules to enforce:
 - Prefer early returns over deep nesting.
 - Avoid duplicate logic in conditionals.
 - Flag helper functions longer than 35 lines.`,
 
-  "security_agent": `You are the Security Auditor. Scan the provided code diff for critical vulnerabilities, hardcoded secrets, api keys, SQL injection vectors, and weak cryptography implementations.
+  "security_agent": `You are the Security Agent. Scan the provided code diff for critical vulnerabilities, hardcoded secrets, api keys, SQL injection vectors, and weak cryptography implementations.
 Target items:
 - Check for password/secret assignments.
 - SQL injection: check raw string interpolations in query executions.`,
@@ -134,7 +134,7 @@ Conventions:
 - JavaScript functions must use camelCase.
 - Enforce strict typing comparisons (===) where applicable.`,
 
-  "semantic search_retriever": `You are the Semantic context Semantic Search retriever. Query pgvector store for historical PR patterns, merged rule updates, and developer style preferences.
+  "rag_retriever": `You are the Semantic context RAG retriever. Query pgvector store for historical PR patterns, merged rule updates, and developer style preferences.
 Query vector: { pr_title + files_metadata }
 Output: Array of matching organizational guidelines.`,
 
@@ -143,18 +143,18 @@ Output format: { aiDecision: APPROVED/CHANGES_REQUESTED, markdownComment: string
   "database_agent": `You are the Database Optimization Agent. Audit database queries, JPA/Hibernate mapping definitions, transaction boundaries, and schema migrations for indexing efficiency and safety.`,
   "performance_agent": `You are the Performance Optimization Agent. Scan source code changes for speed bottlenecks, CPU hot paths, inefficient loops, resource leakage, and high memory allocations.`,
   "api_agent": `You are the API Schema Compliance Agent. Review REST/GraphQL endpoints specifications, route path validations, controller request bodies, and output DTO patterns.`,
-  "testing_agent": `You are the Testing Assurance Agent. Check test specifications, covesemantic searche profiles, assertion robustness, mock structures validity, and edge case assertions.`,
+  "testing_agent": `You are the Testing Assurance Agent. Check test specifications, coverage profiles, assertion robustness, mock structures validity, and edge case assertions.`,
   "devops_agent": `You are the DevOps & Infrastructure Agent. Analyze Dockerfiles, Kubernetes manifests, Helm charts, and CI/CD pipelines configurations for security practices and syntax.`,
   "accessibility_agent": `You are the Accessibility Standard Agent. Verify HTML/CSS styling compliance, ARIA attribute specifications, layout contrasts, and page reader semantics.`,
   "documentation_agent": `You are the Documentation Agent. Scan files changes to ensure Javadocs, docstrings, README references, and swagger guides are updated.`,
-  "compliance_agent": `You are the Compliance Agent. Audit codebase modifications to detect GDPR/CCPA stosemantic searche issues, software license limits, and cryptographical rules compliance.`
+  "compliance_agent": `You are the Compliance Agent. Audit codebase modifications to detect GDPR/CCPA storage issues, software license limits, and cryptographical rules compliance.`
 }
 
 const middleAgentConfig = [
-  { id: "2", label: "Code Quality Analyzer", icon: Zap, keyword: "static" },
-  { id: "3", label: "Security Auditor", icon: Shield, keyword: "security" },
-  { id: "4", label: "Architecture Auditor", icon: Cpu, keyword: "architecture" },
-  { id: "5", label: "Style Auditor", icon: Search, keyword: "style" },
+  { id: "2", label: "Static Analysis Agent", icon: Zap, keyword: "static" },
+  { id: "3", label: "Security Agent", icon: Shield, keyword: "security" },
+  { id: "4", label: "Architecture Agent", icon: Cpu, keyword: "architecture" },
+  { id: "5", label: "Style Agent", icon: Search, keyword: "style" },
   { id: "8", label: "Database Agent", icon: Database, keyword: "database" },
   { id: "9", label: "Performance Agent", icon: Activity, keyword: "performance" },
   { id: "10", label: "API Agent", icon: Server, keyword: "api" },
@@ -187,9 +187,9 @@ const agentConsoleData = {
     input: { styleRules: ["camelCase", "useSemicolons"] },
     output: { warnings: [{ line: 55, message: "Use camelCase instead of snake_case for get_user_id" }] }
   },
-  "semantic search_retriever": {
+  "rag_retriever": {
     input: { semantic_tokens: ["db queries optimization", "early return"] },
-    output: { matched_documents: 3, avesemantic searche_similarity: 0.89 }
+    output: { matched_documents: 3, average_similarity: 0.89 }
   },
   "synthesizer": {
     input: { findings_merged: 2, criticals: 1 },
@@ -200,7 +200,7 @@ const agentConsoleData = {
 export default function AIAgentCenter() {
   const [activeRepo, setActiveRepo] = useState(null)
   const [selectedRepoId, setSelectedRepoId] = useState(() => {
-    return localStosemantic searche.getItem("prsense_selected_repo_id") || ""
+    return localStorage.getItem("prsense_selected_repo_id") || ""
   })
 
   // Live reviews and traces states
@@ -238,7 +238,7 @@ export default function AIAgentCenter() {
      }
  
      const handleRepoChange = () => {
-       const newRepoId = localStosemantic searche.getItem("prsense_selected_repo_id") || ""
+       const newRepoId = localStorage.getItem("prsense_selected_repo_id") || ""
        setSelectedRepoId(newRepoId)
        
        // Reset simulation state when repository changes via listener
@@ -278,7 +278,7 @@ export default function AIAgentCenter() {
 
   const fetchRepositoryDetails = async (id) => {
     try {
-      const token = localStosemantic searche.getItem("authToken")
+      const token = localStorage.getItem("authToken")
       const headers = token ? { "Authorization": `Bearer ${token}` } : {}
       const res = await fetch(`${window.API_BASE_URL}/api/repositories/${id}`, { headers })
       if (res.ok) {
@@ -296,7 +296,7 @@ export default function AIAgentCenter() {
   const fetchLatestReview = async (repoId) => {
     if (simulationActive) return
     try {
-      const token = localStosemantic searche.getItem("authToken")
+      const token = localStorage.getItem("authToken")
       const headers = token ? { "Authorization": `Bearer ${token}` } : {}
       const res = await fetch(`${window.API_BASE_URL}/api/analytics/timeline/${repoId}`, { headers })
       if (res.ok) {
@@ -374,7 +374,7 @@ export default function AIAgentCenter() {
     } else if (nodeId === "5") {
       matchTl = timeline.find(t => t.stepName.toLowerCase().includes("style"))
     } else if (nodeId === "6") {
-      matchTl = timeline.find(t => t.stepName.toLowerCase().includes("semantic search") || t.stepName.toLowerCase().includes("retriev"))
+      matchTl = timeline.find(t => t.stepName.toLowerCase().includes("rag") || t.stepName.toLowerCase().includes("retriev"))
     } else if (nodeId === "7") {
       matchTl = timeline.find(t => t.stepName.toLowerCase().includes("synthesiz") || t.stepName.toLowerCase().includes("summary"))
     } else if (nodeId === "8") {
@@ -456,10 +456,10 @@ export default function AIAgentCenter() {
     
     let matchAo = agentOutputs.find(ao => ao.agentName.toLowerCase().includes(categoryKey))
     
-    if (!matchAo && key === "semantic search_retriever") {
+    if (!matchAo && key === "rag_retriever") {
       return {
         input: `Querying pgvector vector embeddings database for context matching repository codebase rules:\n${latestReviewDetails.pullRequest?.title || "Active pull request"}`,
-        output: latestReviewDetails.review.summaryReport ? "Successfully retrieved similarity context from pgvector database." : "No Semantic Search context index matches found."
+        output: latestReviewDetails.review.summaryReport ? "Successfully retrieved similarity context from pgvector database." : "No RAG context index matches found."
       }
     }
     
@@ -638,11 +638,11 @@ export default function AIAgentCenter() {
             files: [file1]
           },
           output: { 
-            recommendation: "Verify user data stosemantic searche matches GDPR deletion/retention requirements.",
+            recommendation: "Verify user data storage matches GDPR deletion/retention requirements.",
             confidence: 0.93
           }
         };
-      case "semantic search_retriever":
+      case "rag_retriever":
         return {
           input: { 
             semantic_tokens: ["db queries optimization", "early return", "secrets configuration"],
@@ -650,7 +650,7 @@ export default function AIAgentCenter() {
           },
           output: { 
             matched_documents: 3, 
-            avesemantic searche_similarity: 0.89,
+            average_similarity: 0.89,
             contexts_retrieved: [
               `Rule: Database connections must use pooled connections in ${repoName}.`,
               "Guideline: Never commit API credentials to source repositories."
@@ -754,7 +754,7 @@ export default function AIAgentCenter() {
           position: { x: 30, y: 170 }, 
           data: { 
             id: '2',
-            label: 'Code Quality Analyzer', 
+            label: 'Static Analysis Agent', 
             icon: Zap, 
             latency: '480ms', 
             cost: 0.00036, 
@@ -771,7 +771,7 @@ export default function AIAgentCenter() {
           position: { x: 260, y: 170 }, 
           data: { 
             id: '3',
-            label: 'Security Auditor', 
+            label: 'Security Agent', 
             icon: Shield, 
             latency: '720ms', 
             cost: 0.00045, 
@@ -788,7 +788,7 @@ export default function AIAgentCenter() {
           position: { x: 490, y: 170 }, 
           data: { 
             id: '4',
-            label: 'Architecture Auditor', 
+            label: 'Architecture Agent', 
             icon: Cpu, 
             latency: '510ms', 
             cost: 0.00041, 
@@ -805,7 +805,7 @@ export default function AIAgentCenter() {
           position: { x: 720, y: 170 }, 
           data: { 
             id: '5',
-            label: 'Style Auditor', 
+            label: 'Style Agent', 
             icon: Search, 
             latency: '630ms', 
             cost: 0.00032, 
@@ -822,7 +822,7 @@ export default function AIAgentCenter() {
           position: { x: 380, y: 320 }, 
           data: { 
             id: '6',
-            label: 'Semantic Search Context Retriever', 
+            label: 'RAG Context Retriever', 
             icon: Database, 
             latency: '150ms', 
             cost: 0.00018, 
@@ -863,14 +863,14 @@ export default function AIAgentCenter() {
 
     const activeMiddleAgents = middleAgentConfig.filter(cfg => hasAgent(cfg.keyword))
     const activeMiddleAgentIds = activeMiddleAgents.map(cfg => cfg.id)
-    const hasSemantic Search = hasAgent("semantic search") || hasAgent("retriev")
+    const hasRAG = hasAgent("rag") || hasAgent("retriev")
 
     const middleCount = activeMiddleAgents.length
     const spacing = middleCount > 1 ? 690 / (middleCount - 1) : 0
     const startX = middleCount === 1 ? 380 : 30
 
-    const ySemantic Search = 320
-    const ySynthesizer = hasSemantic Search ? 465 : 320
+    const yRAG = 320
+    const ySynthesizer = hasRAG ? 465 : 320
 
     const nodes = [
       { 
@@ -915,14 +915,14 @@ export default function AIAgentCenter() {
       })
     })
 
-    if (hasSemantic Search) {
+    if (hasRAG) {
       nodes.push({
         id: '6',
         type: 'agent',
-        position: { x: 380, y: ySemantic Search },
+        position: { x: 380, y: yRAG },
         data: {
           id: '6',
-          label: 'Semantic Search Context Retriever',
+          label: 'RAG Context Retriever',
           icon: Database,
           latency: getLiveNodeData("6").latency,
           cost: getLiveNodeData("6").cost,
@@ -1022,7 +1022,7 @@ export default function AIAgentCenter() {
 
     const activeMiddleAgents = middleAgentConfig.filter(cfg => hasAgent(cfg.keyword))
     const activeMiddleAgentIds = activeMiddleAgents.map(cfg => cfg.id)
-    const hasSemantic Search = hasAgent("semantic search") || hasAgent("retriev")
+    const hasRAG = hasAgent("rag") || hasAgent("retriev")
 
     const edges = []
 
@@ -1039,7 +1039,7 @@ export default function AIAgentCenter() {
       })
     })
 
-    const nextNodeId = hasSemantic Search ? '6' : '7'
+    const nextNodeId = hasRAG ? '6' : '7'
     activeMiddleAgentIds.forEach(id => {
       edges.push({
         id: `e${id}-${nextNodeId}`,
@@ -1053,7 +1053,7 @@ export default function AIAgentCenter() {
       })
     })
 
-    if (hasSemantic Search) {
+    if (hasRAG) {
       edges.push({
         id: 'e6-7',
         source: '6',
@@ -1076,11 +1076,11 @@ export default function AIAgentCenter() {
   const getNodeDetails = (id) => {
     const keyMap = {
       "1": { name: "Coordinator Agent", key: "coordinator", model: "Claude 3.5 Sonnet", temp: "0.1" },
-      "2": { name: "Code Quality Analyzer", key: "static_analysis", model: "GPT-4o-mini", temp: "0.2" },
+      "2": { name: "Static Analysis Agent", key: "static_analysis", model: "GPT-4o-mini", temp: "0.2" },
       "3": { name: "Security Check Agent", key: "security_agent", model: "Claude 3.5 Sonnet", temp: "0.0" },
       "4": { name: "Architecture Boundary Agent", key: "architecture_agent", model: "GPT-4o-mini", temp: "0.1" },
       "5": { name: "Style Standard Agent", key: "style_agent", model: "GPT-4o-mini", temp: "0.2" },
-      "6": { name: "Semantic Search Context Retriever", key: "semantic search_retriever", model: "pgvector Index Search", temp: "N/A" },
+      "6": { name: "RAG Context Retriever", key: "rag_retriever", model: "pgvector Index Search", temp: "N/A" },
       "7": { name: "Synthesizer Agent", key: "synthesizer", model: "Claude 3.5 Sonnet", temp: "0.3" },
       "8": { name: "Database Agent", key: "database_agent", model: "GPT-4o-mini", temp: "0.1" },
       "9": { name: "Performance Agent", key: "performance_agent", model: "GPT-4o-mini", temp: "0.2" },
@@ -1111,10 +1111,10 @@ export default function AIAgentCenter() {
             </div>
             <div>
               <h1 className="text-2xl font-black tracking-tight text-white">
-                Workflow Engine Studio Topology
+                LangGraph Studio Topology
               </h1>
               <p className="text-slate-450 text-xs mt-0.5">
-                Live StateGraph multi-stage network router mapping inputs, parallel checkpoints, and deduplicated outputs.
+                Live StateGraph multi-agent network router mapping inputs, parallel checkpoints, and deduplicated outputs.
               </p>
             </div>
           </div>
@@ -1155,7 +1155,7 @@ export default function AIAgentCenter() {
           <div className="space-y-1">
             <h3 className="text-lg font-bold text-white">No Active Repository</h3>
             <p className="text-slate-450 text-sm max-w-sm">
-              Please select a repository in the sidebar picker to visual the Workflow Engine state machine structure.
+              Please select a repository in the sidebar picker to visual the LangGraph state machine structure.
             </p>
           </div>
         </div>
@@ -1167,7 +1167,7 @@ export default function AIAgentCenter() {
           <div className="space-y-1">
             <h3 className="text-lg font-bold text-white">Waiting for First Review</h3>
             <p className="text-slate-450 text-sm max-w-sm">
-              No reviews have been run on this repository yet. Push code or open a Pull Request on GitHub to trigger the multi-stage review workflow, or click "Simulate Run" above to see the flow.
+              No reviews have been run on this repository yet. Push code or open a Pull Request on GitHub to trigger the multi-agent review workflow, or click "Simulate Run" above to see the flow.
             </p>
           </div>
         </div>
@@ -1295,7 +1295,7 @@ export default function AIAgentCenter() {
                 StateGraph Orchestration
               </div>
               <p className="leading-normal font-medium">
-                PRSense uses a compiled cyclical StateGraph. Clicking on nodes updates the telemetry console above. Triggering a simulation shows data passing through checking checks.
+                PRSense AI uses a compiled cyclical StateGraph. Clicking on nodes updates the telemetry console above. Triggering a simulation shows data passing through checking checks.
               </p>
             </div>
 

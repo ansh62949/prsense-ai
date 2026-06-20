@@ -76,18 +76,18 @@ export default function Settings() {
   const fetchOrganizations = async () => {
     setLoading(true)
     try {
-      const token = localStosemantic searche.getItem("authToken")
+      const token = localStorage.getItem("authToken")
       const headers = token ? { Authorization: `Bearer ${token}` } : {}
       const res = await fetch(`${window.API_BASE_URL}/api/organizations`, { headers })
       if (res.ok) {
         const data = await res.json()
         setOrganizations(data)
         if (data.length > 0) {
-          const storedOrg = localStosemantic searche.getItem("prsense_selected_org_id")
+          const storedOrg = localStorage.getItem("prsense_selected_org_id")
           const exists = data.some(o => o.id.toString() === storedOrg)
           const activeOrgId = exists ? storedOrg : data[0].id.toString()
           setSelectedOrgId(activeOrgId)
-          localStosemantic searche.setItem("prsense_selected_org_id", activeOrgId)
+          localStorage.setItem("prsense_selected_org_id", activeOrgId)
         }
       }
     } catch (e) {
@@ -102,7 +102,7 @@ export default function Settings() {
     e.preventDefault()
     if (!newOrgName.trim()) return
     try {
-      const token = localStosemantic searche.getItem("authToken")
+      const token = localStorage.getItem("authToken")
       const res = await fetch(`${window.API_BASE_URL}/api/organizations`, {
         method: "POST",
         headers: { 
@@ -118,7 +118,7 @@ export default function Settings() {
         setNewOrgDesc("")
         await fetchOrganizations()
         setSelectedOrgId(newOrg.id.toString())
-        localStosemantic searche.setItem("prsense_selected_org_id", newOrg.id.toString())
+        localStorage.setItem("prsense_selected_org_id", newOrg.id.toString())
       }
     } catch (e) {
       console.error(e)
@@ -128,27 +128,27 @@ export default function Settings() {
 
   const handleOrgSwitch = (orgId) => {
     setSelectedOrgId(orgId)
-    localStosemantic searche.setItem("prsense_selected_org_id", orgId)
+    localStorage.setItem("prsense_selected_org_id", orgId)
     showInfo("Switched organization context.")
   }
 
   const fetchWorkspaces = async (orgId) => {
     try {
-      const token = localStosemantic searche.getItem("authToken")
+      const token = localStorage.getItem("authToken")
       const headers = token ? { Authorization: `Bearer ${token}` } : {}
       const res = await fetch(`${window.API_BASE_URL}/api/organizations/${orgId}/workspaces`, { headers })
       if (res.ok) {
         const data = await res.json()
         setWorkspaces(data)
         if (data.length > 0) {
-          const storedWs = localStosemantic searche.getItem("prsense_selected_workspace_id")
+          const storedWs = localStorage.getItem("prsense_selected_workspace_id")
           const exists = data.some(w => w.id.toString() === storedWs)
           const activeWsId = exists ? storedWs : data[0].id.toString()
           setSelectedWorkspaceId(activeWsId)
-          localStosemantic searche.setItem("prsense_selected_workspace_id", activeWsId)
+          localStorage.setItem("prsense_selected_workspace_id", activeWsId)
         } else {
           setSelectedWorkspaceId("")
-          localStosemantic searche.removeItem("prsense_selected_workspace_id")
+          localStorage.removeItem("prsense_selected_workspace_id")
         }
       }
     } catch (e) {
@@ -161,7 +161,7 @@ export default function Settings() {
     e.preventDefault()
     if (!newWsName.trim() || !selectedOrgId) return
     try {
-      const token = localStosemantic searche.getItem("authToken")
+      const token = localStorage.getItem("authToken")
       const res = await fetch(`${window.API_BASE_URL}/api/organizations/${selectedOrgId}/workspaces`, {
         method: "POST",
         headers: { 
@@ -182,7 +182,7 @@ export default function Settings() {
         setNewWsWebhook("")
         await fetchWorkspaces(selectedOrgId)
         setSelectedWorkspaceId(newWs.id.toString())
-        localStosemantic searche.setItem("prsense_selected_workspace_id", newWs.id.toString())
+        localStorage.setItem("prsense_selected_workspace_id", newWs.id.toString())
       }
     } catch (e) {
       console.error(e)
@@ -192,14 +192,14 @@ export default function Settings() {
 
   const handleWorkspaceSwitch = (wsId) => {
     setSelectedWorkspaceId(wsId)
-    localStosemantic searche.setItem("prsense_selected_workspace_id", wsId)
+    localStorage.setItem("prsense_selected_workspace_id", wsId)
     showInfo("Switched workspace context.")
     window.dispatchEvent(new Event("workspaceChanged"))
   }
 
   const fetchMembers = async (wsId) => {
     try {
-      const token = localStosemantic searche.getItem("authToken")
+      const token = localStorage.getItem("authToken")
       const headers = token ? { Authorization: `Bearer ${token}` } : {}
       const res = await fetch(`${window.API_BASE_URL}/api/organizations/workspaces/${wsId}/members`, { headers })
       if (res.ok) {
@@ -215,7 +215,7 @@ export default function Settings() {
     e.preventDefault()
     if (!inviteEmail.trim() || !selectedWorkspaceId) return
     try {
-      const token = localStosemantic searche.getItem("authToken")
+      const token = localStorage.getItem("authToken")
       const res = await fetch(`${window.API_BASE_URL}/api/organizations/workspaces/${selectedWorkspaceId}/invites`, {
         method: "POST",
         headers: { 

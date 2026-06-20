@@ -60,7 +60,7 @@ export default function ReviewPlayground() {
             Manual Review Playground
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Paste code snippets, select target language compilers, and run parallel multi-stage Analysis Core analysis manually.
+            Paste code snippets, select target language compilers, and run parallel multi-agent LLM analysis manually.
           </p>
         </div>
       </div>
@@ -108,7 +108,7 @@ export default function ReviewPlayground() {
               <textarea
                 value={snippet}
                 onChange={(e) => setSnippet(e.target.value)}
-                placeholder="// Paste class definitions or unsafe code snippets here to run multi-stage checks...&#10;// e.g., hardcoded credentials, deeply nested logic, service bypasses, etc."
+                placeholder="// Paste class definitions or unsafe code snippets here to run multi-agent checks...&#10;// e.g., hardcoded credentials, deeply nested logic, service bypasses, etc."
                 className="w-full h-96 p-4 bg-slate-950 text-slate-100 rounded-xl border border-border font-mono text-xs focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none leading-relaxed"
               />
               {error && (
@@ -133,7 +133,7 @@ export default function ReviewPlayground() {
               {loading ? (
                 <div className="h-64 flex flex-col justify-center items-center space-y-4">
                   <RefreshCw className="w-10 h-10 text-primary animate-spin" />
-                  <p className="text-muted-foreground text-xs font-medium animate-pulse">Running Workflow Engine nodes...</p>
+                  <p className="text-muted-foreground text-xs font-medium animate-pulse">Running LangGraph nodes...</p>
                 </div>
               ) : result ? (
                 <div className="space-y-5">

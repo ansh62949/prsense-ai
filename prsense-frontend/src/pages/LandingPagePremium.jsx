@@ -111,12 +111,12 @@ export default function LandingPagePremium() {
     return () => timers.forEach(t => clearTimeout(t))
   }, [activeTab])
 
-  // Hero Multi-Stage Flow real-time simulation tickers
+  // Hero Multi-Agent Flow real-time simulation tickers
   useEffect(() => {
     const logPool = [
-      "🛡️ Security Auditor: Scanning cryptographic parameters in webhook handler...",
-      "🏛️ Architecture Auditor: Checking boundary interface imports...",
-      "💅 Style Auditor: Auditing camelCase conventions on variables...",
+      "🛡️ Security Agent: Scanning cryptographic parameters in webhook handler...",
+      "🏛️ Architecture Agent: Checking boundary interface imports...",
+      "💅 Style Agent: Auditing camelCase conventions on variables...",
       "⚙️ Static Agent: Inspecting imports overhead & complexity dials...",
       "🤖 Synthesizer: Merging logs and formatting review checklist markdown...",
       "🚀 Webhook: Sending review results payload back to Spring Boot...",
@@ -159,7 +159,7 @@ export default function LandingPagePremium() {
       linesChanged: "+1 -1",
       diffDel: 'String apiToken = "sk-live-5a89fbcd0012bcfe349a88ad";',
       diffAdd: 'String apiToken = System.getenv("GITHUB_APP_SECRET_TOKEN");',
-      agent: "Security Auditor",
+      agent: "Security Agent",
       severity: "critical",
       confidence: "99%",
       message: "Hardcoded GITHUB_APP_SECRET_TOKEN detected. Storing credentials in plain text violates security guidelines. Extract secret keys to env configuration.",
@@ -172,7 +172,7 @@ export default function LandingPagePremium() {
       linesChanged: "+2 -2",
       diffDel: 'private PullRequestRepository pullRequestRepository;',
       diffAdd: 'private GitHubService githubService;',
-      agent: "Architecture Auditor",
+      agent: "Architecture Agent",
       severity: "high",
       confidence: "94%",
       message: "Architectural boundary violation. Controllers must never invoke repositories directly. Delegate database actions to service classes.",
@@ -185,7 +185,7 @@ export default function LandingPagePremium() {
       linesChanged: "+2 -1",
       diffDel: 'function fetch_user_data(user_id) { return db.find(user_id); }',
       diffAdd: 'const fetchUserData = (userId) => db.find(userId);',
-      agent: "Style Auditor",
+      agent: "Style Agent",
       severity: "minor",
       confidence: "89%",
       message: "Naming convention mismatch. JavaScript functions must use camelCase naming ('fetchUserData' instead of 'fetch_user_data').",
@@ -198,7 +198,7 @@ export default function LandingPagePremium() {
       linesChanged: "+0 -1",
       diffDel: 'import java.text.SimpleDateFormat;',
       diffAdd: '// Unused import removed',
-      agent: "Code Quality Analyzer",
+      agent: "Static Analysis Agent",
       severity: "medium",
       confidence: "95%",
       message: "Unused import statement detected: `java.text.SimpleDateFormat`. Redundant imports increase cognitive compilation overhead.",
@@ -213,8 +213,8 @@ export default function LandingPagePremium() {
     { title: "Spring Boot Gateway Ingest", desc: "The primary Spring Boot backend verifies the signature, registers the metadata in PostgreSQL, and enqueues a Celery task." },
     { title: "Redis Task Broker", desc: "Spring Boot routes the review job inside a Celery envelope straight to Redis, ensuring instant response without blocking GitHub." },
     { title: "Celery Workers execution", desc: "Asynchronous Python worker threads consume the task from Redis, checkout/clone the repository, and prepare the snapshot." },
-    { title: "pgvector Semantic Search Context Retrieval", desc: "The worker queries pgvector semantic stosemantic searche, matching custom guidelines, naming preferences, and learned style rules." },
-    { title: "Workflow Engine Multi-Stage Run", desc: "Coordinated agent nodes (Static, Security, Architecture, Style) audit the code diffs in parallel, tracing token consumption." },
+    { title: "pgvector RAG Context Retrieval", desc: "The worker queries pgvector semantic storage, matching custom guidelines, naming preferences, and learned style rules." },
+    { title: "LangGraph Multi-Agent Run", desc: "Coordinated agent nodes (Static, Security, Architecture, Style) audit the code diffs in parallel, tracing token consumption." },
     { title: "GitHub PR Reviews published", desc: "Findings are de-duplicated by the Synthesizer node, sent via callback to Spring Boot, and published as inline comments on GitHub." }
   ]
 
@@ -361,19 +361,19 @@ export default function LandingPagePremium() {
         <div className="lg:col-span-6 flex flex-col items-start text-left relative z-10">
           <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full bg-[#ff5a1f]/10 border border-[#ff5a1f]/20 shadow-inner">
             <span className="w-1.5 h-1.5 rounded-full bg-[#ff5a1f] animate-pulse" />
-            <span className="text-[10px] font-black uppercase text-orange-400 tracking-widest">Automated Developer Ecosystem</span>
+            <span className="text-[10px] font-black uppercase text-orange-400 tracking-widest">AI-Native Developer Ecosystem</span>
           </div>
 
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 leading-[0.95] tracking-tight">
-            Automated <br />
+            AI-Native <br />
             <span className="bg-gradient-to-r from-white via-orange-300 to-[#ff5a1f] bg-clip-text text-transparent">
               Repo Intelligence &
             </span> <br />
-            Multi-Stage Reviews
+            Multi-Agent Reviews
           </h1>
 
           <p className="text-base text-slate-400 mb-10 max-w-xl leading-relaxed font-medium">
-            Understand repositories, review pull requests, retrieve engineering knowledge with Semantic Search, and continuously learn coding conventions using code analyzers.
+            Understand repositories, review pull requests, retrieve engineering knowledge with RAG, and continuously learn coding conventions using AI agents.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
@@ -427,7 +427,7 @@ export default function LandingPagePremium() {
         {/* Right Side: Interactive Animated Review Engine & Floating AI Cards */}
         <div className="lg:col-span-6 flex items-center justify-center relative min-h-[460px]">
           
-          {/* Multi-Stage Flow Network Widget Frame */}
+          {/* Multi-Agent Flow Network Widget Frame */}
           <div className="w-full max-w-lg bg-gradient-to-b from-white/5 to-transparent border border-white/5 p-6 rounded-2xl shadow-2xl relative overflow-hidden">
             {/* Visual Grid Inside Node Frame */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#1b203c_1px,transparent_1px),linear-gradient(to_bottom,#1b203c_1px,transparent_1px)] bg-[size:1.5rem_1.5rem] opacity-25 pointer-events-none -z-10" />
@@ -494,7 +494,7 @@ export default function LandingPagePremium() {
                 <span className="text-[8px] text-slate-500 font-mono mt-1">Repo Ingest</span>
               </div>
 
-              {/* Semantic Search Context Retriever */}
+              {/* RAG Context Retriever */}
               <div className="z-10 flex flex-col items-center">
                 <motion.div 
                   className={cn(
@@ -506,7 +506,7 @@ export default function LandingPagePremium() {
                   <Search className="w-5 h-5 text-orange-400" />
                   {activeAgentNode === "retriever" && <span className="absolute inset-0 rounded-xl border border-orange-400 animate-pulse-node" />}
                 </motion.div>
-                <span className="text-[8px] text-slate-500 font-mono mt-1">Semantic Search Context</span>
+                <span className="text-[8px] text-slate-500 font-mono mt-1">RAG Context</span>
               </div>
 
               {/* Parallel Agent Stack */}
@@ -640,7 +640,7 @@ export default function LandingPagePremium() {
             </div>
           </motion.div>
 
-          {/* Card 4: Semantic Search Context Pinned */}
+          {/* Card 4: RAG Context Pinned */}
           <motion.div 
             className="absolute top-10 -left-8 bg-slate-950/80 border border-emerald-500/20 backdrop-blur-md p-3.5 rounded-xl shadow-2xl flex items-center gap-3 max-w-[190px] pointer-events-none select-none z-20"
             animate={{ y: [0, 10, 0], rotate: [1, -1, 1] }}
@@ -648,7 +648,7 @@ export default function LandingPagePremium() {
           >
             <Search className="w-5 h-5 text-emerald-400 shrink-0" />
             <div>
-              <span className="text-[8px] font-bold text-emerald-400 uppercase tracking-wider block font-mono">pgvector Semantic Search</span>
+              <span className="text-[8px] font-bold text-emerald-400 uppercase tracking-wider block font-mono">pgvector RAG</span>
               <span className="text-[9px] text-slate-200 font-medium block mt-0.5 leading-normal">Matched conventions</span>
             </div>
           </motion.div>
@@ -667,7 +667,7 @@ export default function LandingPagePremium() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
           <span className="text-xs font-black text-slate-500 uppercase tracking-widest font-mono">Integrated Ecosystem</span>
           <div className="flex flex-wrap gap-8 items-center justify-center opacity-45 hover:opacity-75 transition-opacity duration-300">
-            {["GitHub", "Spring Boot", "FastAPI", "PostgreSQL", "Redis", "Workflow Engine", "Analysis Engine", "Prometheus", "Grafana"].map((t, idx) => (
+            {["GitHub", "Spring Boot", "FastAPI", "PostgreSQL", "Redis", "LangGraph", "OpenAI", "Prometheus", "Grafana"].map((t, idx) => (
               <span key={idx} className="text-xs font-mono font-bold text-white tracking-widest flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#ff5a1f]" />
                 {t}
@@ -705,11 +705,11 @@ export default function LandingPagePremium() {
         >
           {[
             { title: "Repository Intelligence", desc: "Automatic mapping and summary parsing of repository configurations. Generates structural dependency flow graphs to audit boundary layering.", icon: GitBranch, col: "#ff5a1f" },
-            { title: "Pull Request Reviews", desc: "Parallel multi-stage scanner reviewing code quality, credentials exposure, layering, and database SQL injections automatically.", icon: Shield, col: "#ff5a1f" },
-            { title: "Repository Search", desc: "Cursor-style conversational chat utilizing pgvector semantic Semantic Search search across the entire codebase with clickable file citations.", icon: Search, col: "#ff5a1f" },
-            { title: "Rule Learner", desc: "Automatically extracts conventions and coding preferences from merged commit logs history to adjust rules dynamically.", icon: Brain, col: "#ff5a1f" },
+            { title: "Pull Request Reviews", desc: "Parallel multi-agent scanner reviewing code quality, credentials exposure, layering, and database SQL injections automatically.", icon: Shield, col: "#ff5a1f" },
+            { title: "AI Repository Copilot", desc: "Cursor-style conversational chat utilizing pgvector semantic RAG search across the entire codebase with clickable file citations.", icon: Search, col: "#ff5a1f" },
+            { title: "Learning Engine", desc: "Automatically extracts conventions and coding preferences from merged commit logs history to adjust rules dynamically.", icon: Brain, col: "#ff5a1f" },
             { title: "Observability Tracing", desc: "Detailed trace Gantt timelines monitoring the latencies, tokens consumed, and API costs of individual agent modules.", icon: BarChart3, col: "#ff5a1f" },
-            { title: "Multi-Stage Workflows", desc: "Coordinated Workflow Engine routing system parsing code segments to specialized agent roles, returning unified PR commentary.", icon: Workflow, col: "#ff5a1f" }
+            { title: "Multi-Agent Workflows", desc: "Coordinated LangGraph routing system parsing code segments to specialized agent roles, returning unified PR commentary.", icon: Workflow, col: "#ff5a1f" }
           ].map((f, i) => (
             <motion.div
               key={i}
@@ -747,7 +747,7 @@ export default function LandingPagePremium() {
           >
             <h2 className="text-3xl font-extrabold text-white tracking-tight mb-3">Interactive Review Sandbox</h2>
             <p className="text-xs text-slate-450 max-w-xl mx-auto leading-relaxed">
-              Select a specialized review track to watch PRSense analyze your files, report issues, and post suggestion comments directly.
+              Select a specialized review track to watch PRSense AI analyze your files, report issues, and post suggestion comments directly.
             </p>
 
             {/* Interactive scan categories */}
@@ -816,7 +816,7 @@ export default function LandingPagePremium() {
                   <div className="flex items-center justify-between text-xs text-slate-400">
                     <span className="flex items-center gap-1.5">
                       {simStep >= 3 ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <div className="w-3.5 h-3.5 rounded-full bg-slate-800" />}
-                      Workflow Engine Agents Run
+                      LangGraph Agents Run
                     </span>
                     <span className="text-[9px] text-slate-600 font-mono font-mono">FastAPI</span>
                   </div>
@@ -979,7 +979,7 @@ export default function LandingPagePremium() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-2xl font-black text-white tracking-tight">Interactive Pipeline Architecture</h2>
-            <p className="text-xs text-slate-400 mt-2">See how code changes flow through our Spring Boot gateway, Redis task broker, and FastAPI Workflow Engine agent workflows.</p>
+            <p className="text-xs text-slate-400 mt-2">See how code changes flow through our Spring Boot gateway, Redis task broker, and FastAPI LangGraph agent workflows.</p>
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -1084,7 +1084,7 @@ export default function LandingPagePremium() {
               <span className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
               <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
               <span className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
-              <span className="text-[10px] text-slate-500 font-mono ml-4">prsense-console // {demoView}</span>
+              <span className="text-[10px] text-slate-500 font-mono ml-4">prsense-ai-console // {demoView}</span>
             </div>
 
             {/* View contents wrapper */}
@@ -1094,7 +1094,7 @@ export default function LandingPagePremium() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center bg-white/[0.01] border border-white/5 p-4 rounded-xl">
                     <div>
-                      <h4 className="text-sm font-bold text-white">anshptk949-hue / prsense-service</h4>
+                      <h4 className="text-sm font-bold text-white">anshptk949-hue / prsense-ai-service</h4>
                       <p className="text-[10px] text-slate-500 mt-1 font-mono">Status: Fully Indexed • Webhook active</p>
                     </div>
                     <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full font-bold uppercase font-mono">Online</span>
@@ -1109,7 +1109,7 @@ export default function LandingPagePremium() {
                       <span className="text-xl font-bold text-white font-mono">8 Pending</span>
                     </div>
                     <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl">
-                      <span className="text-[9px] font-bold text-slate-500 block uppercase tracking-wider mb-2 font-mono">Avesemantic searche Review Time</span>
+                      <span className="text-[9px] font-bold text-slate-500 block uppercase tracking-wider mb-2 font-mono">Average Review Time</span>
                       <span className="text-xl font-bold text-white font-mono">1.4 minutes</span>
                     </div>
                   </div>
@@ -1140,7 +1140,7 @@ export default function LandingPagePremium() {
 
               {demoView === "agent" && (
                 <div className="space-y-4">
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">Workflow Engine Agent Topology</h4>
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">LangGraph Agent Topology</h4>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     {["Coordinator", "Security Auditor", "Architecture Boundary", "Style Standard"].map((agent, i) => (
                       <div key={i} className="bg-white/[0.02] border border-[#ff5a1f]/20 p-4 rounded-xl flex flex-col justify-between min-h-[100px] shadow-lg shadow-orange-500/5">
@@ -1212,7 +1212,7 @@ export default function LandingPagePremium() {
       <section id="pricing" className="py-24 px-6 max-w-7xl mx-auto border-t border-white/5">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-extrabold text-white tracking-tight">Flexible plans for any team size</h2>
-          <p className="text-xs text-slate-450 mt-2">Get started for free. Upgrade whenever you need advanced style learning and Semantic Search systems.</p>
+          <p className="text-xs text-slate-450 mt-2">Get started for free. Upgrade whenever you need advanced style learning and RAG systems.</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
@@ -1251,9 +1251,9 @@ export default function LandingPagePremium() {
               <div className="h-px bg-white/5" />
               <ul className="space-y-3 text-xs text-slate-350">
                 <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-[#ff5a1f]" /> Unlimited Repositories</li>
-                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-[#ff5a1f]" /> Full Analysis Pipeline Graph</li>
-                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-[#ff5a1f]" /> Semantic Search Repository Intelligence</li>
-                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-[#ff5a1f]" /> Automated Rule Learner</li>
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-[#ff5a1f]" /> Full Agent Center Graph</li>
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-[#ff5a1f]" /> RAG Repository Intelligence</li>
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-[#ff5a1f]" /> Automated Learning Engine</li>
                 <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-[#ff5a1f]" /> Detailed Telemetry Tracing</li>
               </ul>
             </div>
@@ -1276,7 +1276,7 @@ export default function LandingPagePremium() {
               <ul className="space-y-3 text-xs text-slate-400">
                 <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-[#ff5a1f]" /> Everything in Pro</li>
                 <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-[#ff5a1f]" /> On-Premises deployments</li>
-                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-[#ff5a1f]" /> Custom Analysis Core gateway integration</li>
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-[#ff5a1f]" /> Custom LLM gateway integration</li>
                 <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-[#ff5a1f]" /> Dedicated SLA Support</li>
               </ul>
             </div>
@@ -1293,9 +1293,9 @@ export default function LandingPagePremium() {
           <h2 className="text-xl font-black text-white text-center mb-10 tracking-tight">Frequently Asked Questions</h2>
           <div className="space-y-4">
             {[
-              { q: "How does the Rule Learner work?", a: "When you merge a PR, the system runs an async learner task parsing the code diff and extracting conventions. These are stored in pgvector, which allows other agents to query them as context during future reviews." },
-              { q: "Do you store our proprietary source code?", a: "No. The code is only checked out temporarily in worker threads during review execution. The files are deleted instantly once the analysis completes. The only data kept in the database are the metadata of your repositories, the generated issues list, and the general patterns extracted by the Rule Learner." },
-              { q: "How is it configured for our company rules?", a: "You can provide custom architectural files or write a set of guidelines. The Semantic Search architecture scans these files and automatically informs the agents if a developer violates those constraints." }
+              { q: "How does the Learning Engine work?", a: "When you merge a PR, the system runs an async learner task parsing the code diff and extracting conventions. These are stored in pgvector, which allows other agents to query them as context during future reviews." },
+              { q: "Do you store our proprietary source code?", a: "No. The code is only checked out temporarily in worker threads during review execution. The files are deleted instantly once the analysis completes. The only data kept in the database are the metadata of your repositories, the generated issues list, and the general patterns extracted by the Learning Engine." },
+              { q: "How is it configured for our company rules?", a: "You can provide custom architectural files or write a set of guidelines. The RAG architecture scans these files and automatically informs the agents if a developer violates those constraints." }
             ].map((faq, index) => (
               <div key={index} className="p-5 rounded-xl border border-white/5 bg-[#050816]/30 space-y-2 animate-fade-in">
                 <h4 className="text-xs font-extrabold text-slate-200">{faq.q}</h4>
@@ -1311,7 +1311,7 @@ export default function LandingPagePremium() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
             <CodeRabbitLogo className="w-6 h-6" />
-            <span className="font-extrabold text-slate-350 uppercase tracking-widest">PRSense</span>
+            <span className="font-extrabold text-slate-350 uppercase tracking-widest">PRSense AI</span>
           </div>
           <div>All rights reserved &copy; 2026 PRSense Inc.</div>
         </div>

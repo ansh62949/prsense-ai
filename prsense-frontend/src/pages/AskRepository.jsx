@@ -35,7 +35,7 @@ export default function AskRepository() {
   const [activeCitations, setActiveCitations] = useState([])
   const [activeReasoning, setActiveReasoning] = useState("")
   const [selectedRepoId, setSelectedRepoId] = useState(() => {
-    return localStosemantic searche.getItem("prsense_selected_repo_id") || ""
+    return localStorage.getItem("prsense_selected_repo_id") || ""
   })
 
   // Mocked state for left panel
@@ -58,7 +58,7 @@ export default function AskRepository() {
     }
 
     const handleRepoChange = () => {
-      const newRepoId = localStosemantic searche.getItem("prsense_selected_repo_id") || ""
+      const newRepoId = localStorage.getItem("prsense_selected_repo_id") || ""
       setSelectedRepoId(newRepoId)
       if (newRepoId) {
         fetchRepositoryDetails(newRepoId)
@@ -110,7 +110,7 @@ export default function AskRepository() {
         const newMsg = {
           sender: "copilot",
           text: data.answer || "No response received.",
-          reasoning: data.reasoning || "Retrieved semantic documents from vector store and generated response via Analysis Engine GPT-4o-mini.",
+          reasoning: data.reasoning || "Retrieved semantic documents from vector store and generated response via OpenAI GPT-4o-mini.",
           citations: data.retrieved_documents || []
         }
         setMessages(prev => [...prev, newMsg])
@@ -289,7 +289,7 @@ export default function AskRepository() {
                   </div>
                   <div className="p-4 rounded-xl text-xs bg-[#0a0e17]/80 border border-slate-800/80 text-slate-500 flex items-center gap-2">
                     <RefreshCw className="w-3.5 h-3.5 animate-spin text-purple-400" />
-                    <span>Searching Semantic Search context indices...</span>
+                    <span>Searching RAG context indices...</span>
                   </div>
                 </div>
               )}
@@ -346,7 +346,7 @@ export default function AskRepository() {
         )}
       </div>
 
-      {/* RIGHT PANEL: Semantic Search Sources, Reasoning, Scores */}
+      {/* RIGHT PANEL: RAG Sources, Reasoning, Scores */}
       <div className="w-80 border-l border-slate-800/80 bg-[#090c13] flex flex-col p-4 shrink-0 overflow-y-auto space-y-6">
         <div>
           <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-1">
@@ -379,7 +379,7 @@ export default function AskRepository() {
         <div className="space-y-3">
           <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
             <Database className="w-3.5 h-3.5 text-cyan-400" />
-            Semantic Search Semantic Nodes
+            RAG Semantic Nodes
           </h3>
           {activeCitations.length > 0 ? (
             <div className="space-y-3">

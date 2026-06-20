@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { GitPullRequest, GitMerge, AlertCircle, CheckCircle2, Clock } from "lucide-react"
 
 const prs = [
-  { id: 1, title: "Feature: Implement Workflow Engine agents", repo: "backend-api", author: "jdoe", status: "reviewing", findings: 3, critical: 1, time: "10 mins ago" },
+  { id: 1, title: "Feature: Implement LangGraph agents", repo: "backend-api", author: "jdoe", status: "reviewing", findings: 3, critical: 1, time: "10 mins ago" },
   { id: 2, title: "Fix: Resolve race condition in webhook processor", repo: "core-ml", author: "msmith", status: "approved", findings: 0, critical: 0, time: "1 hr ago" },
   { id: 3, title: "Refactor: Migrate to React Server Components", repo: "frontend-web", author: "aturing", status: "rejected", findings: 12, critical: 4, time: "3 hrs ago" },
   { id: 4, title: "Chore: Update dependencies", repo: "backend-api", author: "dependabot", status: "approved", findings: 0, critical: 0, time: "5 hrs ago" },
@@ -25,7 +25,7 @@ export default function PullRequestReviews() {
         <Card className="col-span-2 flex flex-col min-h-0">
           <CardHeader className="shrink-0">
             <CardTitle>Recent Reviews</CardTitle>
-            <CardDescription>All pull requests analyzed by PRSense</CardDescription>
+            <CardDescription>All pull requests analyzed by PRSense AI</CardDescription>
           </CardHeader>
           <CardContent className="flex-1 overflow-hidden p-0">
             <ScrollArea className="h-full">

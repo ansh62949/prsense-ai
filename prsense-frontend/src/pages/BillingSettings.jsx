@@ -18,12 +18,12 @@ export default function BillingSettings() {
   const [loading, setLoading] = useState(true)
   const [upgrading, setUpgrading] = useState(false)
   const [selectedOrgId, setSelectedOrgId] = useState(() => {
-    return localStosemantic searche.getItem("prsense_selected_org_id") || "1"
+    return localStorage.getItem("prsense_selected_org_id") || "1"
   })
 
   useEffect(() => {
     const syncSelector = () => {
-      setSelectedOrgId(localStosemantic searche.getItem("prsense_selected_org_id") || "1")
+      setSelectedOrgId(localStorage.getItem("prsense_selected_org_id") || "1")
     }
     window.addEventListener("orgChanged", syncSelector)
     return () => window.removeEventListener("orgChanged", syncSelector)
@@ -38,7 +38,7 @@ export default function BillingSettings() {
   const fetchBillingData = async () => {
     setLoading(true)
     try {
-      const token = localStosemantic searche.getItem("authToken")
+      const token = localStorage.getItem("authToken")
       const headers = token ? { Authorization: `Bearer ${token}` } : {}
       const [subRes, usageRes] = await Promise.all([
         fetch(`${window.API_BASE_URL}/api/billing/subscription/${selectedOrgId}`, { headers }),
@@ -60,7 +60,7 @@ export default function BillingSettings() {
   const handleUpgrade = async (planName) => {
     setUpgrading(true)
     try {
-      const token = localStosemantic searche.getItem("authToken")
+      const token = localStorage.getItem("authToken")
       const res = await fetch(`${window.API_BASE_URL}/api/billing/subscription/${selectedOrgId}/upgrade`, {
         method: "POST",
         headers: { 
@@ -95,13 +95,13 @@ export default function BillingSettings() {
       name: "FREE",
       price: "$0",
       period: "forever",
-      desc: "Perfect for exploring PRSense capabilities on public repositories.",
+      desc: "Perfect for exploring PRSense AI capabilities on public repositories.",
       features: [
         "Up to 5 pull request reviews / month",
         "100k maximum embedding tokens / month",
         "Single repo workspace mapping",
-        "Base Workflow Engine parallel reviews",
-        "Standard Analysis Engine fallback circuit breaker"
+        "Base LangGraph parallel reviews",
+        "Standard OpenAI fallback circuit breaker"
       ]
     },
     {
@@ -113,9 +113,9 @@ export default function BillingSettings() {
         "Up to 100 pull request reviews / month",
         "5M embedding tokens limit / month",
         "Up to 10 active repository integrations",
-        "Enhanced semantic memory caches (Semantic Search)",
+        "Enhanced semantic memory caches (RAG)",
         "Slack & Microsoft Teams notifications",
-        "Priority AI model failovers (Audit Core ⇄ Analysis Engine)"
+        "Priority AI model failovers (Gemini ⇄ OpenAI)"
       ],
       highlight: true
     },
@@ -130,7 +130,7 @@ export default function BillingSettings() {
         "Unlimited repositories and workspaces",
         "Developer API Portal keys & rate-limiting control",
         "Custom Prompt Registry version management",
-        "Dedicated Semantic Search document indexing pipelines",
+        "Dedicated RAG document indexing pipelines",
         "24/7 Priority SLA support"
       ]
     }
@@ -148,7 +148,7 @@ export default function BillingSettings() {
             Billing & Resource Settings
           </h1>
           <p className="text-slate-400 text-xs mt-0.5">
-            Manage organization subscriptions, monitor real-time review quotas, and control Analysis Core token expenditures.
+            Manage organization subscriptions, monitor real-time review quotas, and control LLM token expenditures.
           </p>
         </div>
       </div>
@@ -185,7 +185,7 @@ export default function BillingSettings() {
           <div className="mt-6">
             <div className="text-[10px] font-medium text-slate-500 leading-normal flex items-start gap-1.5">
               <Zap className="w-3.5 h-3.5 text-[#ff5a1f] shrink-0 mt-0.5" />
-              <span>Features sync automatically with our Celery/Workflow Engine queue boundary checks.</span>
+              <span>Features sync automatically with our Celery/LangGraph queue boundary checks.</span>
             </div>
           </div>
         </div>

@@ -35,7 +35,7 @@ export default function RepositoryPage() {
   const fetchRepository = async () => {
     setLoading(true)
     try {
-      const token = localStosemantic searche.getItem("authToken")
+      const token = localStorage.getItem("authToken")
       const res = await fetch(`${window.API_BASE_URL}/api/repositories/${repoId}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       })
@@ -63,7 +63,7 @@ export default function RepositoryPage() {
   const handleIndexRepository = async () => {
     setIndexing(true)
     try {
-      const token = localStosemantic searche.getItem("authToken")
+      const token = localStorage.getItem("authToken")
       const res = await fetch(`${window.API_BASE_URL}/api/repositories/${repoId}/index`, {
         method: "POST",
         headers: token ? { Authorization: `Bearer ${token}` } : {},

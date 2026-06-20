@@ -48,7 +48,7 @@ function AppRoutes() {
       <Route path="/reviews/:reviewId" element={<ProtectedRoute element={<LayoutPremium><ReviewDetails /></LayoutPremium>} />} />
       <Route path="/pull-requests/:prId" element={<ProtectedRoute element={<LayoutPremium><PullRequestWorkspace /></LayoutPremium>} />} />
       <Route path="/playground" element={<ProtectedRoute element={<LayoutPremium><ReviewPlayground /></LayoutPremium>} />} />
-      <Route path="/pipeline" element={<ProtectedRoute element={<LayoutPremium><AIAgentCenter /></LayoutPremium>} />} />
+      <Route path="/agents" element={<ProtectedRoute element={<LayoutPremium><AIAgentCenter /></LayoutPremium>} />} />
       <Route path="/ask" element={<ProtectedRoute element={<LayoutPremium><AskRepository /></LayoutPremium>} />} />
       <Route path="/intelligence" element={<ProtectedRoute element={<LayoutPremium><RepositoryIntelligence /></LayoutPremium>} />} />
       <Route path="/timeline" element={<ProtectedRoute element={<LayoutPremium><ReviewTimeline /></LayoutPremium>} />} />

@@ -35,7 +35,7 @@ export default function RepositoryIntelligence() {
   const [msg, setMsg] = useState("")
 
   const [selectedRepoId, setSelectedRepoId] = useState(() => {
-    return localStosemantic searche.getItem("prsense_selected_repo_id") || ""
+    return localStorage.getItem("prsense_selected_repo_id") || ""
   })
 
   // Selected file from the dynamic workspace tree
@@ -54,7 +54,7 @@ export default function RepositoryIntelligence() {
     }
 
     const handleRepoChange = () => {
-      const newRepoId = localStosemantic searche.getItem("prsense_selected_repo_id") || ""
+      const newRepoId = localStorage.getItem("prsense_selected_repo_id") || ""
       setSelectedRepoId(newRepoId)
       if (newRepoId) {
         loadRepositoryData(newRepoId)

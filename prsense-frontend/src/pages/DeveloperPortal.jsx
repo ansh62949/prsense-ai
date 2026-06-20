@@ -24,12 +24,12 @@ export default function DeveloperPortal() {
   const [selectedLanguage, setSelectedLanguage] = useState("curl")
   
   const [selectedOrgId, setSelectedOrgId] = useState(() => {
-    return localStosemantic searche.getItem("prsense_selected_org_id") || "1"
+    return localStorage.getItem("prsense_selected_org_id") || "1"
   })
 
   useEffect(() => {
     const syncSelector = () => {
-      setSelectedOrgId(localStosemantic searche.getItem("prsense_selected_org_id") || "1")
+      setSelectedOrgId(localStorage.getItem("prsense_selected_org_id") || "1")
     }
     window.addEventListener("orgChanged", syncSelector)
     return () => window.removeEventListener("orgChanged", syncSelector)
@@ -44,7 +44,7 @@ export default function DeveloperPortal() {
   const fetchApiKeys = async () => {
     setLoading(true)
     try {
-      const token = localStosemantic searche.getItem("authToken")
+      const token = localStorage.getItem("authToken")
       const res = await fetch(`${window.API_BASE_URL}/api/developer/keys/${selectedOrgId}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       })
@@ -56,7 +56,7 @@ export default function DeveloperPortal() {
       // Mock some developer logs
       setLogs([
         { id: 1, method: "POST", path: "/api/reviews", status: 200, ip: "192.168.1.42", time: "2m ago" },
-        { id: 2, method: "POST", path: "/api/semantic search/ingest", status: 201, ip: "192.168.1.42", time: "15m ago" },
+        { id: 2, method: "POST", path: "/api/rag/ingest", status: 201, ip: "192.168.1.42", time: "15m ago" },
         { id: 3, method: "GET", path: "/api/repositories", status: 200, ip: "192.168.1.42", time: "1h ago" },
         { id: 4, method: "POST", path: "/api/reviews", status: 429, ip: "192.168.1.10", time: "3h ago" }
       ])
@@ -71,7 +71,7 @@ export default function DeveloperPortal() {
     e.preventDefault()
     if (!newKeyName.trim()) return
     try {
-      const token = localStosemantic searche.getItem("authToken")
+      const token = localStorage.getItem("authToken")
       const res = await fetch(`${window.API_BASE_URL}/api/developer/keys/${selectedOrgId}`, {
         method: "POST",
         headers: { 
@@ -94,7 +94,7 @@ export default function DeveloperPortal() {
   const handleRevokeKey = async (id) => {
     if (!confirm("Are you sure you want to revoke this API token? It will stop working immediately.")) return
     try {
-      const token = localStosemantic searche.getItem("authToken")
+      const token = localStorage.getItem("authToken")
       const res = await fetch(`${window.API_BASE_URL}/api/developer/keys/${id}`, {
         method: "DELETE",
         headers: token ? { Authorization: `Bearer ${token}` } : {}
@@ -164,7 +164,7 @@ print(response.json())`,
             Developer API Portal
           </h1>
           <p className="text-slate-400 text-xs mt-0.5">
-            Generate programmatic keys, configure webhooks, and integrate PRSense automated reviews into your CI/CD lines.
+            Generate programmatic keys, configure webhooks, and integrate PRSense AI automated reviews into your CI/CD lines.
           </p>
         </div>
       </div>
@@ -179,7 +179,7 @@ print(response.json())`,
             <div className="space-y-1">
               <h3 className="text-sm font-extrabold text-white">Active REST Access Keys</h3>
               <p className="text-slate-450 text-[10px]">
-                API tokens grant full access to trigger PR audits, ingest Semantic Search knowledge, and fetch code reviews.
+                API tokens grant full access to trigger PR audits, ingest RAG knowledge, and fetch code reviews.
               </p>
             </div>
 
@@ -333,7 +333,7 @@ print(response.json())`,
                 API Rate Limits
               </h3>
               <p className="text-slate-450 text-[10px]">
-                Enforced client query quotas to protect Semantic Search indexing caches and Analysis Core context resources.
+                Enforced client query quotas to protect RAG indexing caches and LLM context resources.
               </p>
             </div>
 
@@ -350,7 +350,7 @@ print(response.json())`,
 
               <div className="p-3.5 bg-slate-950 border border-slate-900 rounded-xl space-y-1">
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-400 font-bold">Semantic Search File Ingestion Ingest Rate</span>
+                  <span className="text-slate-400 font-bold">RAG File Ingestion Ingest Rate</span>
                   <span className="font-bold text-[#ff5a1f] font-mono">10 uploads / min</span>
                 </div>
                 <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden mt-2">
