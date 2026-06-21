@@ -1,5 +1,6 @@
 package com.prsense.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,6 +21,7 @@ public class RepositorySnapshot {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "repository_id", nullable = false)
+    @JsonIgnore
     private Repository repository;
 
     private String commitSha;
