@@ -33,13 +33,13 @@ public class ReviewAnalyticsService {
 
     @Transactional(readOnly = true)
     public List<Review> getAllReviews() {
-        return reviewRepository.findAll();
+        return reviewRepository.findAllWithDetails();
     }
 
     @Transactional(readOnly = true)
     public Map<String, Object> getRepositoryReviewTimeline(Long repoId) {
         log.info("Compiling review timeline for repository ID: {}", repoId);
-        List<Review> reviews = reviewRepository.findAll().stream()
+        List<Review> reviews = reviewRepository.findAllWithDetails().stream()
                 .filter(r -> r.getPullRequest() != null && r.getPullRequest().getRepository() != null && r.getPullRequest().getRepository().getId().equals(repoId))
                 .sorted(Comparator.comparing(Review::getCreatedAt).reversed())
                 .collect(Collectors.toList());
@@ -95,7 +95,7 @@ public class ReviewAnalyticsService {
         long totalLearnedPatterns;
 
         if (repoId != null) {
-            allReviews = reviewRepository.findAll().stream()
+            allReviews = reviewRepository.findAllWithDetails().stream()
                     .filter(r -> r.getPullRequest() != null && r.getPullRequest().getRepository() != null && r.getPullRequest().getRepository().getId().equals(repoId))
                     .collect(Collectors.toList());
             allFindings = findingRepository.findAll().stream()
@@ -108,7 +108,7 @@ public class ReviewAnalyticsService {
                     .filter(p -> p.getRepository() != null && p.getRepository().getId().equals(repoId))
                     .count();
         } else {
-            allReviews = reviewRepository.findAll();
+            allReviews = reviewRepository.findAllWithDetails();
             allFindings = findingRepository.findAll();
             totalPrs = pullRequestRepository.count();
             totalLearnedPatterns = learnedPatternRepository.count();
