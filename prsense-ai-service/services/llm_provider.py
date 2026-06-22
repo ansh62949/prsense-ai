@@ -56,7 +56,8 @@ class GeminiEmbeddings:
                     for t in batch:
                         requests_payload.append({
                             "model": f"models/{self.model}",
-                            "content": {"parts": [{"text": t}]}
+                            "content": {"parts": [{"text": t}]},
+                            "outputDimensionality": 1536
                         })
                     
                     payload = {"requests": requests_payload}
@@ -104,7 +105,10 @@ class GeminiEmbeddings:
         for attempt in range(max_retries):
             try:
                 url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:embedContent?key={self.api_key}"
-                payload = {"content": {"parts": [{"text": text}]}}
+                payload = {
+                    "content": {"parts": [{"text": text}]},
+                    "outputDimensionality": 1536
+                }
                 r = requests.post(url, json=payload, timeout=10)
                 
                 if r.status_code == 200:

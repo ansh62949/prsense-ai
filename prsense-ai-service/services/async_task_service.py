@@ -815,6 +815,12 @@ def process_index_event(payload: dict) -> str:
         target_files = target_files[:30] # Allow indexing of up to 30 key files
         logger.info(f"Found {len(target_files)} key files in clone for indexing.")
         
+        # Clean up old indexed documents for this repository name to avoid duplicate chunks
+        try:
+            rag_service.delete_memory_documents(repo_name=repo_full_name)
+        except Exception as del_exc:
+            logger.warning(f"Failed to clear old memory documents for {repo_full_name}: {del_exc}")
+            
         files_indexed = 0
         embeddings_generated = 0
         sent_progress_milestones = set()

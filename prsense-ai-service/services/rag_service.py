@@ -350,6 +350,23 @@ class RAGService:
                 
         return saved_count
 
+    def delete_memory_documents(self, repo_name: str) -> bool:
+        conn = self._get_conn()
+        if conn is None:
+            logger.warning("pgvector store is not enabled; cannot delete memory documents.")
+            return False
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "DELETE FROM memory_documents WHERE repo_name = %s",
+                    (repo_name,)
+                )
+            logger.info(f"Deleted existing memory documents for repository: {repo_name}")
+            return True
+        except Exception as exc:
+            logger.error(f"Failed to delete memory documents for {repo_name}: {exc}")
+            return False
+
     def fetch_relevant_context(
         self,
         query: str,
@@ -388,9 +405,6 @@ class RAGService:
                 if organization_id:
                     sql += " AND (organization_id = %s OR organization_id IS NULL)"
                     params.append(organization_id)
-                if commit_sha:
-                    sql += " AND (commit_sha = %s OR commit_sha IS NULL)"
-                    params.append(commit_sha)
                     
                 sql += " AND (embedding <=> %s::vector) <= 0.35"
                 params.append(embedding)
