@@ -949,6 +949,8 @@ def process_index_event(payload: dict) -> str:
                 snapshot["security_rules"] = features["security_rules"]
             if "coding_standards" not in snapshot or not snapshot["coding_standards"]:
                 snapshot["coding_standards"] = features["coding_standards"]
+            
+            snapshot["commit_sha"] = commit_sha
                 
             logger.info(f"Final snapshot object built successfully. Keys: {list(snapshot.keys())}")
             duration_ms = int((time.time() - start_time) * 1000)
@@ -960,6 +962,7 @@ def process_index_event(payload: dict) -> str:
                 "embeddings_generated": embeddings_generated,
                 "duration_ms": duration_ms,
                 "progress": 100,
+                "commit_sha": commit_sha,
                 "snapshot": snapshot
             }
             
