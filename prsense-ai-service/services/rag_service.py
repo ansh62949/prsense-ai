@@ -377,15 +377,21 @@ class RAGService:
         commit_sha: Optional[str] = None
     ) -> Dict[str, Any]:
         from datetime import datetime
+        logger.info(f"[Vector Search] Starting similarity search for query: '{query[:60]}...' (repo: {repo_name}, content_type: {content_type})")
+        
         conn = self._get_conn()
         if conn is None:
+            logger.warning("[Vector Search] pgvector store not connected; returning empty context.")
             return {"context_block": "Vector database not connected.", "documents": []}
             
         # Redis cache check removed
 
         embedding = embedding_service.embed_text(query)
         if not embedding:
+            logger.warning("[Vector Search] Failed to generate query embedding; returning empty context.")
             return {"context_block": "Failed to generate search embedding.", "documents": []}
+            
+        logger.info(f"[Vector Search] Successfully generated query embedding of size {len(embedding)}")
             
         try:
             with conn.cursor() as cur:
@@ -412,9 +418,14 @@ class RAGService:
                 sql += " ORDER BY embedding <=> %s::vector LIMIT %s"
                 params.extend([embedding, limit])
                 
+                # Replace newlines for compact logs
+                sql_log = sql.replace('\n', ' ').replace('  ', ' ').strip()
+                logger.info(f"[Vector Search] Executing SQL: {sql_log}")
                 cur.execute(sql, tuple(params))
                 rows = cur.fetchall()
                 
+            logger.info(f"[Vector Search] Query returned {len(rows)} matching chunks.")
+            
             documents = []
             context_blocks = []
             for row in rows:
@@ -429,10 +440,14 @@ class RAGService:
                     "score": round(float(row[5]), 4) if row[5] is not None else 0.75,
                     "created_at": row[6].isoformat() if row[6] else datetime.utcnow().isoformat()
                 }
+                logger.info(f" - [Chunk Found] ID: {doc['id']}, Title: {doc['title']}, Score: {doc['score']}")
                 documents.append(doc)
                 
                 header = f"\n[SOURCE: {doc['content_type'].upper()} | TITLE: {doc['title']} | RELEVANCE SCORE: {doc['score']:.2f}]\n"
                 context_blocks.append(header + doc['content'].strip() + "\n---\n")
+                
+            if not rows:
+                logger.warning(f"[Vector Search] No chunks matched the cosine distance threshold (<= 0.35) for repo {repo_name}")
                 
             context_block = "".join(context_blocks) if context_blocks else "No relevant repository context retrieved."
             
@@ -443,7 +458,7 @@ class RAGService:
             # Redis cache set removed
             return res
         except Exception as exc:
-            logger.warning(f"pgvector semantic query search failed: {exc}")
+            logger.error(f"[Vector Search] pgvector semantic query search failed: {exc}", exc_info=True)
             return {"context_block": f"RAG query execution error: {exc}", "documents": []}
 
     def get_memory_stats(self, repo_name: Optional[str] = None) -> Dict[str, Any]:
