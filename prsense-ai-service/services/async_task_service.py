@@ -817,6 +817,7 @@ def process_index_event(payload: dict) -> str:
         
         files_indexed = 0
         embeddings_generated = 0
+        sent_progress_milestones = set()
         
         for idx, filepath in enumerate(target_files):
             try:
@@ -845,15 +846,27 @@ def process_index_event(payload: dict) -> str:
                 files_indexed += 1
                 embeddings_generated += chunks
                 
-                progress = 10 + int((idx + 1) / len(target_files) * 70)
-                try:
-                    requests.post(INDEXING_CALLBACK_URL, json={
-                        "repository_id": repo_id,
-                        "status": "INDEXING",
-                        "progress": progress
-                    }, timeout=10)
-                except Exception as cb_exc:
-                    logger.warning(f"Failed to post intermediate indexing status: {cb_exc}")
+                if len(target_files) > 0:
+                    fraction = (idx + 1) / len(target_files)
+                    milestone = None
+                    if fraction >= 0.75:
+                        milestone = 75
+                    elif fraction >= 0.50:
+                        milestone = 50
+                    elif fraction >= 0.25:
+                        milestone = 25
+                        
+                    if milestone and milestone not in sent_progress_milestones:
+                        sent_progress_milestones.add(milestone)
+                        try:
+                            requests.post(INDEXING_CALLBACK_URL, json={
+                                "repository_id": repo_id,
+                                "status": "INDEXING",
+                                "progress": milestone
+                            }, timeout=10)
+                            logger.info(f"Posted indexing progress milestone: {milestone}%")
+                        except Exception as cb_exc:
+                            logger.warning(f"Failed to post intermediate progress milestone {milestone}%: {cb_exc}")
                 
             except Exception as file_exc:
                 logger.warning(f"Failed to index file {filepath}: {file_exc}")
