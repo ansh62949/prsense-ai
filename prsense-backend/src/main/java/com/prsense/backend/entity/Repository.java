@@ -1,5 +1,6 @@
 package com.prsense.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,6 +35,7 @@ public class Repository {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_id")
+    @JsonIgnore
     private Workspace workspace;
 
     private String organizationId;
