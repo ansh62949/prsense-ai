@@ -11,6 +11,8 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @RestController
 @RequestMapping("/api/webhooks")
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class WebhookController {
     private final com.prsense.backend.service.AiIndexingClient aiIndexingClient;
 
     @PostMapping("/github")
+    @Transactional
     public ResponseEntity<String> handleGithubWebhook(
             @RequestHeader("X-GitHub-Event") String event,
             @RequestHeader(value = "X-Hub-Signature-256", required = false) String signature,
