@@ -734,7 +734,7 @@ def process_index_event(payload: dict) -> str:
         requests.post(INDEXING_CALLBACK_URL, json={
             "repository_id": repo_id,
             "status": "INDEXING",
-            "progress": 10
+            "progress": 0
         }, timeout=10)
     except Exception as e:
         logger.warning(f"Failed to post INDEXING status update: {e}")

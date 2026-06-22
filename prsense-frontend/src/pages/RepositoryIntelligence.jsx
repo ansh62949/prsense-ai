@@ -124,7 +124,7 @@ export default function RepositoryIntelligence() {
       const res = await backendApi.post(`/api/repositories/${activeRepo.id}/index`)
       if (res) {
         setMsg("Indexing task submitted to queue successfully! Please wait while the workers analyze the codebase...")
-        setActiveRepo(prev => prev ? { ...prev, indexingStatus: "INDEXING", indexingProgress: 10 } : null)
+        setActiveRepo(prev => prev ? { ...prev, indexingStatus: "INDEXING", indexingProgress: 0 } : null)
         setTimeout(() => {
           loadRepositoryData(activeRepo.id, true)
         }, 1500)
@@ -404,13 +404,13 @@ export default function RepositoryIntelligence() {
           <div className="w-full bg-[#090d16] border border-slate-800 rounded-xl p-4 space-y-3 text-left">
             <div className="flex justify-between text-[11px] font-mono text-slate-400">
               <span>Status: <span className="text-purple-400 font-bold">INDEXING</span></span>
-              <span>Progress: <span className="text-white font-bold">{activeRepo.indexingProgress || 10}%</span></span>
+              <span>Progress: <span className="text-white font-bold">{activeRepo.indexingProgress ?? 0}%</span></span>
             </div>
             {/* Progress Bar */}
             <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
               <div 
                 className="bg-gradient-to-r from-purple-500 to-indigo-500 h-1.5 rounded-full transition-all duration-500" 
-                style={{ width: `${activeRepo.indexingProgress || 10}%` }}
+                style={{ width: `${activeRepo.indexingProgress ?? 0}%` }}
               />
             </div>
             {activeRepo.filesIndexed !== undefined && activeRepo.filesIndexed > 0 && (
