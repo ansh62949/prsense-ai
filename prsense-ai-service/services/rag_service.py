@@ -412,7 +412,7 @@ class RAGService:
                     sql += " AND (organization_id = %s OR organization_id IS NULL)"
                     params.append(organization_id)
                     
-                sql += " AND (embedding <=> %s::vector) <= 0.35"
+                sql += " AND (embedding <=> %s::vector) <= 0.70"
                 params.append(embedding)
                 
                 sql += " ORDER BY embedding <=> %s::vector LIMIT %s"
@@ -447,7 +447,7 @@ class RAGService:
                 context_blocks.append(header + doc['content'].strip() + "\n---\n")
                 
             if not rows:
-                logger.warning(f"[Vector Search] No chunks matched the cosine distance threshold (<= 0.35) for repo {repo_name}")
+                logger.warning(f"[Vector Search] No chunks matched the cosine distance threshold (<= 0.70) for repo {repo_name}")
                 
             context_block = "".join(context_blocks) if context_blocks else "No relevant repository context retrieved."
             
