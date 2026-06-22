@@ -47,17 +47,46 @@ EMBEDDING_MODEL = "text-embedding-3-large"
 
 
 def _safe_json_load(text: str) -> Any:
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        start = text.find("[")
-        end = text.rfind("]")
-        if start != -1 and end != -1:
-            try:
-                return json.loads(text[start:end + 1])
-            except json.JSONDecodeError:
-                pass
+    if not text:
         return None
+    text_str = str(text).strip()
+    try:
+        return json.loads(text_str)
+    except json.JSONDecodeError:
+        pass
+
+    # Handle Markdown code blocks (e.g. ```json ... ``` or ``` ... ```)
+    if text_str.startswith("```"):
+        first_newline = text_str.find("\n")
+        if first_newline != -1:
+            text_str = text_str[first_newline:].strip()
+        if text_str.endswith("```"):
+            text_str = text_str[:-3].strip()
+        try:
+            return json.loads(text_str)
+        except json.JSONDecodeError:
+            pass
+
+    # Try finding the first '{' and last '}' for objects
+    start_obj = text_str.find("{")
+    end_obj = text_str.rfind("}")
+    if start_obj != -1 and end_obj != -1 and start_obj < end_obj:
+        try:
+            return json.loads(text_str[start_obj:end_obj + 1])
+        except json.JSONDecodeError:
+            pass
+
+    # Try finding the first '[' and last ']' for arrays
+    start_arr = text_str.find("[")
+    end_arr = text_str.rfind("]")
+    if start_arr != -1 and end_arr != -1 and start_arr < end_arr:
+        try:
+            return json.loads(text_str[start_arr:end_arr + 1])
+        except json.JSONDecodeError:
+            pass
+
+    return None
+
 
 
 def _normalize_severity(value: Optional[str]) -> str:

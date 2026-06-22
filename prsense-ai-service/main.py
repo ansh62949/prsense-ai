@@ -62,7 +62,8 @@ async def startup_event():
         else:
             logger.warning("WARNING: BACKEND_URL and BACKEND_CALLBACK_URL are missing! Callbacks will default to localhost:8080.")
     else:
-        logger.info(f"Callback config verified. BACKEND_URL={backend_url}, BACKEND_CALLBACK_URL={backend_callback}")
+        from services.async_task_service import BACKEND_CALLBACK_URL as resolved_callback
+        logger.info(f"Callback config verified. BACKEND_URL={backend_url}, BACKEND_CALLBACK_URL={backend_callback} (Resolved: {resolved_callback})")
         
     if provider == "gemini" and not gemini_key:
         logger.warning("WARNING: GEMINI_API_KEY is not configured but provider is set to gemini!")
