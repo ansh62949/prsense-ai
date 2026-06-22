@@ -860,7 +860,9 @@ def process_index_event(payload: dict) -> str:
 
         # Generate repository snapshot using LLM + codebase analysis features
         try:
+            logger.info(f"Starting repository snapshot generation for: {repo_full_name}")
             features = analyze_codebase_features(repo_dir, repo_full_name)
+            logger.info(f"Extracted codebase features: {list(features.keys()) if features else None}")
             
             readme_content = ""
             readme_path = os.path.join(repo_dir, "README.md")
@@ -903,11 +905,13 @@ def process_index_event(payload: dict) -> str:
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
                 
+            logger.info("Invoking LLM agent to generate snapshot structure...")
             raw_res = loop.run_until_complete(agent._generate(snapshot_prompt))
             snapshot = _safe_json_load(raw_res)
             
             # Guarantee override with features to prevent any LLM hallucination and ensure 100% real data
             if not isinstance(snapshot, dict):
+                logger.warning("LLM agent did not return a valid dictionary for snapshot. Initializing empty dictionary.")
                 snapshot = {}
                 
             snapshot["primary_language"] = features["primary_language"]
@@ -927,6 +931,7 @@ def process_index_event(payload: dict) -> str:
             if "coding_standards" not in snapshot or not snapshot["coding_standards"]:
                 snapshot["coding_standards"] = features["coding_standards"]
                 
+            logger.info(f"Final snapshot object built successfully. Keys: {list(snapshot.keys())}")
             duration_ms = int((time.time() - start_time) * 1000)
             
             callback_payload = {
@@ -939,8 +944,9 @@ def process_index_event(payload: dict) -> str:
                 "snapshot": snapshot
             }
             
-            logger.info(f"Repository {repo_full_name} successfully indexed. Posting callback...")
+            logger.info(f"Repository {repo_full_name} successfully indexed. Posting callback to URL: {INDEXING_CALLBACK_URL}")
             response = requests.post(INDEXING_CALLBACK_URL, json=callback_payload, timeout=10)
+            logger.info(f"Callback response status: {response.status_code}, response body: {response.text}")
             return f"Indexed: {files_indexed} files"
             
         except Exception as exc:

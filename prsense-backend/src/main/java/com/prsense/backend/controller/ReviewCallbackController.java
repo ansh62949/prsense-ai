@@ -192,35 +192,42 @@ public class ReviewCallbackController {
             
             repositoryRepository.save(repo);
 
-            if ("INDEXED".equals(status) && body.get("snapshot") != null) {
-                Map<String, Object> snapMap = (Map<String, Object>) body.get("snapshot");
-                String commitSha = (String) snapMap.get("commit_sha");
-                
-                if (commitSha != null) {
-                    repositorySnapshotRepository.findByRepositoryIdAndCommitSha(repoId, commitSha)
-                            .ifPresent(repositorySnapshotRepository::delete);
+            if ("INDEXED".equals(status)) {
+                if (body.get("snapshot") != null) {
+                    Map<String, Object> snapMap = (Map<String, Object>) body.get("snapshot");
+                    String commitSha = (String) snapMap.get("commit_sha");
+                    log.info("Processing snapshot in callback for repo ID: {}, language: {}, frameworks: {}", 
+                            repoId, snapMap.get("primary_language"), snapMap.get("frameworks"));
+                    
+                    if (commitSha != null) {
+                        repositorySnapshotRepository.findByRepositoryIdAndCommitSha(repoId, commitSha)
+                                .ifPresent(repositorySnapshotRepository::delete);
+                    }
+                    
+                    RepositorySnapshot snapshot = RepositorySnapshot.builder()
+                            .repository(repo)
+                            .commitSha(commitSha)
+                            .primaryLanguage((String) snapMap.get("primary_language"))
+                            .frameworks((String) snapMap.get("frameworks"))
+                            .databaseUsed((String) snapMap.get("database_used"))
+                            .buildTool((String) snapMap.get("build_tool"))
+                            .controllersCount(snapMap.get("controllers_count") != null ? ((Number) snapMap.get("controllers_count")).intValue() : 0)
+                            .servicesCount(snapMap.get("services_count") != null ? ((Number) snapMap.get("services_count")).intValue() : 0)
+                            .repositoriesCount(snapMap.get("repositories_count") != null ? ((Number) snapMap.get("repositories_count")).intValue() : 0)
+                            .testCount(snapMap.get("test_count") != null ? ((Number) snapMap.get("test_count")).intValue() : 0)
+                            .architectureStyle((String) snapMap.get("architecture_style"))
+                            .securityRules((String) snapMap.get("security_rules"))
+                            .codingStandards((String) snapMap.get("coding_standards"))
+                            .dependencyGraph((String) snapMap.get("dependency_graph"))
+                            .repositoryHealthScore(snapMap.get("health_score") != null ? ((Number) snapMap.get("health_score")).doubleValue() : 90.0)
+                            .build();
+                    
+                    log.info("Saving repository snapshot into database...");
+                    repositorySnapshotRepository.save(snapshot);
+                    log.info("Successfully saved repository snapshot for repo: {} at commit: {}", repo.getFullName(), commitSha);
+                } else {
+                    log.warn("Received INDEXED callback status for repo ID: {} but snapshot payload was null!", repoId);
                 }
-                
-                RepositorySnapshot snapshot = RepositorySnapshot.builder()
-                        .repository(repo)
-                        .commitSha(commitSha)
-                        .primaryLanguage((String) snapMap.get("primary_language"))
-                        .frameworks((String) snapMap.get("frameworks"))
-                        .databaseUsed((String) snapMap.get("database_used"))
-                        .buildTool((String) snapMap.get("build_tool"))
-                        .controllersCount(snapMap.get("controllers_count") != null ? ((Number) snapMap.get("controllers_count")).intValue() : 0)
-                        .servicesCount(snapMap.get("services_count") != null ? ((Number) snapMap.get("services_count")).intValue() : 0)
-                        .repositoriesCount(snapMap.get("repositories_count") != null ? ((Number) snapMap.get("repositories_count")).intValue() : 0)
-                        .testCount(snapMap.get("test_count") != null ? ((Number) snapMap.get("test_count")).intValue() : 0)
-                        .architectureStyle((String) snapMap.get("architecture_style"))
-                        .securityRules((String) snapMap.get("security_rules"))
-                        .codingStandards((String) snapMap.get("coding_standards"))
-                        .dependencyGraph((String) snapMap.get("dependency_graph"))
-                        .repositoryHealthScore(snapMap.get("health_score") != null ? ((Number) snapMap.get("health_score")).doubleValue() : 90.0)
-                        .build();
-                
-                repositorySnapshotRepository.save(snapshot);
-                log.info("Saved repository snapshot for repo: {} at commit: {}", repo.getFullName(), commitSha);
             }
 
             return ResponseEntity.ok("Indexing callback successfully processed.");

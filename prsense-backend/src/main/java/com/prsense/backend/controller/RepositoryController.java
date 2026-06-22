@@ -210,6 +210,7 @@ public class RepositoryController {
     @GetMapping("/{id}/snapshot")
     public ResponseEntity<RepositorySnapshot> getRepositorySnapshot(@PathVariable Long id) {
         List<RepositorySnapshot> snapshots = snapshotRepository.findByRepositoryId(id);
+        log.info("Snapshots found in database for repository ID {}: {}", id, snapshots.size());
         if (snapshots.isEmpty()) {
             repositoryService.resetIndexingStatus(id);
             return ResponseEntity.notFound().build();
