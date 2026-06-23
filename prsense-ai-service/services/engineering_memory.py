@@ -2,7 +2,7 @@ import logging
 from typing import Optional
 from services.rag_service import rag_service
 
-logger = logging.getLogger("PRSenseEngineeringMemory")
+logger = logging.getLogger("EngineeringMemory")
 
 class EngineeringMemory:
     def __init__(self):

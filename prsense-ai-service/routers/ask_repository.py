@@ -13,7 +13,7 @@ from models.schemas import (
 from services.rag_service import rag_service
 from graph.nodes import agent_coordinator
 
-logger = logging.getLogger("PRSenseAskRepositoryRouter")
+logger = logging.getLogger("AskRepositoryController")
 router = APIRouter()
 
 from config import sanitize_repo_name

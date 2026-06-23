@@ -42,9 +42,9 @@ const navigation = [
   { name: "Reviews", href: "/playground", icon: CheckSquare, group: "Core Workflows" },
   { name: "Repository Intelligence", href: "/intelligence", icon: BookOpen, group: "Intelligence" },
   { name: "Query Codebase", href: "/ask", icon: Search, group: "Intelligence" },
+  { name: "Rule Learning", href: "/learner", icon: Brain, group: "Intelligence" },
   { name: "Execution Timeline", href: "/timeline", icon: Clock, group: "Observability" },
-  { name: "Analysis Pipeline", href: "/pipeline", icon: Cpu, group: "Observability" },
-  { name: "Rule Learner", href: "/learner", icon: Brain, group: "Engine" },
+  { name: "Pipeline", href: "/pipeline", icon: Cpu, group: "Observability" },
   { name: "Monitoring", href: "/monitoring", icon: Activity, group: "Observability" },
   { name: "Billing & Plans", href: "/billing", icon: CreditCard, group: "Enterprise" },
   { name: "Developer API", href: "/developer", icon: Key, group: "Enterprise" },
@@ -124,7 +124,7 @@ export function LayoutPremium({ children }) {
   }
 
   const selectedRepo = repos.find((r) => r.id.toString() === selectedRepoId)
-  const groups = ["Overview", "Core Workflows", "Intelligence", "Engine", "Observability", "Enterprise"]
+  const groups = ["Overview", "Core Workflows", "Intelligence", "Observability", "Enterprise"]
 
   return (
     <div className="flex h-screen bg-[#0c0c0e] text-slate-150 font-sans overflow-hidden">

@@ -18,17 +18,6 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:alpine
-    container_name: prsense-redis
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   backend:
     build:
       context: ./prsense-backend
@@ -42,16 +31,12 @@ services:
       - DB_NAME=prsense_db
       - DB_USER=prsense_user
       - DB_PASS=password
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
       - AI_SERVICE_URL=http://ai-service:8000
       - SPRING_PROFILES_ACTIVE=prod
       - ALLOWED_ORIGINS=http://localhost:5173,http://localhost
       - WEBHOOK_BASE_URL=http://backend:8080
     depends_on:
       db:
-        condition: service_healthy
-      redis:
         condition: service_healthy
 
   ai-service:
@@ -70,35 +55,9 @@ services:
       - POSTGRES_DB=prsense_db
       - POSTGRES_USER=prsense_user
       - POSTGRES_PASSWORD=password
-      - REDIS_URL=redis://redis:6379/0
       - BACKEND_CALLBACK_URL=http://backend:8080/api/reviews/callback
     depends_on:
       db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
-  celery-worker:
-    build:
-      context: ./prsense-ai-service
-      dockerfile: Dockerfile
-    container_name: prsense-celery-worker
-    command: celery -A celery_worker.celery_app worker --loglevel=info -P solo
-    environment:
-      - LLM_PROVIDER=gemini
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - POSTGRES_HOST=db
-      - POSTGRES_PORT=5432
-      - POSTGRES_DB=prsense_db
-      - POSTGRES_USER=prsense_user
-      - POSTGRES_PASSWORD=password
-      - REDIS_URL=redis://redis:6379/0
-      - BACKEND_CALLBACK_URL=http://backend:8080/api/reviews/callback
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
         condition: service_healthy
 
 volumes:

@@ -14,7 +14,7 @@ except ImportError:
     psycopg2 = None
     register_vector = None
 
-logger = logging.getLogger("PRSenseRAGService")
+logger = logging.getLogger("RAGService")
 
 class DocumentLoader:
     @staticmethod
@@ -377,7 +377,7 @@ class RAGService:
         commit_sha: Optional[str] = None
     ) -> Dict[str, Any]:
         from datetime import datetime
-        logger.info(f"[Vector Search] Starting similarity search for query: '{query[:60]}...' (repo: {repo_name}, content_type: {content_type})")
+        logger.debug(f"[Vector Search] Starting similarity search for query: '{query[:60]}...' (repo: {repo_name}, content_type: {content_type})")
         
         conn = self._get_conn()
         if conn is None:
@@ -385,13 +385,13 @@ class RAGService:
             return {"context_block": "Vector database not connected.", "documents": []}
             
         # Redis cache check removed
-
+ 
         embedding = embedding_service.embed_text(query)
         if not embedding:
             logger.warning("[Vector Search] Failed to generate query embedding; returning empty context.")
             return {"context_block": "Failed to generate search embedding.", "documents": []}
             
-        logger.info(f"[Vector Search] Successfully generated query embedding of size {len(embedding)}")
+        logger.debug(f"[Vector Search] Successfully generated query embedding of size {len(embedding)}")
             
         try:
             with conn.cursor() as cur:
@@ -420,11 +420,11 @@ class RAGService:
                 
                 # Replace newlines for compact logs
                 sql_log = sql.replace('\n', ' ').replace('  ', ' ').strip()
-                logger.info(f"[Vector Search] Executing SQL: {sql_log}")
+                logger.debug(f"[Vector Search] Executing SQL: {sql_log}")
                 cur.execute(sql, tuple(params))
                 rows = cur.fetchall()
                 
-            logger.info(f"[Vector Search] Query returned {len(rows)} matching chunks.")
+            logger.debug(f"[Vector Search] Query returned {len(rows)} matching chunks.")
             
             documents = []
             context_blocks = []
@@ -440,7 +440,7 @@ class RAGService:
                     "score": round(float(row[5]), 4) if row[5] is not None else 0.75,
                     "created_at": row[6].isoformat() if row[6] else datetime.utcnow().isoformat()
                 }
-                logger.info(f" - [Chunk Found] ID: {doc['id']}, Title: {doc['title']}, Score: {doc['score']}")
+                logger.debug(f" - [Chunk Found] ID: {doc['id']}, Title: {doc['title']}, Score: {doc['score']}")
                 documents.append(doc)
                 
                 header = f"\n[SOURCE: {doc['content_type'].upper()} | TITLE: {doc['title']} | RELEVANCE SCORE: {doc['score']:.2f}]\n"

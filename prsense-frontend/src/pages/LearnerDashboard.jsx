@@ -88,19 +88,35 @@ export default function LearnerDashboard() {
 
   // Fetch Learned Patterns
   const fetchPatterns = async () => {
+    if (!activeRepo) return
     setLoadingPatterns(true)
     try {
-      const url = activeRepo
-        ? `/api/analytics/dashboard?repoId=${activeRepo.id}`
-        : '/api/analytics/dashboard'
-      const dashRes = await backendApi.get(url)
-      if (dashRes) {
-        const dashData = dashRes.data
-        setDashboardData(dashData)
-        setLearningTrends(dashData.learningTrends || [])
+      const url = `/api/analytics/patterns?repoId=${activeRepo.id}`
+      const res = await backendApi.get(url)
+      if (res && res.data) {
+        setPatterns(res.data)
       }
     } catch (error) {
-      console.error("Failed to fetch KB stats & trends:", error)
+      console.error("Failed to fetch learned patterns:", error)
+    } finally {
+      setLoadingPatterns(false)
+    }
+  }
+
+  // Fetch KB stats & trends
+  const fetchStats = async () => {
+    if (!activeRepo) return
+    try {
+      const url = `/api/analytics/dashboard?repoId=${activeRepo.id}`
+      const res = await backendApi.get(url)
+      if (res && res.data) {
+        const dashData = res.data
+        setDashboardData(dashData)
+        setLearningTrends(dashData.learningTrends || [])
+        setTotalKBDocs(dashData.totalLearnedRules || 0)
+      }
+    } catch (error) {
+      console.error("Failed to fetch dashboard stats:", error)
     }
   }
 

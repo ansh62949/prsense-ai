@@ -15,16 +15,6 @@ const PRSenseLogo = ({ className = "w-8 h-8" }) => (
   </div>
 )
 
-const Github = (props) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    stroke="none"
-    className={props.className}
-  >
-    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57V21.09c-3.33.72-4.035-1.605-4.035-1.605-.54-1.38-1.335-1.755-1.335-1.755-1.095-.75.09-.735.09-.735 1.215.09 1.86 1.245 1.86 1.245 1.08 1.83 2.82 1.305 3.51.99.105-.78.42-1.305.765-1.605-2.655-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22v3.3c0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-  </svg>
-)
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -250,23 +240,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-white/5"></div>
-          </div>
-          <div className="relative flex justify-center text-[9px] uppercase font-black">
-            <span className="px-3 bg-[#0c0c0e] text-slate-500 tracking-widest">Or connect with</span>
-          </div>
-        </div>
 
-        <button 
-          type="button" 
-          onClick={() => handleLogin()}
-          className="w-full h-10 border border-white/5 bg-white/[0.01] hover:bg-white/[0.04] text-slate-350 rounded-xl text-xs flex items-center justify-center gap-2 font-bold cursor-pointer transition-all hover:border-[#ff5a1f]/30"
-        >
-          <Github className="w-3.5 h-3.5 text-slate-400" />
-          Continue with GitHub Auth
-        </button>
 
         {/* Demo login reminder helper */}
         <div className="text-[10px] text-slate-500 text-center bg-white/[0.01] p-2.5 rounded-xl border border-white/5 leading-normal">

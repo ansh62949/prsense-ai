@@ -210,12 +210,11 @@ export default function LandingPagePremium() {
 
   const architectureSteps = [
     { title: "GitHub Webhook Ingestion", desc: "A developer pushes code or opens a new Pull Request. GitHub fires a webhook event signed with cryptographic payload headers." },
-    { title: "Spring Boot Gateway Ingest", desc: "The primary Spring Boot backend verifies the signature, registers the metadata in PostgreSQL, and enqueues a Celery task." },
-    { title: "Redis Task Broker", desc: "Spring Boot routes the review job inside a Celery envelope straight to Redis, ensuring instant response without blocking GitHub." },
-    { title: "Celery Workers execution", desc: "Asynchronous Python worker threads consume the task from Redis, checkout/clone the repository, and prepare the snapshot." },
-    { title: "pgvector Semantic Search Context Retrieval", desc: "The worker queries pgvector semantic storage, matching custom guidelines, naming preferences, and learned style rules." },
-    { title: "Workflow Engine Multi-Stage Run", desc: "Coordinated agent nodes (Static, Security, Architecture, Style) audit the code diffs in parallel, tracing token consumption." },
-    { title: "GitHub PR Reviews published", desc: "Findings are de-duplicated by the Synthesizer node, sent via callback to Spring Boot, and published as inline comments on GitHub." }
+    { title: "Spring Boot Gateway Ingest", desc: "The primary Spring Boot backend verifies the signature, registers the pull request in the PostgreSQL database, and initiates async processing." },
+    { title: "Direct AI Service Call", desc: "Spring Boot directly triggers the FastAPI AI Service endpoints asynchronously without blocking the client response." },
+    { title: "pgvector Semantic Search", desc: "The AI service queries pgvector semantic storage, matching custom guidelines, naming preferences, and learned style rules." },
+    { title: "Analysis Core Execution", desc: "Coordinated agent nodes (Static, Security, Architecture, Style) audit the code diffs in parallel, tracing token consumption." },
+    { title: "GitHub PR Reviews Published", desc: "Findings are de-duplicated by the Synthesizer node, sent via callback to Spring Boot, and published as inline comments on GitHub." }
   ]
 
   return (

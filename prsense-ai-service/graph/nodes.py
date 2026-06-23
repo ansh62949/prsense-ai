@@ -34,7 +34,7 @@ except ImportError:
     psycopg2 = None
     register_vector = None
 
-logger = logging.getLogger("PRSenseAgents")
+logger = logging.getLogger("AgentCoordinator")
 logger.setLevel(logging.INFO)
 
 from services.llm_provider import llm_provider

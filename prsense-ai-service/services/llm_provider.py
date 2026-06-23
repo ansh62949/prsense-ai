@@ -2,7 +2,7 @@ import os
 import logging
 from typing import Any
 
-logger = logging.getLogger("PRSenseLLMProvider")
+logger = logging.getLogger("LLMProvider")
 logger.setLevel(logging.INFO)
 
 # Load environment configurations
@@ -22,7 +22,7 @@ if not LLM_PROVIDER or LLM_PROVIDER not in ["openai", "gemini", "groq"]:
     else:
         LLM_PROVIDER = "gemini"
 
-logger.info(f"Initializing PRSense LLM Provider: {LLM_PROVIDER.upper()}")
+logger.info(f"Initializing LLM Provider: {LLM_PROVIDER.upper()}")
 
 class GeminiEmbeddings:
     def __init__(self, model: str, api_key: str):

@@ -182,10 +182,10 @@ export default function Monitoring() {
           {/* Status HUD cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
-            {/* Redis health check */}
+            {/* Database health check */}
             <div className="bg-[#09090b]/40 border border-slate-900 p-5 rounded-2xl backdrop-blur-md hover:border-[#ff5a1f]/20 transition-all flex flex-col justify-between">
               <div className="flex justify-between items-center text-slate-400 text-[10px] uppercase font-bold tracking-wider font-mono">
-                <span>Redis Broker</span>
+                <span>PostgreSQL DB</span>
                 <Database className="w-4 h-4 text-[#ff5a1f]" />
               </div>
               <div className="mt-3">
@@ -193,18 +193,18 @@ export default function Monitoring() {
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                   CONNECTED
                 </div>
-                <p className="text-[10px] text-slate-550 mt-1 font-semibold">Port 6379 • Localhost</p>
+                <p className="text-[10px] text-slate-550 mt-1 font-semibold">Port 5432 • pgvector</p>
               </div>
             </div>
 
             {/* Queue count */}
             <div className="bg-[#09090b]/40 border border-slate-900 p-5 rounded-2xl backdrop-blur-md hover:border-[#ff5a1f]/20 transition-all flex flex-col justify-between">
               <div className="flex justify-between items-center text-slate-400 text-[10px] uppercase font-bold tracking-wider font-mono">
-                <span>Celery Queue Size</span>
+                <span>Active Task Queue</span>
                 <Layers className="w-4 h-4 text-[#ff5a1f]" />
               </div>
               <div className="mt-3">
-                <div className="text-2xl font-black text-white">{stats.celery_queue_size} tasks</div>
+                <div className="text-2xl font-black text-white">{stats.active_queue_size} tasks</div>
                 <p className="text-[10px] text-slate-550 mt-1 font-semibold">Active queue: review_tasks</p>
               </div>
             </div>
@@ -212,7 +212,7 @@ export default function Monitoring() {
             {/* Worker status */}
             <div className="bg-[#09090b]/40 border border-slate-900 p-5 rounded-2xl backdrop-blur-md hover:border-[#ff5a1f]/20 transition-all flex flex-col justify-between">
               <div className="flex justify-between items-center text-slate-400 text-[10px] uppercase font-bold tracking-wider font-mono">
-                <span>Celery Workers</span>
+                <span>Review Workers</span>
                 <Server className="w-4 h-4 text-orange-500" />
               </div>
               <div className="mt-3">

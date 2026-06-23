@@ -14,7 +14,7 @@ class DirectReviewRequest(BaseModel):
     organization_id: Optional[str] = None
     commit_sha: Optional[str] = None
 
-logger = logging.getLogger("PRSenseReviewRouter")
+logger = logging.getLogger("ReviewController")
 router = APIRouter()
 
 @router.post("/api/review/run")

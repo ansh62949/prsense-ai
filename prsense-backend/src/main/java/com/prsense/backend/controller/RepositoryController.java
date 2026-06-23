@@ -32,8 +32,6 @@ public class RepositoryController {
     private final AiIndexingClient aiIndexingClient;
     private final RepositorySnapshotRepository snapshotRepository;
     private final KnowledgeDocumentRepository knowledgeDocumentRepository;
-    private final GitHubOAuthService gitHubOAuthService;
-    private final GitHubRepositoryService gitHubRepositoryService;
 
     @GetMapping
     public ResponseEntity<List<Repository>> getAllRepositories() {
@@ -45,79 +43,6 @@ public class RepositoryController {
         return repositoryService.getRepositoryById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping("/connect")
-    public ResponseEntity<RepositoryResponse> connectRepository(
-            @RequestBody RepositoryConnectRequest request,
-            Authentication authentication
-    ) {
-        try {
-            User user = (User) authentication.getPrincipal();
-            
-            if (user.getGithubAccessToken() == null) {
-                return ResponseEntity.badRequest().build(); // User not authenticated with GitHub
-            }
-            
-            // Fetch repository details from GitHub
-            Map<String, Object> repoDetails = gitHubRepositoryService.fetchRepositoryDetails(
-                request.getOwner(),
-                request.getRepo(),
-                user.getGithubAccessToken()
-            );
-            
-            String normalizedFullName = RepositoryService.normalizeRepoFullName((String) repoDetails.get("fullName"));
-            // Create or update repository
-            Repository repo = repositoryService.getRepositoryByFullName(normalizedFullName)
-                .orElseGet(() -> new Repository());
-            
-            repo.setName((String) repoDetails.get("name"));
-            repo.setFullName(normalizedFullName);
-            repo.setDescription((String) repoDetails.get("description"));
-            repo.setUrl((String) repoDetails.get("url"));
-            repo.setOwner((String) repoDetails.get("owner"));
-            repo.setIsPrivate((Boolean) repoDetails.get("isPrivate"));
-            repo.setDefaultBranch((String) repoDetails.get("defaultBranch"));
-            repo.setStars((Integer) repoDetails.get("stars"));
-            repo.setForks((Integer) repoDetails.get("forks"));
-            repo.setLanguage((String) repoDetails.get("language"));
-            repo.setInstallationId(request.getInstallationId() != null ? request.getInstallationId() : 0L);
-            repo.setSyncStatus("completed");
-            repo.setLastSyncAt(LocalDateTime.now());
-            
-            Repository saved = repositoryService.saveRepository(repo);
-            
-            log.info("Successfully connected repository: {}", saved.getFullName());
-            
-            return ResponseEntity.ok(mapToResponse(saved));
-        } catch (Exception e) {
-            log.error("Error connecting repository: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @GetMapping("/user/repositories")
-    public ResponseEntity<Map<String, Object>> getUserRepositories(
-            Authentication authentication
-    ) {
-        try {
-            User user = (User) authentication.getPrincipal();
-            
-            if (user.getGithubAccessToken() == null) {
-                return ResponseEntity.badRequest().build();
-            }
-            
-            Map<String, Object> repos = gitHubRepositoryService.fetchUserRepositories(
-                user.getGithubAccessToken(),
-                1,
-                50
-            );
-            
-            return ResponseEntity.ok(repos);
-        } catch (Exception e) {
-            log.error("Error fetching user repositories: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().build();
-        }
     }
 
     @PostMapping("/sync")
@@ -170,18 +95,23 @@ public class RepositoryController {
                     repo.setIndexingProgress(0);
                     repo.setIndexingError(null);
                     Repository updated = repositoryService.saveRepository(repo);
+
+                    Long repoId = updated.getId();
+                    String repoFullName = updated.getFullName();
+                    Long orgId = updated.getOrganizationId();
+                    String commitSha = updated.getLatestCommitSha();
                     
                     java.util.concurrent.CompletableFuture.runAsync(() -> {
                         try {
                             long startTime = System.currentTimeMillis();
                             Map<String, Object> result = aiIndexingClient.indexRepository(
-                                    updated.getId(),
-                                    updated.getFullName(),
-                                    updated.getOrganizationId(),
-                                    updated.getLatestCommitSha()
+                                    repoId,
+                                    repoFullName,
+                                    orgId,
+                                    commitSha
                             );
                             
-                            Repository currentRepo = repositoryService.getRepositoryById(updated.getId()).orElse(null);
+                            Repository currentRepo = repositoryService.getRepositoryById(repoId).orElse(null);
                             if (currentRepo != null) {
                                 boolean success = Boolean.TRUE.equals(result.get("success"));
                                 if (success) {
@@ -193,8 +123,8 @@ public class RepositoryController {
                                 }
                             }
                         } catch (Exception e) {
-                            log.error("Failed to run async repository indexing for repo {}", updated.getFullName(), e);
-                            repositoryService.getRepositoryById(updated.getId()).ifPresent(r -> {
+                            log.error("Failed to run async repository indexing for repo {}", repoFullName, e);
+                            repositoryService.getRepositoryById(repoId).ifPresent(r -> {
                                 r.setIndexingStatus("FAILED");
                                 r.setIndexingError(e.getMessage());
                                 repositoryService.saveRepository(r);

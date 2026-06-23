@@ -206,14 +206,14 @@ export default function CommandCenter() {
               </div>
               <div className="space-y-3 text-xs">
                 <div className="flex justify-between items-center bg-slate-950/40 p-2.5 rounded-lg border border-slate-850">
-                  <span className="text-slate-400">Celery Worker Daemon</span>
+                  <span className="text-slate-400">Review Worker Pool</span>
                   <span className="text-emerald-400 font-bold flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Active
                   </span>
                 </div>
                 <div className="flex justify-between items-center bg-slate-950/40 p-2.5 rounded-lg border border-slate-850">
-                  <span className="text-slate-400">Redis Queue Size</span>
-                  <span className="font-mono text-slate-200 font-bold">{data?.celery_queue_size || 0} tasks</span>
+                  <span className="text-slate-400">Active Reviews Queue</span>
+                  <span className="font-mono text-slate-200 font-bold">{data?.active_queue_size || 0} tasks</span>
                 </div>
                 <div className="flex justify-between items-center bg-slate-950/40 p-2.5 rounded-lg border border-slate-850">
                   <span className="text-slate-400">Average Job Latency</span>

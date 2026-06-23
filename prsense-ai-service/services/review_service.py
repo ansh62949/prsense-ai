@@ -2,7 +2,7 @@ import logging
 from typing import Dict, Any, Optional
 from services.langgraph_service import langgraph_service
 
-logger = logging.getLogger("PRSenseReviewService")
+logger = logging.getLogger("ReviewService")
 
 class ReviewService:
     def __init__(self):

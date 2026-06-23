@@ -1,6 +1,7 @@
 package com.prsense.backend.controller;
 
 import com.prsense.backend.entity.Review;
+import com.prsense.backend.entity.LearnedPattern;
 import com.prsense.backend.service.ReviewAnalyticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +31,10 @@ public class ReviewAnalyticsController {
     @GetMapping("/reviews")
     public ResponseEntity<List<Review>> getAllReviews() {
         return ResponseEntity.ok(analyticsService.getAllReviews());
+    }
+
+    @GetMapping("/patterns")
+    public ResponseEntity<List<LearnedPattern>> getLearnedPatterns(@RequestParam(value = "repoId", required = false) Long repoId) {
+        return ResponseEntity.ok(analyticsService.getLearnedPatterns(repoId));
     }
 }

@@ -3,7 +3,7 @@ import logging
 import time
 from typing import Any, Dict, Optional
 
-logger = logging.getLogger("PRSenseLangfuseService")
+logger = logging.getLogger("TelemetryService")
 logger.setLevel(logging.INFO)
 
 # Load configuration
@@ -36,7 +36,7 @@ class MockSpan:
         
     def end(self, output: Any = None, level: str = "DEFAULT", status_message: str = "", usage: Optional[Dict] = None):
         duration = (time.perf_counter() - self.start_time) * 1000
-        logger.info(f"[TELEMETRY TRACE] End Span '{self.name}' - Duration: {duration:.1f}ms - Status: {level} {status_message} - Usage: {usage}")
+        logger.debug(f"[TELEMETRY TRACE] End Span '{self.name}' - Duration: {duration:.1f}ms - Status: {level} {status_message} - Usage: {usage}")
 
 class MockTrace:
     def __init__(self, id: str, name: str):
@@ -45,12 +45,12 @@ class MockTrace:
         self.start_time = time.perf_counter()
         
     def span(self, name: str, input: Any = None, metadata: Optional[Dict] = None) -> MockSpan:
-        logger.info(f"[TELEMETRY TRACE] Start Span '{name}' on Trace '{self.name}' ({self.id}) - Input size: {len(str(input)) if input else 0}")
+        logger.debug(f"[TELEMETRY TRACE] Start Span '{name}' on Trace '{self.name}' ({self.id}) - Input size: {len(str(input)) if input else 0}")
         return MockSpan(name)
         
     def update(self, output: Any = None, metadata: Optional[Dict] = None):
         duration = (time.perf_counter() - self.start_time) * 1000
-        logger.info(f"[TELEMETRY TRACE] End Trace '{self.name}' ({self.id}) - Duration: {duration:.1f}ms")
+        logger.debug(f"[TELEMETRY TRACE] End Trace '{self.name}' ({self.id}) - Duration: {duration:.1f}ms")
 
 class LangfuseService:
     def __init__(self):

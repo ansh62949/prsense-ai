@@ -38,12 +38,6 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
-github:
-  oauth:
-    client-id: ${GITHUB_CLIENT_ID:}
-    client-secret: ${GITHUB_CLIENT_SECRET:}
-    redirect-uri: ${GITHUB_OAUTH_REDIRECT_URI:http://localhost:3000/auth/github/callback}
-
 ai:
   service:
     url: ${AI_SERVICE_URL:http://localhost:8000}

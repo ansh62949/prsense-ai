@@ -2,7 +2,7 @@ import re
 import logging
 from typing import List, Dict, Any
 
-logger = logging.getLogger("PRSenseStaticAnalysisEngine")
+logger = logging.getLogger("StaticAnalysisService")
 logger.setLevel(logging.INFO)
 
 class StaticAnalysisEngine:
@@ -69,7 +69,7 @@ class StaticAnalysisEngine:
                                 "description": f"Bandit [B105:hardcoded_password_string]: Hardcoded credential key found in: '{added_code}'",
                                 "why_flagged": "Exposing secrets in repository source code leads to critical credential leak risks.",
                                 "rule_violated": "Bandit Ruleset B105 (Hardcoded Password String)",
-                                "similar_pr": "PR-102 (Fix hardcoded stripe key)"
+                                "similar_pr": "None"
                             })
                             
                     # Check for eval, exec, shell=True
@@ -101,7 +101,7 @@ class StaticAnalysisEngine:
                                 "description": "Checkstyle [Style:field_injection]: Found field-level dependency injection using @Autowired.",
                                 "why_flagged": "Field injection hides class dependency graphs, prevents class immutability, and complicates writing clean unit tests.",
                                 "rule_violated": "Checkstyle Coding Guidelines Section 4.1 (Constructor Injection)",
-                                "similar_pr": "PR-145 (Enforce controller boundaries)"
+                                "similar_pr": "None"
                             })
                             
                         # Class declaration naming style
@@ -134,7 +134,7 @@ class StaticAnalysisEngine:
                                 "description": "ESLint [Arch:layered_isolation]: Controller performs database queries bypassing the Service boundaries.",
                                 "why_flagged": "Layered architecture separation of concerns requires controllers to only communicate with service layers to enforce isolation.",
                                 "rule_violated": "Architecture Design Standard Section 3.2 (Layer Isolation Guidelines)",
-                                "similar_pr": "PR-145 (Enforce controller boundaries)"
+                                "similar_pr": "None"
                             })
                             
                         # Deep nesting representation
@@ -149,7 +149,7 @@ class StaticAnalysisEngine:
                                 "description": "ESLint [no-nested-conditionals]: Excessive conditional complexity inside blocks decreases maintainability.",
                                 "why_flagged": "Flattening nested control flow makes the method readable and minimizes cognitive load during audits.",
                                 "rule_violated": "Coding Style Guideline #4 (Flatten Control Flow)",
-                                "similar_pr": "PR-184 (Flatten user controller validation logic)"
+                                "similar_pr": "None"
                             })
 
                 elif line.strip() and not line.startswith(("+", "-", "@@", "index", "similarity")):

@@ -4,7 +4,7 @@ from typing import Optional
 from services.async_task_service import process_index_event
 import logging
 
-logger = logging.getLogger("PRSenseIndexingRouter")
+logger = logging.getLogger("IndexingController")
 router = APIRouter()
 
 class IndexRequest(BaseModel):

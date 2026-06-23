@@ -2,7 +2,7 @@ import os
 import logging
 from typing import Dict, Any, Optional
 
-logger = logging.getLogger("PRSensePromptRegistry")
+logger = logging.getLogger("PromptRegistry")
 
 class PromptRegistry:
     def __init__(self):

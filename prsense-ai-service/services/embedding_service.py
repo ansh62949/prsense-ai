@@ -2,7 +2,7 @@ import logging
 from typing import List, Optional
 from services.llm_provider import llm_provider
 
-logger = logging.getLogger("PRSenseEmbeddingService")
+logger = logging.getLogger("EmbeddingService")
 
 class EmbeddingService:
     def __init__(self):

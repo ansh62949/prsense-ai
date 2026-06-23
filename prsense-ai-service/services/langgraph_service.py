@@ -8,7 +8,7 @@ from services.langfuse_service import langfuse_service
 from services.llm_provider import llm_provider
 from graph.nodes import PRSenseAgent
 
-logger = logging.getLogger("PRSenseLangGraphService")
+logger = logging.getLogger("WorkflowService")
 
 class TelemetryPRSenseAgent(PRSenseAgent):
     def __init__(self):

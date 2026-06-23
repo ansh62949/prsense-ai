@@ -19,7 +19,7 @@ class DirectLearnerRequest(BaseModel):
     pr_diff: Optional[str] = None
     organization_id: Optional[str] = None
 
-logger = logging.getLogger("PRSenseLearnerRouter")
+logger = logging.getLogger("LearnerController")
 router = APIRouter()
 
 @router.post("/api/learner/run")

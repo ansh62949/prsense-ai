@@ -3,7 +3,7 @@ from typing import List, Optional
 from services.rag_service import rag_service
 from graph.nodes import PRSenseAgent
 
-logger = logging.getLogger("PRSenseLearnerService")
+logger = logging.getLogger("LearnerService")
 
 class LearnerService:
     def __init__(self):

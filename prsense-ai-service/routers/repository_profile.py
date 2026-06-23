@@ -8,7 +8,7 @@ from services.rag_service import rag_service
 from graph.nodes import agent_coordinator
 import logging
 
-logger = logging.getLogger("PRSenseRepositoryProfileRouter")
+logger = logging.getLogger("RepositoryProfileController")
 router = APIRouter()
 
 from config import sanitize_repo_name

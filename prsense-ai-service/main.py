@@ -3,7 +3,7 @@ import os
 
 # Initialize logging configuration before any local imports
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("PRSenseAPI")
+logger = logging.getLogger("APIService")
 
 from dotenv import load_dotenv
 
@@ -46,7 +46,7 @@ async def startup_event():
     groq_key = os.getenv("GROQ_API_KEY")
     provider = os.getenv("LLM_PROVIDER", "gemini").lower()
     
-    logger.info(f"Starting PRSense AI Service with provider: {provider}")
+    logger.info(f"Starting AI service with provider: {provider}")
     
     # Validate BACKEND_URL or production BACKEND_CALLBACK_URL
     backend_url = os.getenv("BACKEND_URL")
@@ -63,7 +63,7 @@ async def startup_event():
             logger.warning("WARNING: BACKEND_URL and BACKEND_CALLBACK_URL are missing! Callbacks will default to localhost:8080.")
     else:
         from services.async_task_service import BACKEND_CALLBACK_URL as resolved_callback
-        logger.info(f"Callback config verified. BACKEND_URL={backend_url}, BACKEND_CALLBACK_URL={backend_callback} (Resolved: {resolved_callback})")
+        logger.info(f"Resolved callback URL: {resolved_callback}")
         
     if provider == "gemini" and not gemini_key:
         logger.warning("WARNING: GEMINI_API_KEY is not configured but provider is set to gemini!")
@@ -72,7 +72,7 @@ async def startup_event():
     elif provider == "groq" and not groq_key:
         logger.warning("WARNING: GROQ_API_KEY is not configured but provider is set to groq!")
     else:
-        logger.info("LLM Provider credentials validated.")
+        logger.info("LLM credentials verified")
         
     # Check connections & validate pgvector
     try:
@@ -82,11 +82,11 @@ async def startup_event():
                 cur.execute("SELECT extname FROM pg_extension WHERE extname = 'vector';")
                 ext = cur.fetchone()
                 if ext:
-                    logger.info("Successfully connected to Database and verified pgvector extension is enabled on startup.")
+                    logger.info("Database connected")
                 else:
-                    logger.warning("Database connected, but pgvector extension is NOT enabled on startup.")
+                    logger.warning("Database connected without pgvector")
         else:
-            logger.warning("Could not connect to Database on startup.")
+            logger.warning("Database connection failed")
     except Exception as e:
         logger.warning(f"Error connecting/validating pgvector on startup: {e}")
 
@@ -97,7 +97,7 @@ async def root():
         "service": "PRSense AI Service Engine"
     }
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 async def health(response: Response):
     health_status = {"status": "UP"}
     db_ok = False

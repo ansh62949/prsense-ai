@@ -12,7 +12,7 @@ import re
 import asyncio
 from typing import Dict, Any, Optional
 
-logger = logging.getLogger("PRSenseAsyncTaskService")
+logger = logging.getLogger("AsyncTaskService")
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 BACKEND_CALLBACK_URL = os.getenv("BACKEND_CALLBACK_URL")
@@ -43,7 +43,7 @@ if not is_valid_prod_callback:
     # Construct callback URL from normalized backend_url
     BACKEND_CALLBACK_URL = f"{backend_url.rstrip('/')}/api/reviews/callback"
 
-logger.info(f"PRSenseAsyncTaskService initialized. Resolved BACKEND_CALLBACK_URL: {BACKEND_CALLBACK_URL}")
+logger.info(f"AsyncTaskService initialized. Resolved BACKEND_CALLBACK_URL: {BACKEND_CALLBACK_URL}")
 
 # Import services
 from services.review_service import review_service
@@ -924,13 +924,13 @@ def process_index_event(payload: dict) -> str:
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
                 
-            logger.info("Invoking LLM agent to generate snapshot structure...")
+            logger.info("Generating repository snapshot...")
             raw_res = loop.run_until_complete(agent._generate(snapshot_prompt))
             snapshot = _safe_json_load(raw_res)
             
             # Guarantee override with features to prevent any LLM hallucination and ensure 100% real data
             if not isinstance(snapshot, dict):
-                logger.warning("LLM agent did not return a valid dictionary for snapshot. Initializing empty dictionary.")
+                logger.warning("Invalid snapshot response")
                 snapshot = {}
                 
             snapshot["primary_language"] = features["primary_language"]

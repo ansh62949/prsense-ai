@@ -115,6 +115,9 @@ public class WebhookController {
     private void triggerAiReviewFlow(PullRequest pr, String repoFullName, String prTitle) {
         log.info("Initiating asynchronous direct review flow for PR #{} in {}", pr.getPrNumber(), repoFullName);
         
+        Long orgId = pr.getRepository() != null ? pr.getRepository().getOrganizationId() : null;
+        String headSha = pr.getHeadSha();
+
         // Create Review in IN_PROGRESS state
         Review review = Review.builder()
                 .pullRequest(pr)
@@ -125,28 +128,33 @@ public class WebhookController {
                 .criticalFindings(0)
                 .confidenceScore(0.0)
                 .executionTimeMs(0L)
-                .organizationId(pr.getRepository().getOrganizationId())
+                .organizationId(orgId)
                 .build();
         final Review savedReview = reviewRepository.save(review);
  
         String mockDiff = "";
+        Long reviewId = savedReview.getId();
+        Long savedOrgId = savedReview.getOrganizationId();
  
         // Call direct indexing service asynchronously
         java.util.concurrent.CompletableFuture.runAsync(() -> {
             try {
                 aiIndexingClient.runReview(
-                        savedReview.getId(),
+                        reviewId,
                         repoFullName,
                         prTitle,
                         mockDiff,
-                        savedReview.getOrganizationId(),
-                        pr.getHeadSha()
+                        savedOrgId,
+                        headSha
                 );
             } catch (Exception e) {
-                log.error("Failed to execute async direct review for review ID: {}", savedReview.getId(), e);
-                savedReview.setStatus("FAILED");
-                savedReview.setSummaryReport("Direct review call failed: " + e.getMessage());
-                reviewRepository.save(savedReview);
+                log.error("Failed to execute async direct review for review ID: {}", reviewId, e);
+                // Reload or fetch to save status safely
+                reviewRepository.findById(reviewId).ifPresent(r -> {
+                    r.setStatus("FAILED");
+                    r.setSummaryReport("Direct review call failed: " + e.getMessage());
+                    reviewRepository.save(r);
+                });
             }
         });
     }
@@ -154,19 +162,21 @@ public class WebhookController {
     private void triggerLearnerFlow(Repository repository, String prTitle) {
         log.info("Triggering asynchronous direct learning task for repo: {}", repository.getFullName());
         
+        String repoFullName = repository.getFullName();
+        Long orgId = repository.getOrganizationId();
         String mockMergedDiff = "";
  
         // Call direct learning service asynchronously
         java.util.concurrent.CompletableFuture.runAsync(() -> {
             try {
                 aiIndexingClient.runLearner(
-                        repository.getFullName(),
+                        repoFullName,
                         prTitle,
                         mockMergedDiff,
-                        repository.getOrganizationId()
+                        orgId
                 );
             } catch (Exception e) {
-                log.error("Failed to execute async direct learner for repo: {}", repository.getFullName(), e);
+                log.error("Failed to execute async direct learner for repo: {}", repoFullName, e);
             }
         });
     }

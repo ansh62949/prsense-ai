@@ -267,4 +267,13 @@ public class ReviewAnalyticsService {
 
         return res;
     }
+
+    @Transactional(readOnly = true)
+    public List<LearnedPattern> getLearnedPatterns(Long repoId) {
+        if (repoId != null) {
+            return learnedPatternRepository.findByRepositoryId(repoId);
+        } else {
+            return learnedPatternRepository.findAll();
+        }
+    }
 }

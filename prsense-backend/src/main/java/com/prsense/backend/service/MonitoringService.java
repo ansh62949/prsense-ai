@@ -84,7 +84,7 @@ public class MonitoringService {
         stats.put("agent_latencies_ms", agentLatencies);
         stats.put("total_tokens_consumed", totalTokens);
         stats.put("total_api_costs_usd", totalCost);
-        stats.put("celery_queue_size", queueSize);
+        stats.put("active_queue_size", queueSize);
         stats.put("worker_status", totalReviews > 0 ? "active" : "idle");
 
         return stats;
