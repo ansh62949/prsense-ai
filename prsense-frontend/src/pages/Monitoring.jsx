@@ -143,7 +143,7 @@ export default function Monitoring() {
             <div>
               <h1 className="text-2xl font-black tracking-tight text-white">System Observability</h1>
               <p className="text-slate-400 text-xs mt-0.5">
-                Real-time daemon checks, task queue latencies, code analyzer execution profiles, and Analysis Core costs.
+                Real-time daemon checks, background job pipelines, code analyzer execution profiles, and Analysis Core costs.
               </p>
             </div>
           </div>
@@ -200,19 +200,19 @@ export default function Monitoring() {
             {/* Queue count */}
             <div className="bg-[#09090b]/40 border border-slate-900 p-5 rounded-2xl backdrop-blur-md hover:border-[#ff5a1f]/20 transition-all flex flex-col justify-between">
               <div className="flex justify-between items-center text-slate-400 text-[10px] uppercase font-bold tracking-wider font-mono">
-                <span>Active Task Queue</span>
+                <span>Background Processing Jobs</span>
                 <Layers className="w-4 h-4 text-[#ff5a1f]" />
               </div>
               <div className="mt-3">
                 <div className="text-2xl font-black text-white">{stats.active_queue_size} tasks</div>
-                <p className="text-[10px] text-slate-550 mt-1 font-semibold">Active queue: review_tasks</p>
+                <p className="text-[10px] text-slate-550 mt-1 font-semibold">Active pipeline: review_tasks</p>
               </div>
             </div>
 
             {/* Worker status */}
             <div className="bg-[#09090b]/40 border border-slate-900 p-5 rounded-2xl backdrop-blur-md hover:border-[#ff5a1f]/20 transition-all flex flex-col justify-between">
               <div className="flex justify-between items-center text-slate-400 text-[10px] uppercase font-bold tracking-wider font-mono">
-                <span>Review Workers</span>
+                <span>Processing Thread Pools</span>
                 <Server className="w-4 h-4 text-orange-500" />
               </div>
               <div className="mt-3">
@@ -220,7 +220,7 @@ export default function Monitoring() {
                   <span className={`w-2.5 h-2.5 rounded-full ${stats.worker_status === "active" ? "bg-emerald-500 animate-pulse" : "bg-blue-500"}`} />
                   {stats.worker_status}
                 </div>
-                <p className="text-[10px] text-slate-550 mt-1 font-semibold">Daemon worker check: OK</p>
+                <p className="text-[10px] text-slate-550 mt-1 font-semibold">Asynchronous pipeline check: OK</p>
               </div>
             </div>
 

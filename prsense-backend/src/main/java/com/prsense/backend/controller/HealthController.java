@@ -26,17 +26,20 @@ public class HealthController {
         Map<String, String> healthReport = new HashMap<>();
         boolean isDbUp = false;
 
+        healthReport.put("service", "backend");
+        healthReport.put("timestamp", java.time.Instant.now().toString());
+
         // Check Database
         try (Connection conn = dataSource.getConnection()) {
             if (conn.isValid(2)) {
                 isDbUp = true;
-                healthReport.put("database", "UP");
+                healthReport.put("database", "CONNECTED");
             } else {
-                healthReport.put("database", "DOWN");
+                healthReport.put("database", "DISCONNECTED");
             }
         } catch (Exception e) {
             log.error("Database health check failed", e);
-            healthReport.put("database", "DOWN - " + e.getMessage());
+            healthReport.put("database", "ERROR - " + e.getMessage());
         }
 
         if (isDbUp) {

@@ -1,5 +1,6 @@
 import { backendApi } from "@/config/api";
 import React, { useState, useEffect } from "react"
+import { exportReviewReportToPDF } from "@/lib/pdfExport"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -237,18 +238,28 @@ export default function ReviewReports() {
                 <CardTitle className="text-base font-extrabold text-foreground">Detailed Findings</CardTitle>
                 <CardDescription className="text-xs">Wired via Review Explanation Protocol</CardDescription>
               </div>
-              <Badge 
-                variant="outline"
-                className={
-                  selectedReview.aiDecision === "APPROVED" 
-                    ? "bg-green-500/10 border-green-500/20 text-green-500 font-extrabold" 
-                    : "bg-red-500/10 border-red-500/20 text-red-500 font-extrabold"
-                }
-              >
-                {selectedReview.aiDecision === "APPROVED" && <CheckCircle2 className="w-3.5 h-3.5 mr-1" />}
-                {selectedReview.aiDecision !== "APPROVED" && <ShieldAlert className="w-3.5 h-3.5 mr-1" />}
-                {selectedReview.aiDecision}
-              </Badge>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => exportReviewReportToPDF(selectedReview, selectedReview.findings, selectedReview.pullRequest)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#ff5a1f]/10 border border-[#ff5a1f]/20 hover:bg-[#ff5a1f]/20 text-[#ff5a1f] hover:text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
+                  title="Download PDF Audit Report"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Export PDF</span>
+                </button>
+                <Badge 
+                  variant="outline"
+                  className={
+                    selectedReview.aiDecision === "APPROVED" 
+                      ? "bg-green-500/10 border-green-500/20 text-green-500 font-extrabold" 
+                      : "bg-red-500/10 border-red-500/20 text-red-500 font-extrabold"
+                  }
+                >
+                  {selectedReview.aiDecision === "APPROVED" && <CheckCircle2 className="w-3.5 h-3.5 mr-1" />}
+                  {selectedReview.aiDecision !== "APPROVED" && <ShieldAlert className="w-3.5 h-3.5 mr-1" />}
+                  {selectedReview.aiDecision}
+                </Badge>
+              </div>
             </CardHeader>
             <CardContent className="flex-1 p-0 overflow-y-auto max-h-[600px]">
               <ScrollArea className="h-full">
@@ -296,10 +307,10 @@ export default function ReviewReports() {
                               <p className="leading-relaxed">{finding.similarPr || "None identified."}</p>
                             </div>
                             <div className="bg-secondary/40 border border-border p-3 rounded-xl space-y-1">
-                              <span className="font-extrabold text-[9px] uppercase tracking-widest text-primary block">Confidence Rating:</span>
-                              <div className="flex items-center gap-1.5 font-bold text-green-500">
-                                <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
-                                {Math.round((finding.confidence || 0.85) * 100)}% Match
+                              <span className="font-extrabold text-[9px] uppercase tracking-widest text-primary block">Rule Match Strength:</span>
+                              <div className="flex items-center gap-1.5 font-bold text-emerald-400">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                                <span>High Match</span>
                               </div>
                             </div>
                           </div>
@@ -409,8 +420,8 @@ export default function ReviewReports() {
                   <span className="font-extrabold text-foreground font-mono">{selectedReview.executionTimeMs} ms</span>
                 </div>
                 <div className="flex justify-between items-center bg-secondary/20 p-3 rounded-xl border border-border">
-                  <span className="text-muted-foreground">Confidence Score</span>
-                  <span className="font-extrabold text-green-500 font-mono">{Math.round(selectedReview.confidenceScore * 100)}%</span>
+                  <span className="text-muted-foreground">Agents Executed</span>
+                  <span className="font-extrabold text-foreground font-mono">5 (Analysis Core)</span>
                 </div>
                 <div className="flex justify-between items-center bg-secondary/20 p-3 rounded-xl border border-border">
                   <span className="text-muted-foreground">Actionable Issues</span>

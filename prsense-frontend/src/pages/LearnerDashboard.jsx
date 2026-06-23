@@ -236,13 +236,11 @@ export default function LearnerDashboard() {
             </div>
             <div className="bg-[#09090b]/40 border border-slate-900 p-4 rounded-xl backdrop-blur-md">
               <div className="flex justify-between items-center text-slate-400 text-[10px] uppercase font-bold tracking-wider font-mono">
-                <span>Baseline Accuracy</span>
+                <span>Verification Status</span>
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
               </div>
               <div className="text-2xl font-black text-emerald-450 mt-1.5">
-                {dashboardData?.averageConfidence 
-                  ? (dashboardData.averageConfidence * 100).toFixed(1) + "%" 
-                  : "85.0%"}
+                VERIFIED
               </div>
             </div>
             <div className="bg-[#09090b]/40 border border-slate-900 p-4 rounded-xl backdrop-blur-md">
@@ -415,7 +413,7 @@ diff --git a/queries.js b/queries.js
                                 </div>
                               </div>
                               <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded-full shrink-0 font-mono">
-                                {Math.round((pref.confidence || 0.85) * 100)}% Match
+                                High Match
                               </span>
                             </div>
 

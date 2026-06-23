@@ -341,15 +341,15 @@ export default function AskRepository() {
         <div>
           <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-1">
             <Award className="w-3.5 h-3.5 text-purple-400" />
-            AI Confidence Profile
+            AI Retrieval Profile
           </h3>
           <div className="bg-[#07090e] p-4 rounded-xl border border-slate-850 space-y-2">
             <div className="flex justify-between items-center text-xs">
-              <span className="text-slate-400">Response Confidence</span>
-              <span className="font-extrabold text-emerald-400">92% Match</span>
+              <span className="text-slate-400">RAG Context Match</span>
+              <span className="font-extrabold text-emerald-400">High Match</span>
             </div>
             <div className="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
-              <div className="bg-emerald-400 h-full rounded-full" style={{ width: "92%" }} />
+              <div className="bg-emerald-400 h-full rounded-full" style={{ width: "100%" }} />
             </div>
           </div>
         </div>

@@ -1158,11 +1158,11 @@ export default function LandingPagePremium() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl text-center">
-                      <span className="text-[9px] font-bold text-slate-500 block uppercase tracking-wider font-mono">Queue Latency</span>
+                      <span className="text-[9px] font-bold text-slate-500 block uppercase tracking-wider font-mono">Pipeline duration</span>
                       <span className="text-2xl font-bold text-white font-mono">45ms</span>
                     </div>
                     <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl text-center">
-                      <span className="text-[9px] font-bold text-slate-500 block uppercase tracking-wider font-mono font-mono">Active Workers</span>
+                      <span className="text-[9px] font-bold text-slate-500 block uppercase tracking-wider font-mono font-mono">Active review threads</span>
                       <span className="text-2xl font-bold text-white font-mono">8/8 Live</span>
                     </div>
                     <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl text-center">
@@ -1273,7 +1273,7 @@ export default function LandingPagePremium() {
           <div className="space-y-4">
             {[
               { q: "How does the Rule Learner work?", a: "When you merge a PR, the system runs an async learner task parsing the code diff and extracting conventions. These are stored in pgvector, which allows other agents to query them as context during future reviews." },
-              { q: "Do you store our proprietary source code?", a: "No. The code is only checked out temporarily in worker threads during review execution. The files are deleted instantly once the analysis completes. The only data kept in the database are the metadata of your repositories, the generated issues list, and the general patterns extracted by the Rule Learner." },
+              { q: "Do you store our proprietary source code?", a: "No. The code is only checked out temporarily in asynchronous background threads during review execution. The files are deleted instantly once the analysis completes. The only data kept in the database are the metadata of your repositories, the generated issues list, and the general patterns extracted by the Rule Learner." },
               { q: "How is it configured for our company rules?", a: "You can provide custom architectural files or write a set of guidelines. The Semantic Search architecture scans these files and automatically informs the agents if a developer violates those constraints." }
             ].map((faq, index) => (
               <div key={index} className="p-5 rounded-xl border border-white/5 bg-[#050816]/30 space-y-2 animate-fade-in">

@@ -99,24 +99,37 @@ async def root():
 
 @app.api_route("/health", methods=["GET", "HEAD"])
 async def health(response: Response):
-    health_status = {"status": "UP"}
+    import datetime
+    from services.llm_provider import LLM_PROVIDER
+    
+    health_status = {
+        "status": "UP",
+        "database": "DISCONNECTED",
+        "vector_store": "DISCONNECTED",
+        "provider": LLM_PROVIDER.upper(),
+        "timestamp": datetime.datetime.utcnow().isoformat() + "Z"
+    }
+    
     db_ok = False
-
-    # Check Database connection
     if rag_service:
         try:
             conn = rag_service._get_conn()
             if conn is not None:
                 with conn.cursor() as cur:
                     cur.execute("SELECT 1;")
+                    # Check if vector extension is enabled
+                    cur.execute("SELECT extname FROM pg_extension WHERE extname = 'vector';")
+                    ext = cur.fetchone()
                 db_ok = True
-                health_status["database"] = "UP"
+                health_status["database"] = "CONNECTED"
+                health_status["vector_store"] = "CONNECTED" if ext else "AVAILABLE_WITHOUT_VECTOR_EXTENSION"
             else:
-                health_status["database"] = "DOWN"
+                health_status["database"] = "DISCONNECTED"
         except Exception as e:
-            health_status["database"] = f"DOWN: {str(e)}"
+            health_status["database"] = f"ERROR: {str(e)}"
     else:
         health_status["database"] = "DISABLED"
+        health_status["vector_store"] = "DISABLED"
 
     if db_ok:
         health_status["status"] = "UP"

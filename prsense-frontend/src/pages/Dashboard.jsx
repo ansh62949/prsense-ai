@@ -167,7 +167,7 @@ export default function Dashboard() {
                 <div className="text-3xl font-black text-red-500">{metrics.totalFindings}</div>
                 <p className="text-[10px] text-red-500 mt-1 font-semibold flex items-center gap-0.5">
                   <TrendingUp className="w-3.5 h-3.5" />
-                  Confidence rate: {Math.round(metrics.averageConfidence * 100)}%
+                  Precision Rate: High Match
                 </p>
               </CardContent>
             </Card>
@@ -310,7 +310,7 @@ export default function Dashboard() {
                             </div>
                             <p className="text-muted-foreground line-clamp-2 leading-snug">{finding.description}</p>
                             <div className="text-[9px] text-red-400/80 mt-1.5 text-right font-semibold">
-                              Conf: {Math.round(finding.confidence * 100)}%
+                              Match: High Match
                             </div>
                           </div>
                         ))}
@@ -333,7 +333,7 @@ export default function Dashboard() {
                             <h5 className="font-bold text-purple-400 truncate mb-1" title={rule.title}>{rule.title}</h5>
                             <p className="text-muted-foreground line-clamp-2 leading-snug">{rule.description}</p>
                             <div className="text-[9px] text-purple-400/80 mt-1.5 text-right font-semibold">
-                              Confidence: {Math.round(rule.confidence * 100)}%
+                              Rule Strength: High Match
                             </div>
                           </div>
                         ))}

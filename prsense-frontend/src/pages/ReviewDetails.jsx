@@ -1,5 +1,6 @@
 import { backendApi } from "@/config/api";
 import React, { useState, useEffect } from "react"
+import { exportReviewReportToPDF } from "@/lib/pdfExport"
 import { useParams, Link } from "react-router-dom"
 import { 
   FileText, 
@@ -16,7 +17,8 @@ import {
   ChevronLeft,
   MessageSquare,
   Award,
-  Database
+  Database,
+  Download
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -158,6 +160,14 @@ export default function ReviewDetails() {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => exportReviewReportToPDF(review, findings, pullRequest)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#ff5a1f]/10 border border-[#ff5a1f]/20 hover:bg-[#ff5a1f]/20 text-[#ff5a1f] hover:text-white rounded-lg text-xs font-bold transition-all cursor-pointer"
+              title="Download PDF Audit Report"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Export PDF</span>
+            </button>
             <span className={`text-[10px] font-black px-3.5 py-1.5 rounded-full border ${
               review.aiDecision === "APPROVED" 
                 ? "bg-green-500/10 border-green-500/20 text-green-400" 
@@ -179,7 +189,7 @@ export default function ReviewDetails() {
         {[
           { label: "Total Findings", value: findings?.length || 0, color: "text-white" },
           { label: "Critical Violations", value: review.criticalFindings, color: "text-rose-400" },
-          { label: "Confidence Rating", value: `${Math.round(review.confidenceScore * 100)}%`, color: "text-emerald-400" },
+          { label: "Agents Executed", value: "5 (Core)", color: "text-emerald-400" },
           { label: "Files Evaluated", value: filesChanged?.length || 0, color: "text-white" }
         ].map((stat, i) => (
           <div key={i} className="p-4 bg-[#0a0e17]/80 border border-slate-800/80 rounded-xl">

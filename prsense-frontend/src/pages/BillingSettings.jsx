@@ -186,7 +186,7 @@ export default function BillingSettings() {
           <div className="mt-6">
             <div className="text-[10px] font-medium text-slate-500 leading-normal flex items-start gap-1.5">
               <Zap className="w-3.5 h-3.5 text-[#ff5a1f] shrink-0 mt-0.5" />
-              <span>Features sync automatically with our Celery/Workflow Engine queue boundary checks.</span>
+              <span>Features sync automatically with our direct AI dispatch pipelines.</span>
             </div>
           </div>
         </div>

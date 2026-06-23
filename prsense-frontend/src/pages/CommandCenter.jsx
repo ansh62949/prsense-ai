@@ -151,7 +151,7 @@ export default function CommandCenter() {
               <div className="flex justify-between items-center border-b border-slate-800/60 pb-3">
                 <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                   <Activity className="w-4 h-4 text-purple-400" />
-                  Active Review Queue
+                  Active Review Pipelines
                 </h3>
                 <span className="text-[9px] bg-slate-800 border border-slate-700 px-2 py-0.5 rounded font-mono text-slate-400">
                   REAL-TIME FEED
@@ -201,18 +201,18 @@ export default function CommandCenter() {
               <div className="flex justify-between items-center border-b border-slate-800/60 pb-3">
                 <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                   <Server className="w-4 h-4 text-cyan-400" />
-                  Worker Pool Status
+                  Pipeline Status
                 </h3>
               </div>
               <div className="space-y-3 text-xs">
                 <div className="flex justify-between items-center bg-slate-950/40 p-2.5 rounded-lg border border-slate-850">
-                  <span className="text-slate-400">Review Worker Pool</span>
+                  <span className="text-slate-400">Asynchronous Processing Threads</span>
                   <span className="text-emerald-400 font-bold flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Active
                   </span>
                 </div>
                 <div className="flex justify-between items-center bg-slate-950/40 p-2.5 rounded-lg border border-slate-850">
-                  <span className="text-slate-400">Active Reviews Queue</span>
+                  <span className="text-slate-400">Active Processing Jobs</span>
                   <span className="font-mono text-slate-200 font-bold">{data?.active_queue_size || 0} tasks</span>
                 </div>
                 <div className="flex justify-between items-center bg-slate-950/40 p-2.5 rounded-lg border border-slate-850">
