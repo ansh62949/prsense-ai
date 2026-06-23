@@ -115,7 +115,7 @@ public class WebhookController {
     private void triggerAiReviewFlow(PullRequest pr, String repoFullName, String prTitle) {
         log.info("Initiating asynchronous direct review flow for PR #{} in {}", pr.getPrNumber(), repoFullName);
         
-        Long orgId = pr.getRepository() != null ? pr.getRepository().getOrganizationId() : null;
+        String orgId = pr.getRepository() != null ? pr.getRepository().getOrganizationId() : null;
         String headSha = pr.getHeadSha();
 
         // Create Review in IN_PROGRESS state
@@ -134,7 +134,7 @@ public class WebhookController {
  
         String mockDiff = "";
         Long reviewId = savedReview.getId();
-        Long savedOrgId = savedReview.getOrganizationId();
+        String savedOrgId = savedReview.getOrganizationId();
  
         // Call direct indexing service asynchronously
         java.util.concurrent.CompletableFuture.runAsync(() -> {
@@ -163,7 +163,7 @@ public class WebhookController {
         log.info("Triggering asynchronous direct learning task for repo: {}", repository.getFullName());
         
         String repoFullName = repository.getFullName();
-        Long orgId = repository.getOrganizationId();
+        String orgId = repository.getOrganizationId();
         String mockMergedDiff = "";
  
         // Call direct learning service asynchronously

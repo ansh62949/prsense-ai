@@ -98,7 +98,7 @@ public class RepositoryController {
 
                     Long repoId = updated.getId();
                     String repoFullName = updated.getFullName();
-                    Long orgId = updated.getOrganizationId();
+                    String orgId = updated.getOrganizationId();
                     String commitSha = updated.getLatestCommitSha();
                     
                     java.util.concurrent.CompletableFuture.runAsync(() -> {
