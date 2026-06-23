@@ -363,12 +363,12 @@ export default function LandingPagePremium() {
             <span className="text-[10px] font-black uppercase text-orange-400 tracking-widest">Automated Developer Ecosystem</span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 leading-[0.95] tracking-tight">
-            Automated <br />
+          <h1 className="text-4xl md:text-6xl lg:text-6xl font-black text-white mb-6 leading-tight tracking-tight">
+            Automated{" "}
             <span className="bg-gradient-to-r from-white via-orange-300 to-[#ff5a1f] bg-clip-text text-transparent">
-              Repo Intelligence &
-            </span> <br />
-            Multi-Stage Reviews
+              Repo Intelligence
+            </span>{" "}
+            & Multi-Stage Reviews
           </h1>
 
           <p className="text-base text-slate-400 mb-10 max-w-xl leading-relaxed font-medium">
@@ -400,26 +400,6 @@ export default function LandingPagePremium() {
                 <Play className="w-4 h-4 text-[#ff5a1f]" /> Watch Demo
               </a>
             </motion.div>
-          </div>
-
-          {/* Hero Statistics */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full mt-16 pt-8 border-t border-white/5">
-            <div>
-              <div className="text-2xl font-black text-white">240K+</div>
-              <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Repositories Indexed</div>
-            </div>
-            <div>
-              <div className="text-2xl font-black text-white">18M+</div>
-              <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Reviews Generated</div>
-            </div>
-            <div>
-              <div className="text-2xl font-black text-white">99.2%</div>
-              <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Findings Resolved</div>
-            </div>
-            <div>
-              <div className="text-2xl font-black text-white">8,500+</div>
-              <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Teams Enrolled</div>
-            </div>
           </div>
         </div>
 
