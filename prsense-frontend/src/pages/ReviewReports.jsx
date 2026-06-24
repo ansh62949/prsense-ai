@@ -414,18 +414,40 @@ export default function ReviewReports() {
               </Tabs>
 
               {/* Review metrics card */}
-              <div className="pt-6 border-t border-border space-y-4 text-xs">
-                <div className="flex justify-between items-center bg-secondary/20 p-3 rounded-xl border border-border">
-                  <span className="text-muted-foreground">Average Run Speed</span>
-                  <span className="font-extrabold text-foreground font-mono">{selectedReview.executionTimeMs} ms</span>
+              <div className="pt-6 border-t border-border space-y-3.5 text-xs">
+                <div className="flex justify-between items-center bg-secondary/20 p-2.5 rounded-xl border border-border">
+                  <span className="text-muted-foreground">Critical Findings</span>
+                  <span className="font-extrabold text-rose-450 font-mono">
+                    {(selectedReview.findings || []).filter(f => f.severity?.toLowerCase() === 'critical' || f.severity?.toLowerCase() === 'high').length}
+                  </span>
                 </div>
-                <div className="flex justify-between items-center bg-secondary/20 p-3 rounded-xl border border-border">
+                <div className="flex justify-between items-center bg-secondary/20 p-2.5 rounded-xl border border-border">
+                  <span className="text-muted-foreground">Medium Findings</span>
+                  <span className="font-extrabold text-amber-550 font-mono">
+                    {(selectedReview.findings || []).filter(f => f.severity?.toLowerCase() === 'medium').length}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center bg-secondary/20 p-2.5 rounded-xl border border-border">
+                  <span className="text-muted-foreground">Low Findings</span>
+                  <span className="font-extrabold text-emerald-450 font-mono">
+                    {(selectedReview.findings || []).filter(f => f.severity?.toLowerCase() === 'low' || f.severity?.toLowerCase() === 'info').length}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center bg-secondary/20 p-2.5 rounded-xl border border-border">
+                  <span className="text-muted-foreground">Review Duration</span>
+                  <span className="font-extrabold text-foreground font-mono">
+                    {(selectedReview.executionTimeMs / 1000).toFixed(1)}s
+                  </span>
+                </div>
+                <div className="flex justify-between items-center bg-secondary/20 p-2.5 rounded-xl border border-border">
+                  <span className="text-muted-foreground">Files Analyzed</span>
+                  <span className="font-extrabold text-foreground font-mono">
+                    {[...new Set((selectedReview.findings || []).map(f => f.filePath))].length}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center bg-secondary/20 p-2.5 rounded-xl border border-border">
                   <span className="text-muted-foreground">Agents Executed</span>
-                  <span className="font-extrabold text-foreground font-mono">5 (Analysis Core)</span>
-                </div>
-                <div className="flex justify-between items-center bg-secondary/20 p-3 rounded-xl border border-border">
-                  <span className="text-muted-foreground">Actionable Issues</span>
-                  <span className="font-extrabold text-red-500 font-mono">{selectedReview.totalFindings} findings</span>
+                  <span className="font-extrabold text-foreground font-mono">5 (Core)</span>
                 </div>
               </div>
 

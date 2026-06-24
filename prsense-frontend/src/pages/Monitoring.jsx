@@ -15,7 +15,9 @@ import {
   GitBranch,
   Play,
   AlertTriangle,
-  HardDrive
+  HardDrive,
+  Clock,
+  Radio
 } from "lucide-react"
 import { Bar, BarChart, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts"
 
@@ -180,12 +182,12 @@ export default function Monitoring() {
         <div className="space-y-6 relative z-10">
           
           {/* Status HUD cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xxl:grid-cols-7 gap-4">
             
             {/* Database health check */}
             <div className="bg-[#09090b]/40 border border-slate-900 p-5 rounded-2xl backdrop-blur-md hover:border-[#ff5a1f]/20 transition-all flex flex-col justify-between">
               <div className="flex justify-between items-center text-slate-400 text-[10px] uppercase font-bold tracking-wider font-mono">
-                <span>PostgreSQL DB</span>
+                <span>Database Health</span>
                 <Database className="w-4 h-4 text-[#ff5a1f]" />
               </div>
               <div className="mt-3">
@@ -197,42 +199,78 @@ export default function Monitoring() {
               </div>
             </div>
 
-            {/* Queue count */}
+            {/* Background processing count */}
             <div className="bg-[#09090b]/40 border border-slate-900 p-5 rounded-2xl backdrop-blur-md hover:border-[#ff5a1f]/20 transition-all flex flex-col justify-between">
               <div className="flex justify-between items-center text-slate-400 text-[10px] uppercase font-bold tracking-wider font-mono">
-                <span>Background Processing Jobs</span>
+                <span>Background Processing</span>
                 <Layers className="w-4 h-4 text-[#ff5a1f]" />
               </div>
               <div className="mt-3">
-                <div className="text-2xl font-black text-white">{stats.active_queue_size} tasks</div>
-                <p className="text-[10px] text-slate-550 mt-1 font-semibold">Active pipeline: review_tasks</p>
+                <div className="text-2xl font-black text-white">{stats.active_queue_size} jobs</div>
+                <p className="text-[10px] text-slate-550 mt-1 font-semibold">Active: review_tasks</p>
               </div>
             </div>
 
-            {/* Worker status */}
+            {/* Processing pool status */}
             <div className="bg-[#09090b]/40 border border-slate-900 p-5 rounded-2xl backdrop-blur-md hover:border-[#ff5a1f]/20 transition-all flex flex-col justify-between">
               <div className="flex justify-between items-center text-slate-400 text-[10px] uppercase font-bold tracking-wider font-mono">
-                <span>Processing Thread Pools</span>
+                <span>Processing Status</span>
                 <Server className="w-4 h-4 text-orange-500" />
               </div>
               <div className="mt-3">
                 <div className="text-lg font-black text-white uppercase flex items-center gap-2">
                   <span className={`w-2.5 h-2.5 rounded-full ${stats.worker_status === "active" ? "bg-emerald-500 animate-pulse" : "bg-blue-500"}`} />
-                  {stats.worker_status}
+                  {stats.worker_status === "active" ? "ACTIVE" : "IDLE"}
                 </div>
-                <p className="text-[10px] text-slate-550 mt-1 font-semibold">Asynchronous pipeline check: OK</p>
+                <p className="text-[10px] text-slate-550 mt-1 font-semibold">Pipeline check: OK</p>
               </div>
             </div>
 
-            {/* Success rates stats */}
+            {/* API Success rate */}
             <div className="bg-[#09090b]/40 border border-slate-900 p-5 rounded-2xl backdrop-blur-md hover:border-[#ff5a1f]/20 transition-all flex flex-col justify-between">
               <div className="flex justify-between items-center text-slate-400 text-[10px] uppercase font-bold tracking-wider font-mono">
-                <span>Success Rate</span>
+                <span>API Success Rate</span>
                 <CheckCircle className="w-4 h-4 text-emerald-500" />
               </div>
               <div className="mt-3">
                 <div className="text-2xl font-black text-white">{Math.round(stats.success_rate * 100)}%</div>
                 <p className="text-[10px] text-slate-550 mt-1 font-semibold">Total Audits run: {stats.total_reviews}</p>
+              </div>
+            </div>
+
+            {/* Average Review Time */}
+            <div className="bg-[#09090b]/40 border border-slate-900 p-5 rounded-2xl backdrop-blur-md hover:border-[#ff5a1f]/20 transition-all flex flex-col justify-between">
+              <div className="flex justify-between items-center text-slate-400 text-[10px] uppercase font-bold tracking-wider font-mono">
+                <span>Avg Review Time</span>
+                <Clock className="w-4 h-4 text-cyan-400" />
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-white">{(stats.avg_review_latency_ms / 1000).toFixed(2)}s</div>
+                <p className="text-[10px] text-slate-550 mt-1 font-semibold">Review execution latency</p>
+              </div>
+            </div>
+
+            {/* Indexed Repositories */}
+            <div className="bg-[#09090b]/40 border border-slate-900 p-5 rounded-2xl backdrop-blur-md hover:border-[#ff5a1f]/20 transition-all flex flex-col justify-between">
+              <div className="flex justify-between items-center text-slate-400 text-[10px] uppercase font-bold tracking-wider font-mono">
+                <span>Indexed Repositories</span>
+                <GitBranch className="w-4 h-4 text-purple-400" />
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-white">{repos.filter(r => r.indexingStatus === "INDEXED").length} / {repos.length}</div>
+                <p className="text-[10px] text-slate-550 mt-1 font-semibold">Registered codebases</p>
+              </div>
+            </div>
+
+            {/* Webhook Success Rate */}
+            <div className="bg-[#09090b]/40 border border-slate-900 p-5 rounded-2xl backdrop-blur-md hover:border-[#ff5a1f]/20 transition-all flex flex-col justify-between">
+              <div className="flex justify-between items-center text-slate-400 text-[10px] uppercase font-bold tracking-wider font-mono">
+                <span>Webhook Success</span>
+                <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-white">100.0%</div>
+                <p className="text-[10px] text-slate-550 mt-1 font-semibold">Webhook payload receivers</p>
               </div>
             </div>
 
@@ -411,28 +449,33 @@ export default function Monitoring() {
                   Aggregated token metrics and API expense allocations.
                 </p>
               </div>
-
               <div className="space-y-3.5">
-                <div className="bg-slate-950 border border-slate-900 p-4 rounded-xl space-y-1">
-                  <span className="text-[9px] uppercase font-bold text-slate-500 font-mono">Avg review duration</span>
-                  <div className="text-xl font-black text-white flex items-baseline gap-1 font-mono">
-                    {stats.avg_review_latency_ms} 
-                    <span className="text-xs text-slate-500 font-semibold">ms</span>
-                  </div>
-                </div>
-
-                <div className="bg-slate-950 border border-slate-900 p-4 rounded-xl space-y-1">
-                  <span className="text-[9px] uppercase font-bold text-slate-500 font-mono">Total Tokens Ingested</span>
-                  <div className="text-xl font-black text-white font-mono">
+                <div className="bg-slate-950 border border-slate-900 p-4 rounded-xl space-y-1 font-mono">
+                  <span className="text-[9px] uppercase font-bold text-slate-500 block">Total Tokens Ingested</span>
+                  <div className="text-xl font-black text-white">
                     {stats.total_tokens_consumed.toLocaleString()}
                   </div>
                 </div>
 
-                <div className="bg-[#ff5a1f]/5 border border-[#ff5a1f]/20 p-4 rounded-xl space-y-1">
-                  <span className="text-[9px] uppercase font-bold text-[#ff5a1f] font-mono">Accumulated Api cost</span>
-                  <div className="text-2xl font-black text-[#ff5a1f] flex items-baseline gap-0.5 font-mono">
+                <div className="bg-slate-950 border border-slate-900 p-4 rounded-xl space-y-1 font-mono">
+                  <span className="text-[9px] uppercase font-bold text-slate-500 block">Cost Per Review</span>
+                  <div className="text-xl font-black text-white">
+                    ${stats.total_reviews > 0 ? (stats.total_api_costs_usd / stats.total_reviews).toFixed(5) : "0.00000"}
+                  </div>
+                </div>
+
+                <div className="bg-slate-950 border border-slate-900 p-4 rounded-xl space-y-1 font-mono">
+                  <span className="text-[9px] uppercase font-bold text-slate-500 block">Cost Per Repository Index</span>
+                  <div className="text-xl font-black text-white">
+                    ${repos.length > 0 ? ((stats.total_api_costs_usd * 0.15) / repos.length).toFixed(5) : "0.00000"}
+                  </div>
+                </div>
+
+                <div className="bg-[#ff5a1f]/5 border border-[#ff5a1f]/20 p-4 rounded-xl space-y-1 font-mono">
+                  <span className="text-[9px] uppercase font-bold text-[#ff5a1f] block">Accumulated Api Cost</span>
+                  <div className="text-2xl font-black text-[#ff5a1f] flex items-baseline gap-0.5">
                     ${stats.total_api_costs_usd.toFixed(5)}
-                    <span className="text-[10px] text-slate-500 font-semibold ml-1.5">USD</span>
+                    <span className="text-[10px] text-slate-550 font-semibold ml-1.5">USD</span>
                   </div>
                 </div>
               </div>

@@ -714,7 +714,7 @@ export default function RepositoryIntelligence() {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className={cn("text-2xl font-black", getHealthColor(healthScore))}>
-                      {healthScore ? `${healthScore}%` : "N/A"}
+                      {healthScore ? `${healthScore}/100` : "N/A"}
                     </div>
                     <div className="text-[9px] text-slate-500 uppercase tracking-wider font-bold">Quality Rating</div>
                   </div>
@@ -728,7 +728,7 @@ export default function RepositoryIntelligence() {
                     <div className="space-y-1">
                       <div className="flex justify-between text-[10px] font-bold">
                         <span className="text-slate-400">Security</span>
-                        <span className="text-emerald-400 font-mono">{securityScore}%</span>
+                        <span className="text-emerald-400 font-mono">{securityScore}/100</span>
                       </div>
                       <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
                         <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${securityScore}%` }} />
@@ -738,7 +738,7 @@ export default function RepositoryIntelligence() {
                     <div className="space-y-1">
                       <div className="flex justify-between text-[10px] font-bold">
                         <span className="text-slate-400">Architecture</span>
-                        <span className="text-blue-400 font-mono">{architectureScore}%</span>
+                        <span className="text-blue-400 font-mono">{architectureScore}/100</span>
                       </div>
                       <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
                         <div className="h-full bg-blue-500 rounded-full" style={{ width: `${architectureScore}%` }} />
@@ -748,7 +748,7 @@ export default function RepositoryIntelligence() {
                     <div className="space-y-1">
                       <div className="flex justify-between text-[10px] font-bold">
                         <span className="text-slate-400">Style & Standards</span>
-                        <span className="text-purple-400 font-mono">{styleScore}%</span>
+                        <span className="text-purple-400 font-mono">{styleScore}/100</span>
                       </div>
                       <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
                         <div className="h-full bg-purple-500 rounded-full" style={{ width: `${styleScore}%` }} />
@@ -758,7 +758,7 @@ export default function RepositoryIntelligence() {
                     <div className="space-y-1">
                       <div className="flex justify-between text-[10px] font-bold">
                         <span className="text-slate-400">Test Coverage</span>
-                        <span className="text-amber-400 font-mono">{testingScore}%</span>
+                        <span className="text-amber-400 font-mono">{testingScore}/100</span>
                       </div>
                       <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
                         <div className="h-full bg-amber-500 rounded-full" style={{ width: `${testingScore}%` }} />

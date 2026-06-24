@@ -185,15 +185,17 @@ export default function ReviewDetails() {
       </div>
 
       {/* Stats Deck */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
         {[
-          { label: "Total Findings", value: findings?.length || 0, color: "text-white" },
-          { label: "Critical Violations", value: review.criticalFindings, color: "text-rose-400" },
-          { label: "Agents Executed", value: "5 (Core)", color: "text-emerald-400" },
-          { label: "Files Evaluated", value: filesChanged?.length || 0, color: "text-white" }
+          { label: "Critical Findings", value: findings?.filter(f => f.severity?.toLowerCase() === 'critical' || f.severity?.toLowerCase() === 'high').length || 0, color: "text-rose-400" },
+          { label: "Medium Findings", value: findings?.filter(f => f.severity?.toLowerCase() === 'medium').length || 0, color: "text-amber-400" },
+          { label: "Low Findings", value: findings?.filter(f => f.severity?.toLowerCase() === 'low' || f.severity?.toLowerCase() === 'info').length || 0, color: "text-emerald-400" },
+          { label: "Review Duration", value: `${(review.executionTimeMs / 1000).toFixed(1)}s`, color: "text-cyan-400" },
+          { label: "Files Evaluated", value: filesChanged?.length || [...new Set(findings?.map(f => f.filePath))].length || 0, color: "text-white" },
+          { label: "Agents Executed", value: "5 (Core)", color: "text-purple-400" }
         ].map((stat, i) => (
           <div key={i} className="p-4 bg-[#0a0e17]/80 border border-slate-800/80 rounded-xl">
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">{stat.label}</span>
+            <span className="text-[10px] text-slate-550 font-bold uppercase tracking-wider block mb-1">{stat.label}</span>
             <span className={`text-xl font-black ${stat.color}`}>{stat.value}</span>
           </div>
         ))}
