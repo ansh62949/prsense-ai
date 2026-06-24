@@ -189,22 +189,27 @@ sequenceDiagram
 
 ### Setup Sequence
 
-1. **Database Setup**:
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/ansh62949/prsense-ai.git
+   cd prsense-ai
+   ```
+2. **Database Setup**:
    Ensure PostgreSQL is running and the vector extension is loaded:
    ```sql
    CREATE EXTENSION IF NOT EXISTS vector;
    ```
-2. **Analysis Service**:
+3. **Analysis Service**:
    Navigate to `/prsense-ai-service`, create a Python virtual environment, install `requirements.txt`, and start the app:
    ```bash
    uvicorn main:app --reload --port 8000
    ```
-3. **Backend Service**:
+4. **Backend Service**:
    Navigate to `/prsense-backend` and run the Spring Boot application:
    ```bash
    ./mvnw spring-boot:run
    ```
-4. **Frontend Portal**:
+5. **Frontend Portal**:
    Navigate to `/prsense-frontend`, run `npm install` and start the development server:
    ```bash
    npm run dev
@@ -229,9 +234,15 @@ The core services require the following variables to be configured in your envir
 
 ## Deployment
 
-- **Frontend**: Hosted on Vercel (routing rules configured in `vercel.json`).
-- **Backend Service & Analysis Service**: Hosted on Render as Web Services.
-- **Database**: PostgreSQL with `pgvector` extension enabled.
+The system is deployed across the following hosting platforms and URLs:
+
+| Service | Host | Live / Production Address | Description |
+|---------|------|---------------------------|-------------|
+| **Frontend UI** | Vercel | [prsense-ai.vercel.app](https://prsense-ai.vercel.app/) | React Web Application Portal |
+| **Backend Service** | Render | [prsense-ai-1.onrender.com](https://prsense-ai-1.onrender.com/) | Spring Boot Orchestrator & API |
+| **Analysis Service** | Render | [prsense-ai.onrender.com](https://prsense-ai.onrender.com/) | FastAPI Analysis Service |
+| **Backend Swagger** | Render | [Swagger UI](https://prsense-ai-1.onrender.com/swagger-ui/index.html) | Interactive API documentation |
+| **Analysis OpenAPI** | Render | [OpenAPI Docs](https://prsense-ai.onrender.com/docs) | Interactive API playground |
 
 *Note: The Analysis Service requires its `BACKEND_CALLBACK_URL` and `BACKEND_URL` environment variables to be explicitly set to the deployed backend domain in production to complete asynchronous task dispatches.*
 
