@@ -1,118 +1,262 @@
-# PRSense - AI-Powered Pull Request Audit & Repository Intelligence Platform
+# PRSense
 
-PRSense is a production-grade codebase intelligence platform designed to audit pull requests, verify code safety, check style rules, and provide repository-wide conversational search. 
+Repository Analysis, Semantic Search, and Pull Request Review Platform
 
-The platform is designed around a modern three-tier architecture that utilizes direct asynchronous processing pipelines to review code diffs and coordinate analysis loops.
-
----
-
-## 🏛️ System Architecture
-
-PRSense operates using a direct-dispatch asynchronous pipeline flow to ensure fast response times and eliminate queueing overhead:
-
-![PRSense Architecture](file:///C:/Users/satam/.gemini/antigravity/brain/3375c9ea-7e2e-4dba-bc18-6e4375ccb1bf/prsense_architecture_diagram_1782247803603.png)
-
-### Architectural Flow
-1. **Frontend (React + Vite + Tailwind)**: An interactive dark-mode dashboard that communicates with the backend via HTTP. Provides visual tools for diff reviews, RAG queries, and detailed PDF report exports.
-2. **Backend (Spring Boot)**: Acts as the secure orchestrator. It registers webhook event notifications, persists user metadata, and directly dispatches asynchronous indexing and code review requests to the AI service.
-3. **AI Service (FastAPI + Python)**: Manages static analysis, security scans, rule extraction (Rule Learner), and embedding generation.
-4. **Knowledge Store (PostgreSQL + pgvector)**: Stores structural repository profiles, user/repo metadata, and vector embeddings of codebase chunks for Semantic Search context retrieval.
+PRSense is a system designed to perform static codebase analysis, repository semantic search, and pull request audits. It integrates with GitHub webhooks to analyze source code diffs, cross-reference them against stored codebase context, and run specialized audit modules to flag code quality, security, styling, and test coverage concerns.
 
 ---
 
-## ✨ Core Platform Capabilities
+## Overview
 
-### 1. Multi-Stage Asynchronous Review Pipeline
-Our direct-dispatch pipeline evaluates code changes concurrently using specialized agents:
-- **Security Check**: Flags potential vulnerabilities, secrets exposure, and insecure dependencies.
-- **Architecture Scanner**: Verifies package boundaries and structural invariants.
-- **Style Standardizer**: Ensures consistency with project conventions.
-- **Test Auditor**: Analyzes test coverage gaps, missing assertions, and mock validations.
+The system operates on a decoupled architecture composed of a Java Spring Boot orchestrator, a Python FastAPI analysis service, and a PostgreSQL database extended with `pgvector`. 
 
-### 2. 4-Dimensional Codebase Health Scores
-Repository health is calculated across four key architectural dimensions instead of arbitrary percentages:
-- 🛡️ **Security**: Vulnerability posture and secret scanning coverage.
-- 📐 **Architecture**: Package coupling, dependency cycles, and clean code principles.
-- 🎨 **Style & Standards**: Adherence to codebase style guidelines and naming conventions.
-- 🧪 **Test Coverage**: Ratios of implementation components to unit and integration test assertions.
-
-### 3. Print-to-PDF Audit Reports
-Recruiters and security auditors can export formal review audit logs directly from the UI. Clicking **Export PDF** opens a printer-friendly template styled with a professional corporate layout, allowing immediate vector PDF print generation.
-
-### 4. Telemetry-Backed Health Checks
-Both primary services feature comprehensive health checks reporting connection health, LLM provider availability, and timestamps:
-- **Spring Boot Endpoint (`/api/health`)**: Reports connection status of the PostgreSQL database, backend service status, and timestamp.
-- **FastAPI Endpoint (`/health`)**: Performs active database connection test, verifies that the `pgvector` extension is enabled, and reports the active LLM provider (e.g. `GEMINI`, `GROQ`, `OPENAI`).
+When a user registers a repository, the system indexer extracts, chunks, and generates vector embeddings for all code files, storing them for semantic retrieval. During subsequent pull request events, GitHub webhooks trigger the review pipeline, which retrieves codebase context using vector queries and runs concurrent evaluation modules to verify code safety and styling consistency.
 
 ---
 
-## 📁 Project Structure
+## Current Capabilities
+
+- **Repository Indexing and Semantic Retrieval**: Clones codebase versions, chunks files, generates embeddings, and indexes them for queries.
+- **Pull Request Review Execution**: Automatically analyzes PR diffs and generates structural audit reports.
+- **GitHub Webhook Integration**: Receives real-time PR events to trigger checks without manual pipeline runs.
+- **Concurrent Review Agents**: Evaluates changes simultaneously for security, code style, architecture, and tests.
+- **Vector Search using pgvector**: Utilizes HNSW indexes and cosine similarity for contextual RAG searches.
+- **Review Telemetry and Execution Tracking**: Reports database statuses, average review runtimes, and analysis costs.
+- **PDF Audit Export**: Exports full codebase reviews to clean, printable corporate formats.
+
+---
+
+## System Architecture
+
+The following diagram illustrates the deployment layout and information flow across the system components:
+
+```mermaid
+graph TD
+    ReactFrontend[React Frontend] --> SpringBootBackend[Spring Boot Backend]
+    GitHubWebhook[GitHub Webhook] --> SpringBootBackend
+    SpringBootBackend --> FastAPIAnalysisService[FastAPI Analysis Service]
+    FastAPIAnalysisService --> GitRepositoryClone[Git Repository Clone]
+    FastAPIAnalysisService --> PostgreSQL[PostgreSQL]
+    PostgreSQL --> pgvector[pgvector]
+```
+
+---
+
+## Technology Stack
+
+- **Frontend Application**: React, Vite, Tailwind CSS, Framer Motion
+- **Backend Service**: Spring Boot, Spring Security (JWT authentication), JPA / Hibernate
+- **Analysis Service**: FastAPI, Python `BackgroundTasks`, LangGraph
+- **Database**: PostgreSQL with the `pgvector` extension
+
+---
+
+## Design Decisions
+
+### Direct HTTP Communication
+The system uses direct HTTP communication between Spring Boot and the Analysis Service. A queue-based architecture was intentionally avoided to reduce deployment complexity and infrastructure requirements for small and medium-sized workloads.
+
+### PostgreSQL + pgvector
+Repository context is stored in PostgreSQL using pgvector to simplify operational overhead while supporting semantic retrieval.
+
+### Background Processing
+FastAPI BackgroundTasks are used for indexing and review execution to prevent blocking HTTP requests.
+
+---
+
+## Project Structure
 
 ```
 prsense/
-├── prsense-frontend/          # React + Vite + Tailwind + Framer Motion
-│   ├── src/
-│   │   ├── pages/              # Views (CommandCenter, AskRepository, Dashboard, etc.)
-│   │   ├── components/         # Reusable UI cards, tables, layouts
-│   │   └── lib/                # Client-side utility functions (PDF Export)
-│   ├── package.json
-│   └── vite.config.js
-│
-├── prsense-backend/           # Java Spring Boot Backend Service
-│   ├── src/
-│   │   ├── main/java/...       # Entities, Repositories, Services, and Controllers
-│   │   └── main/resources/     # Application YAML configuration
-│   └── pom.xml
-│
-└── prsense-ai-service/        # Python FastAPI AI Service
-    ├── main.py                # Router and HTTP Endpoints
-    ├── graph/                 # Multi-Stage Workflow orchestrator
-    ├── services/              # pgvector utility and LLM integration
-    └── requirements.txt       # Python dependencies
+├── prsense-frontend/          # React frontend application
+├── prsense-backend/           # Spring Boot backend service
+├── prsense-ai-service/        # FastAPI analysis service
+├── docs/                      # Technical documentation
+├── screenshots/               # Application interface walkthroughs
+└── README.md                  # Project documentation
 ```
 
 ---
 
-## 🚀 Quick Start
+## Data Model
 
-### Prerequisites
-- **Docker & Docker Compose** (Installed and running)
-- **Java 17+** (Optional, for local backend development)
-- **Python 3.11+** (Optional, for local AI service development)
-- **Node.js 18+** (Optional, for local frontend development)
+### Core Entities
+- **Repository**: Stores git metadata, indexing states, and synchronization timestamps.
+- **Pull Request**: Tracks imported PR records, commit hashes, and status states.
+- **Review**: Persists overall analysis outcomes, severity counts, and execution metrics.
+- **Review Finding**: Houses specific audit issues, recommendations, and source code line positions.
+- **Repository Snapshot**: Maintains high-level architectural metrics and codebase health scores.
 
-### Deployment with Docker Compose
+### Vector Storage
+- `memory_documents`: Stores raw codebase text chunks and their 1536-dimension embeddings.
+- `style_guidelines`: Stores project rule definitions and their corresponding vectors.
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/ansh62949/prsense.git
-   cd prsense
-   ```
-
-2. **Configure environment variables**:
-   Create a `.env` file at the root:
-   ```env
-   OPENAI_API_KEY=your-openai-api-key-here
-   GEMINI_API_KEY=your-gemini-api-key-here
-   ```
-
-3. **Spin up the stack**:
-   ```bash
-   docker-compose -f docker-compose.production.yml up --build -d
-   ```
-   This deploys:
-   - **PostgreSQL (pgvector)** on port `5432`
-   - **Spring Boot Backend** on port `8080`
-   - **FastAPI AI Service** on port `8000`
+*Repository metadata is stored in PostgreSQL through JPA/Hibernate. Semantic search data is stored using pgvector embeddings.*
 
 ---
 
-## 🛠️ Service Architecture & Endpoints
+## Core Operational Flows
 
-| Service | Local Address | Live/Production Address | Description |
-|---------|---------------|-------------------------|-------------|
-| **Frontend UI** | `http://localhost:3000` | `https://prsense-ai.vercel.app/` | React Web Application Portal |
-| **Backend API** | `http://localhost:8080` | `https://prsense-ai-1.onrender.com/` | Spring Boot Orchestrator & API |
-| **Backend Swagger** | `http://localhost:8080/swagger-ui.html` | `https://prsense-ai-1.onrender.com/swagger-ui/index.html` | Interactive API documentation |
-| **AI Service** | `http://localhost:8000` | `https://prsense-ai.onrender.com/` | FastAPI AI analyzer service |
-| **AI Swagger** | `http://localhost:8000/docs` | `https://prsense-ai.onrender.com/docs` | Interactive OpenAPI playground |
+### Repository Indexing Flow
+
+```mermaid
+sequenceDiagram
+    participant UI as React Frontend
+    participant SB as Spring Boot Backend
+    participant FA as Analysis Service
+    participant DB as PostgreSQL (pgvector)
+    
+    UI->>SB: POST /api/repositories/{id}/index
+    SB->>FA: POST /api/index/repository
+    FA-->>SB: 202 Accepted (Background Triggered)
+    SB-->>UI: Indexing Status: PENDING
+    
+    Note over FA: Clone Git repository to local disk
+    Note over FA: Parse codebase into structural chunks
+    Note over FA: Generate embeddings & update pgvector
+    
+    FA->>DB: INSERT chunks & summaries
+    Note over FA: Delete temporary clone directory
+    
+    FA->>SB: POST /api/reviews/callback (Status: COMPLETED)
+    SB->>DB: Update Repository Indexing Status
+```
+
+### Pull Request Review Flow
+
+```mermaid
+sequenceDiagram
+    participant GH as GitHub Webhook
+    participant SB as Spring Boot Backend
+    participant FA as Analysis Service
+    participant DB as PostgreSQL (pgvector)
+    
+    GH->>SB: POST /api/webhooks/github (PR event)
+    Note over SB: Validate signature & save PR metadata
+    SB->>FA: POST /api/review/run
+    FA-->>SB: 202 Accepted
+    
+    Note over FA: Fetch PR diff via GitHub API
+    FA->>DB: Query nearest codebase context (cosine similarity)
+    Note over FA: Execute concurrent checks (Security, Style, etc.)
+    
+    FA->>DB: INSERT reviews & review_findings
+    FA->>SB: POST /api/reviews/callback (Result summary)
+    SB->>DB: Update Review Status to COMPLETED
+```
+
+---
+
+## API Overview
+
+### Backend Service (Spring Boot)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/auth/login` | Authenticates user credentials and returns a JWT. |
+| `POST` | `/api/auth/register` | Registers a new user account. |
+| `GET` | `/api/repositories` | Lists linked repositories. |
+| `POST` | `/api/repositories/link` | Links a GitHub repository to a workspace. |
+| `POST` | `/api/repositories/{id}/index` | Dispatches an indexing call to the Analysis Service. |
+| `GET` | `/api/repositories/{id}/pulls` | Lists pull requests imported for a repository. |
+| `GET` | `/api/pulls/{id}/reviews` | Returns the review log for a pull request. |
+| `GET` | `/api/reviews/{id}` | Fetches a completed review report. |
+| `POST` | `/api/webhooks/github` | Public webhook target for GitHub event dispatches. |
+| `GET` | `/health` / `/api/health` | Diagnostic status check endpoint. |
+
+### Analysis Service (FastAPI)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/index/repository` | Launches asynchronous cloning and embedding generation. |
+| `POST` | `/api/review/run` | Launches asynchronous PR diff code reviews. |
+| `POST` | `/api/rag/ingest` | Generates embeddings for a single text block. |
+| `POST` | `/api/rag/search` | Queries the nearest vector chunks. |
+| `POST` | `/api/repository/ask` | Runs conversational context searches. |
+| `GET` | `/health` | Diagnostic status endpoint reporting database and pipeline health. |
+
+---
+
+## Local Development Setup
+
+### Prerequisites
+
+- Java Development Kit (JDK) 17 or higher
+- Python 3.11 or higher
+- Node.js 18 or higher (with npm)
+- PostgreSQL (v15+) with `pgvector` extension installed
+- Git CLI
+
+### Setup Sequence
+
+1. **Database Setup**:
+   Ensure PostgreSQL is running and the vector extension is loaded:
+   ```sql
+   CREATE EXTENSION IF NOT EXISTS vector;
+   ```
+2. **Analysis Service**:
+   Navigate to `/prsense-ai-service`, create a Python virtual environment, install `requirements.txt`, and start the app:
+   ```bash
+   uvicorn main:app --reload --port 8000
+   ```
+3. **Backend Service**:
+   Navigate to `/prsense-backend` and run the Spring Boot application:
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+4. **Frontend Portal**:
+   Navigate to `/prsense-frontend`, run `npm install` and start the development server:
+   ```bash
+   npm run dev
+   ```
+
+For detailed configurations on model switches and provider API configurations, see [docs/configuration.md](docs/configuration.md).
+
+---
+
+## Required Variables
+
+The core services require the following variables to be configured in your environment or root `.env` file:
+
+- `DATABASE_URL`: Connection string for PostgreSQL (e.g. `postgresql://user:pass@localhost:5432/prsense_db`).
+- `JWT_SECRET`: Secret token used to sign Spring Security session tokens.
+- `GITHUB_TOKEN`: GitHub Personal Access Token used to clone repositories and request pull request diffs.
+- `GROQ_API_KEY`: API credential key when using the active model provider.
+
+*For a full list of environmental settings, refer to the [Configuration Guide](docs/configuration.md).*
+
+---
+
+## Deployment
+
+- **Frontend**: Hosted on Vercel (routing rules configured in `vercel.json`).
+- **Backend Service & Analysis Service**: Hosted on Render as Web Services.
+- **Database**: PostgreSQL with `pgvector` extension enabled.
+
+*Note: The Analysis Service requires its `BACKEND_CALLBACK_URL` and `BACKEND_URL` environment variables to be explicitly set to the deployed backend domain in production to complete asynchronous task dispatches.*
+
+---
+
+## Monitoring
+
+- **Service Diagnostics**:
+  - `/health` in Spring Boot returns `200 OK` validating database connectivity.
+  - `/health` in FastAPI checks database connections and verifies the presence of the `pgvector` extension.
+- **Telemetry Dashboard**:
+  - Live metric pages track operational health, processing runtimes, API success rates, and token cost metrics.
+
+
+---
+
+
+## Current Limitations
+
+- Reviews are optimized for GitHub repositories.
+- Large repositories may require longer indexing times.
+- Semantic retrieval quality depends on repository documentation quality.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
