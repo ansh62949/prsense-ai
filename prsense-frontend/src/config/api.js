@@ -3,12 +3,14 @@ import axios from "axios";
 export const API_CONFIG = {
   BACKEND_URL:
     import.meta.env.VITE_BACKEND_URL ||
-    "https://prsense-ai-1.onrender.com",
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://prsense-ai-88yl.onrender.com",
 
   AI_URL:
     import.meta.env.VITE_AI_URL ||
     import.meta.env.VITE_AI_SERVICE_URL ||
-    "https://prsense-ai.onrender.com",
+    import.meta.env.VITE_AI_BASE_URL ||
+    "https://prsense-ai-1-teia.onrender.com",
 
   PROMETHEUS_URL:
     import.meta.env.VITE_PROMETHEUS_URL ||

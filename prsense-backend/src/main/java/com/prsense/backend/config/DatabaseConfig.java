@@ -6,6 +6,7 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import javax.sql.DataSource;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 @Configuration
 public class DatabaseConfig {
@@ -21,48 +22,25 @@ public class DatabaseConfig {
 
     @Bean
     public DataSource dataSource() {
-        String url = dbUrl;
+        String url = dbUrl == null ? "" : dbUrl.trim();
         String username = dbUsername;
         String password = dbPassword;
 
-        // Overwrite URL from the environment variable if DATABASE_URL is set
-        String envDatabaseUrl = System.getenv("DATABASE_URL");
+        // Prefer the Spring-specific setting when both variables are present.
+        String envDatabaseUrl = System.getenv("SPRING_DATASOURCE_URL");
         if (envDatabaseUrl == null || envDatabaseUrl.trim().isEmpty()) {
-            envDatabaseUrl = System.getenv("SPRING_DATASOURCE_URL");
+            envDatabaseUrl = System.getenv("DATABASE_URL");
         }
 
         if (envDatabaseUrl != null && !envDatabaseUrl.trim().isEmpty()) {
-            url = envDatabaseUrl;
+            url = envDatabaseUrl.trim();
         }
 
         if (url != null && !url.trim().isEmpty()) {
-            // Check if it's in postgres:// or postgresql:// format
-            if (url.startsWith("postgres://") || url.startsWith("postgresql://")) {
-                try {
-                    URI uri = new URI(url);
-                    String host = uri.getHost();
-                    int port = uri.getPort();
-                    if (port == -1) {
-                        port = 5432;
-                    }
-                    String path = uri.getPath();
-                    String userInfo = uri.getUserInfo();
-
-                    String jdbcUrl = "jdbc:postgresql://" + host + ":" + port + path;
-                    
-                    if (userInfo != null && userInfo.contains(":")) {
-                        String[] parts = userInfo.split(":", 2);
-                        username = parts[0];
-                        password = parts[1];
-                    }
-                    url = jdbcUrl;
-                } catch (Exception e) {
-                    // Failover to string replacement if URI parsing fails
-                    url = url.replace("postgresql://", "jdbc:postgresql://").replace("postgres://", "jdbc:postgresql://");
-                }
-            } else if (!url.startsWith("jdbc:")) {
-                url = "jdbc:postgresql://" + url;
-            }
+            DatabaseConnection connection = normalizeConnection(url, username, password);
+            url = connection.url();
+            username = connection.username();
+            password = connection.password();
         }
 
         return DataSourceBuilder.create()
@@ -70,5 +48,48 @@ public class DatabaseConfig {
                 .username(username)
                 .password(password)
                 .build();
+    }
+
+    private static DatabaseConnection normalizeConnection(
+            String rawUrl,
+            String username,
+            String password) {
+        String url = rawUrl.trim();
+        if (url.startsWith("jdbc:")) {
+            return new DatabaseConnection(url, username, password);
+        }
+
+        if (!url.startsWith("postgres://") && !url.startsWith("postgresql://")) {
+            return new DatabaseConnection("jdbc:postgresql://" + url, username, password);
+        }
+
+        try {
+            URI uri = new URI(url);
+            String host = uri.getHost();
+            if (host == null || host.isBlank()) {
+                throw new IllegalArgumentException("PostgreSQL URL does not contain a host");
+            }
+
+            int port = uri.getPort() == -1 ? 5432 : uri.getPort();
+            String path = uri.getRawPath() == null ? "" : uri.getRawPath();
+            String query = uri.getRawQuery() == null ? "" : "?" + uri.getRawQuery();
+            String userInfo = uri.getUserInfo();
+
+            if (userInfo != null && userInfo.contains(":")) {
+                String[] parts = userInfo.split(":", 2);
+                username = parts[0];
+                password = parts[1];
+            }
+
+            return new DatabaseConnection(
+                    "jdbc:postgresql://" + host + ":" + port + path + query,
+                    username,
+                    password);
+        } catch (URISyntaxException | IllegalArgumentException exception) {
+            throw new IllegalArgumentException("Invalid PostgreSQL database URL", exception);
+        }
+    }
+
+    private record DatabaseConnection(String url, String username, String password) {
     }
 }

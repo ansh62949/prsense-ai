@@ -239,10 +239,10 @@ The system is deployed across the following hosting platforms and URLs:
 | Service | Host | Live / Production Address | Description |
 |---------|------|---------------------------|-------------|
 | **Frontend UI** | Vercel | [prsense-ai.vercel.app](https://prsense-ai.vercel.app/) | React Web Application Portal |
-| **Backend Service** | Render | [prsense-ai-1.onrender.com](https://prsense-ai-1.onrender.com/) | Spring Boot Orchestrator & API |
-| **Analysis Service** | Render | [prsense-ai.onrender.com](https://prsense-ai.onrender.com/) | FastAPI Analysis Service |
-| **Backend Swagger** | Render | [Swagger UI](https://prsense-ai-1.onrender.com/swagger-ui/index.html) | Interactive API documentation |
-| **Analysis OpenAPI** | Render | [OpenAPI Docs](https://prsense-ai.onrender.com/docs) | Interactive API playground |
+| **Backend Service** | Render | [prsense-ai-88yl.onrender.com](https://prsense-ai-88yl.onrender.com/) | Spring Boot Orchestrator & API |
+| **Analysis Service** | Render | [prsense-ai-1-teia.onrender.com](https://prsense-ai-1-teia.onrender.com/) | FastAPI Analysis Service |
+| **Backend Swagger** | Render | [Swagger UI](https://prsense-ai-88yl.onrender.com/swagger-ui/index.html) | Interactive API documentation |
+| **Analysis OpenAPI** | Render | [OpenAPI Docs](https://prsense-ai-1-teia.onrender.com/docs) | Interactive API playground |
 
 *Note: The Analysis Service requires its `BACKEND_CALLBACK_URL` and `BACKEND_URL` environment variables to be explicitly set to the deployed backend domain in production to complete asynchronous task dispatches.*
 
